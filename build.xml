@@ -1,0 +1,16 @@
+
+<project name="buildid" default="package">
+
+	<target name="package">
+		<zip destfile="${basedir}/${ant.project.name}.xpi">
+			<fileset dir="${basedir}">
+				<include name="**/*"/>
+				<exclude name="components/*.idl"/>
+				<exclude name="${ant.project.name}.xpi"/>
+				<exclude name="build.xml"/>
+				<exclude name=".*"/>
+			</fileset>
+		</zip>
+	</target>
+	
+</project>

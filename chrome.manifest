@@ -1,0 +1,4 @@
+content	buildid	file:chrome/content/
+skin	buildid	classic/1.0	file:chrome/skin/
+locale	buildid	en-US	file:chrome/locale/en-US/
+overlay	chrome://browser/content/browser.xul	chrome://buildid/content/browserOverlay.xul
