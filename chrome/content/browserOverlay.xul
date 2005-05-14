@@ -6,7 +6,7 @@
 	<script type="application/x-javascript" src="browserOverlay.js" />
 
 	<menupopup id="menu_HelpPopup">
-		<menuitem label="Copy Build ID" oncommand="copyBuildID();"/>
+		<menuitem label="Copy Build ID" oncommand="nightly.copyTemplate('build');"/>
 	</menupopup>
 
 </overlay>
