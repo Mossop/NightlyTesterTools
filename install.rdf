@@ -18,8 +18,8 @@
     </em:targetApplication>
     
     <!-- Front End MetaData -->
-    <em:name>Firefox Tester Tools</em:name>
-    <em:description>Provides some tools useful for nightly testers.</em:description>
+    <em:name>Build ID Copier</em:name>
+    <em:description>Allows you to copy the current firefox build identifier to the clipboard.</em:description>
     <em:creator>Dave Townsend</em:creator>
     <em:homepageURL>http://www.blueprintit.co.uk/~dave/web/firefox/buildid/index.html</em:homepageURL>
     <em:updateURL>http://www.blueprintit.co.uk/~dave/web/firefox/update.rdf?guid=%ITEM_ID%&amp;version=%ITEM_VERSION%&amp;app=%APP_ID%&amp;appver=%APP_VERSION%</em:updateURL>

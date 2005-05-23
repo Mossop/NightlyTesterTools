@@ -4,21 +4,42 @@ preferences: Components.classes["@mozilla.org/preferences-service;1"].
                    	getService(Components.interfaces.nsIPrefService).getBranch("extensions.nightlytools."),
 
 variables: {
+	BUILDID: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).geckoBuildID,
+	USERAGENT: navigator.userAgent
+},
+
+templates: {
+	BUILD: "${UserAgent} ID:${BuildID}"
+},
+
+getStoredItem: function(type,name)
+{
+	name=name.toUpperCase();
+	var varvalue = null;
+	try
+	{
+		varvalue = nightly.preferences.getCharPref(type+"."+name);
+	}
+	catch (e) {}
+	if (!varvalue)
+	{
+		varvalue = eval("nightly."+type+"."+name);
+	}
+	else
+	{
+		varvalue = eval(varvalue);
+	}
+	return varvalue;
 },
 
 getVariable: function(name)
 {
-	name=name.toUpperCase();
-	var varvalue = nightly.preferences.getCharPref("variables."+name);
-	if (!varvalue)
-	{
-		varvalue = eval("nightly.variables."+name);
-	}
-	else
-	{
-		varvalue=eval(varvalue);
-	}
-	return varvalue;
+	return nightly.getStoredItem("variables",name);
+},
+
+getTemplate: function(name)
+{
+	return nightly.getStoredItem("templates",name);
 },
 
 generateText: function(template)
@@ -63,7 +84,7 @@ copyText: function(template)
 
 copyTemplate: function(name)
 {
-	nightly.copyText(nightly.preferences.getCharPref("templates."+name));
+	nightly.copyText(nightly.getTemplate(name));
 }
 
 }
