@@ -7,6 +7,7 @@
 
 	<menupopup id="menu_HelpPopup">
 		<menuitem label="Copy Build ID" oncommand="nightly.copyTemplate('build');"/>
+		<menuitem label="Launch Talkback" oncommand="nightly.launchTalkback();"/>
 	</menupopup>
 
 </overlay>

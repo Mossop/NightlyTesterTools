@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{8620c15f-30dc-4dba-a131-7c5d20cf4a29}</em:id>
-    <em:version>0.2</em:version>
+    <em:version>0.3</em:version>
     
     <!-- Target Application this extension can install into, 
         with minimum and maximum supported versions. --> 
@@ -13,13 +13,13 @@
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>1.0</em:minVersion>
-        <em:maxVersion>1.1+</em:maxVersion>
+        <em:maxVersion>1.0+</em:maxVersion>
       </Description>
     </em:targetApplication>
     
     <!-- Front End MetaData -->
     <em:name>Build ID Copier</em:name>
-    <em:description>Allows you to copy the current firefox build identifier to the clipboard.</em:description>
+    <em:description>Useful tools for the nightly tester. Currently all on the help menu.</em:description>
     <em:creator>Dave Townsend</em:creator>
     <em:homepageURL>http://www.blueprintit.co.uk/~dave/web/firefox/buildid/index.html</em:homepageURL>
     <em:updateURL>http://www.blueprintit.co.uk/~dave/web/firefox/update.rdf?guid=%ITEM_ID%&amp;version=%ITEM_VERSION%&amp;app=%APP_ID%&amp;appver=%APP_VERSION%</em:updateURL>

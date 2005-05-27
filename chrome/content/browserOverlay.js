@@ -85,6 +85,76 @@ copyText: function(template)
 copyTemplate: function(name)
 {
 	nightly.copyText(nightly.getTemplate(name));
+},
+
+launch: function(file, args)
+{
+	var process = Components.classes["@mozilla.org/process/util;1"].
+										createInstance(Components.interfaces.nsIProcess);
+	process.init(file);
+	if (args)
+	{
+		process.run(false,args,args.length);
+	}
+	else
+	{
+		process.run(false,null,0);
+	}
+},
+
+alertType: function(type)
+{
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
+										getService(Components.interfaces.nsIProperties);
+
+	var dir = directoryService.get(type,Components.interfaces.nsIFile);
+	alert(dir.path);
+},
+
+findTalkback: function()
+{
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
+										getService(Components.interfaces.nsIProperties);
+
+	var dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
+	dir.append("components");
+	
+	if (dir.exists())
+	{
+		var winCheck = dir.clone();
+		winCheck.append("talkback.exe");
+		
+		if ((winCheck.exists()) && (winCheck.isExecutable()))
+		{
+			return winCheck;
+		}
+		else
+		{
+			dir.append("talkback");
+			if (dir.exists())
+			{
+				dir.append("talkback");
+				if ((talkback.exists()) && (talkback.isExecutable()))
+				{
+					return dir;
+				}
+			}
+		}
+	}
+	return null;
+},
+
+launchTalkback: function()
+{
+	var talkback = nightly.findTalkback();
+	if (talkback)
+	{
+		nightly.launch(talkback,null);
+	}
+	else
+	{
+		alert("Could not find talkback. Perhaps it isn't installed.");
+	}
 }
 
 }
