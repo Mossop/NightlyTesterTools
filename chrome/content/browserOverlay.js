@@ -134,7 +134,7 @@ findTalkback: function()
 			if (dir.exists())
 			{
 				dir.append("talkback");
-				if ((talkback.exists()) && (talkback.isExecutable()))
+				if ((dir.exists()) && (dir.isExecutable()))
 				{
 					return dir;
 				}
