@@ -111,12 +111,8 @@ alertType: function(type)
 	alert(dir.path);
 },
 
-findTalkback: function()
+findTalkbackInDir: function(dir)
 {
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
-										getService(Components.interfaces.nsIProperties);
-
-	var dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
 	dir.append("components");
 	
 	if (dir.exists())
@@ -142,6 +138,40 @@ findTalkback: function()
 		}
 	}
 	return null;
+},
+
+findTalkback: function()
+{	
+	/*var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"].
+										getService(Components.interfaces.nsIExtensionManager);
+	var installloc = extensionManager.getInstallLocation("talkback@mozilla.org");
+	if (installloc)
+	{
+		var dir = installloc.getItemLocation("talkback@mozilla.org");
+		if (dir)
+		{
+			var talkback=nightly.findTalkbackInDir(dir);
+			if (talkback)
+			{
+				return talkback;
+			}
+		}
+	}*/
+
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
+										getService(Components.interfaces.nsIProperties);
+	var dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
+	
+	var extensions = dir.clone();
+	extensions.append("extensions");
+	extensions.append("talkback@mozilla.org");
+	var talkback=nightly.findTalkbackInDir(extensions);
+	if (talkback)
+	{
+		return talkback;
+	}
+
+	return nightly.findTalkbackInDir(dir);
 },
 
 launchTalkback: function()
