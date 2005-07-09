@@ -106,7 +106,7 @@ generateText: function(template)
 				}
 				else
 				{
-					start=endpos+1;
+					start=pos+2;
 				}
 			}
 			else
@@ -138,15 +138,22 @@ copyTemplate: function(template)
 insertTemplate: function(template)
 {
 	var element = document.commandDispatcher.focusedElement;
-	var type = element.localName.toLowerCase();
-	if ((type=="input")||(type=="textarea"))
+	if (element)
 	{
-		var text = nightly.generateText(nightly.getTemplate(template));
-		var newpos = element.selectionStart+text.length;
-		var value = element.value;
-		element.value=value.substring(0,element.selectionStart)+text+value.substring(element.selectionEnd);
-		element.selectionStart=newpos;
-		element.selectionEnd=newpos;
+		var type = element.localName.toLowerCase();
+		if ((type=="input")||(type=="textarea"))
+		{
+			var text = nightly.generateText(nightly.getTemplate(template));
+			var newpos = element.selectionStart+text.length;
+			var value = element.value;
+			element.value=value.substring(0,element.selectionStart)+text+value.substring(element.selectionEnd);
+			element.selectionStart=newpos;
+			element.selectionEnd=newpos;
+		}
+		else
+		{
+			alert("You must select a text box before using this function.");
+		}
 	}
 	else
 	{

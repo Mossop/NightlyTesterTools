@@ -39,6 +39,6 @@ setStandardTitle: function()
 {
 	window.setTitleFromFolder=nightlyApp.savedSetTitleFromFolder;
 	nightlyApp.updateTitle();
-},
+}
 
 }

@@ -20,6 +20,6 @@ setStandardTitle: function()
 {
 	document.documentElement.setAttribute("titlemodifier",nightlyApp.storedTitle);
 	document.getElementById("content").updateTitlebar();
-},
+}
 
 }
