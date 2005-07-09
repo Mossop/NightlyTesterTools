@@ -10,6 +10,8 @@ $Revision$
 <overlay id="TitlePane"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+  <script type="application/x-javascript" src="chrome://nightly/content/title.js"/>
+
   <prefpane id="paneTitle">
     <preferences>
       <preference id="nightly.idtitle"  name="nightly.idtitle"

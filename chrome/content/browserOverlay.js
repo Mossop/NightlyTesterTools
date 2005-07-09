@@ -34,7 +34,7 @@ init: function()
 
 prefChange: function(pref)
 {
-	if (pref=="idtitle")
+	if ((pref=="idtitle")||(pref=="templates.title"))
 	{
 		if (nightly.preferences.getBoolPref("idtitle"))
 		{
