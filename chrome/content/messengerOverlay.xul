@@ -10,6 +10,8 @@ $Revision$
 <overlay id="NightlyMessengerOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
+  <script type="application/x-javascript" src="messenger.js" />
+
   <toolbarpalette id="MailToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
             class="toolbarbutton-1"

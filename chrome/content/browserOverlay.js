@@ -38,29 +38,18 @@ prefChange: function(pref)
 	{
 		if (nightly.preferences.getBoolPref("idtitle"))
 		{
-			nightly.setCustomTitle();
+			nightlyApp.setCustomTitle(nightly.generateText(nightly.getTemplate("title")));
 		}
 		else
 		{
-			nightly.setStandardTitle();
+			nightlyApp.setStandardTitle();
 		}
-		document.getElementById("content").updateTitlebar();
 	}
 },
 
 observe: function(prefBranch, subject, pref)
 {
 	nightly.prefChange(pref);
-},
-
-setCustomTitle: function()
-{
-	document.documentElement.setAttribute("titlemodifier",nightly.generateText(nightly.getTemplate("title")));
-},
-
-setStandardTitle: function()
-{
-	document.documentElement.setAttribute("titlemodifier",nightly.getStoredItem('variables','BRANDNAME'));
 },
 
 getStoredItem: function(type,name)
