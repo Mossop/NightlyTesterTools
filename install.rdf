@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{8620c15f-30dc-4dba-a131-7c5d20cf4a29}</em:id>
-    <em:version>0.3.3</em:version>
+    <em:version>0.5</em:version>
     
     <!-- Firefox version --> 
     <em:targetApplication>
@@ -26,9 +26,11 @@
     </em:targetApplication>
 
     <!-- Front End MetaData -->
-    <em:name>Build ID Copier</em:name>
-    <em:description>Useful tools for the nightly tester. Currently all on the help menu.</em:description>
+    <em:name>Nightly Tester Tools</em:name>
+    <em:description>Useful tools for the nightly tester.</em:description>
     <em:creator>Dave Townsend</em:creator>
+    <em:iconURL>chrome://nightly/skin/icon.png</em:iconURL>
+    <em:optionsURL>chrome://nightly/content/options.xul</em:optionsURL>
     <em:homepageURL>http://www.blueprintit.co.uk/~dave/web/firefox/buildid/index.html</em:homepageURL>
     <em:updateURL>http://www.blueprintit.co.uk/~dave/web/firefox/update.rdf?guid=%ITEM_ID%&amp;version=%ITEM_VERSION%&amp;app=%APP_ID%&amp;appver=%APP_VERSION%</em:updateURL>
     

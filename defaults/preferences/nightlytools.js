@@ -1,0 +1,1 @@
+pref("nightly.idtitle", true);

@@ -1,5 +1,5 @@
 
-<project name="buildid" default="package">
+<project name="nightly" default="package">
 
 	<target name="package">
 		<zip destfile="${basedir}/${ant.project.name}.xpi">

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<!--
+$HeadURL$
+$LastChangedBy$
+$Date$
+$Revision$
+-->
+
+<overlay id="TitlePane"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <prefpane id="paneTitle">
+    <preferences>
+      <preference id="nightly.idtitle"  name="nightly.idtitle"
+          type="bool"/>
+      <preference id="nightly.templates.title"  name="nightly.templates.title"
+          type="string"/>
+    </preferences>
+    
+    <description>You can use a custom title to always display the current build in the titlebar.</description>
+    
+    <checkbox id="enableTitleBar" label="Use custom title"
+                preference="nightly.idtitle"/>
+                
+    <hbox align="center" flex="1">
+      <label value="Custom title template:" control="customTitle"/>
+      <textbox id="customTitle" flex="1" 
+             preference="nightly.templates.title"/>
+    </hbox>
+
+    <description>The following variables can be used in the title (case insensitive):</description>
+
+    <label id="vendor">${Vendor} - The application vendor</label>
+    <label id="name">${Name} - The application name</label>
+    <label id="version">${Version} - The application version</label>
+    <label id="appbuildid">${AppBuildID} - The application build identifier</label>
+    <label id="geckobuildid">${GeckoBuildID} - The gecko build identifier (usually as above)</label>
+    <label id="brandname">${BrandName} - The application brand name</label>
+    <label id="useragent">${UserAgent} - The application user agent string</label>
+
+  </prefpane>
+
+</overlay>

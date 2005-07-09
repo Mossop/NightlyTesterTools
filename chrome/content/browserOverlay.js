@@ -1,20 +1,71 @@
+/*
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Date$
+ * $Revision$
+ *
+ */
+
 var nightly = {
 
-preferences: Components.classes["@mozilla.org/preferences-service;1"].
-                   	getService(Components.interfaces.nsIPrefService).getBranch("extensions.nightlytools."),
-
 variables: {
-	BUILDID: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).geckoBuildID,
-	USERAGENT: navigator.userAgent
+	vendor: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).vendor,
+	name: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).name,
+	version: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).version,
+	appbuildid: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).appBuildID,
+	geckobuildid: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).geckoBuildID,
+	brandname: document.documentElement.getAttribute("titlemodifier"),
+	useragent: navigator.userAgent
 },
 
 templates: {
-	BUILD: "${UserAgent} ID:${BuildID}"
+},
+
+preferences: null,
+
+init: function()
+{
+	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+							.getService(Components.interfaces.nsIPrefService);
+	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+	nightly.preferences.addObserver("",nightly,false);
+	nightly.prefChange("idtitle");
+},
+
+prefChange: function(pref)
+{
+	if (pref=="idtitle")
+	{
+		if (nightly.preferences.getBoolPref("idtitle"))
+		{
+			nightly.setCustomTitle();
+		}
+		else
+		{
+			nightly.setStandardTitle();
+		}
+		document.getElementById("content").updateTitlebar();
+	}
+},
+
+observe: function(prefBranch, subject, pref)
+{
+	nightly.prefChange(pref);
+},
+
+setCustomTitle: function()
+{
+	document.documentElement.setAttribute("titlemodifier",nightly.generateText(nightly.getTemplate("title")));
+},
+
+setStandardTitle: function()
+{
+	document.documentElement.setAttribute("titlemodifier",nightly.getStoredItem('variables','BRANDNAME'));
 },
 
 getStoredItem: function(type,name)
 {
-	name=name.toUpperCase();
+	name=name.toLowerCase();
 	var varvalue = null;
 	try
 	{
@@ -23,12 +74,16 @@ getStoredItem: function(type,name)
 	catch (e) {}
 	if (!varvalue)
 	{
-		varvalue = eval("nightly."+type+"."+name);
+		varvalue = nightly[type][name];
 	}
-	else
+	/*else
 	{
-		varvalue = eval(varvalue);
-	}
+		try
+		{
+			varvalue = eval(varvalue);
+		}
+		catch () { }
+	}*/
 	return varvalue;
 },
 
@@ -65,6 +120,10 @@ generateText: function(template)
 					start=endpos+1;
 				}
 			}
+			else
+			{
+				start=pos+2;
+			}
 		}
 		else
 		{
@@ -75,16 +134,35 @@ generateText: function(template)
 	return template;
 },
 
-copyText: function(template)
+copyTemplate: function(template)
 {
   var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].
                                          getService(Components.interfaces.nsIClipboardHelper);
   clipboard.copyString(nightly.generateText(template));
 },
 
-copyTemplate: function(name)
+copyTemplate: function(template)
 {
-	nightly.copyText(nightly.getTemplate(name));
+	nightly.copyTemplate(nightly.getTemplate(template));
+},
+
+insertTemplate: function(template)
+{
+	var element = document.commandDispatcher.focusedElement;
+	var type = element.localName.toLowerCase();
+	if ((type=="input")||(type=="textarea"))
+	{
+		var text = nightly.generateText(nightly.getTemplate(template));
+		var newpos = element.selectionStart+text.length;
+		var value = element.value;
+		element.value=value.substring(0,element.selectionStart)+text+value.substring(element.selectionEnd);
+		element.selectionStart=newpos;
+		element.selectionEnd=newpos;
+	}
+	else
+	{
+		alert("You must select a text box before using this function.");
+	}
 },
 
 launch: function(file, args)
@@ -142,7 +220,7 @@ findTalkbackInDir: function(dir)
 
 findTalkback: function()
 {	
-	/*var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"].
+	var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"].
 										getService(Components.interfaces.nsIExtensionManager);
 	var installloc = extensionManager.getInstallLocation("talkback@mozilla.org");
 	if (installloc)
@@ -156,21 +234,11 @@ findTalkback: function()
 				return talkback;
 			}
 		}
-	}*/
+	}
 
 	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
 										getService(Components.interfaces.nsIProperties);
 	var dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
-	
-	var extensions = dir.clone();
-	extensions.append("extensions");
-	extensions.append("talkback@mozilla.org");
-	var talkback=nightly.findTalkbackInDir(extensions);
-	if (talkback)
-	{
-		return talkback;
-	}
-
 	return nightly.findTalkbackInDir(dir);
 },
 
@@ -188,3 +256,5 @@ launchTalkback: function()
 }
 
 }
+
+window.addEventListener("load",nightly.init,false);

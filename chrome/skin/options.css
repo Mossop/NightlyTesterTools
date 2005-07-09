@@ -1,0 +1,21 @@
+#NightlyTesterOptions {
+	padding: 0;
+	height: 20em;
+	width: 40em;
+}
+
+#NightlyTesterOptions hbox.paneDeckContainer {
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#NightlyTesterOptions hbox.prefWindow-dlgbuttons {
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+}
+
+#NightlyTesterOptions radio[pane=paneTitle] {
+  	list-style-image: url("chrome://nightly/skin/icon.png");
+}

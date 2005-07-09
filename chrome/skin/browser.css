@@ -1,0 +1,7 @@
+#nightly-tester-enter {
+	list-style-image: url("chrome://nightly/skin/idlarge.png");
+}
+
+toolbar[iconsize="small"] #nightly-tester-enter {
+	list-style-image: url("chrome://nightly/skin/idsmall.png");
+}
