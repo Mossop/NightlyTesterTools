@@ -1,4 +1,7 @@
 content	nightly	file:chrome/content/
 skin		nightly	classic/1.0	file:chrome/skin/
+overlay	chrome://browser/content/browser.xul	chrome://nightly/content/generalOverlay.xul
+overlay chrome://messenger/content/messenger.xul chrome://nightly/content/generalOverlay.xul
 overlay	chrome://browser/content/browser.xul	chrome://nightly/content/browserOverlay.xul
-overlay chrome://messenger/content/messenger.xul chrome://nightly/content/browserOverlay.xul
+overlay chrome://messenger/content/messenger.xul chrome://nightly/content/messengerOverlay.xul
+overlay chrome://global/content/customizeToolbar.xul chrome://nightly/content/toolbarOverlay.xul

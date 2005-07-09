@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!--
+$HeadURL$
+$LastChangedBy$
+$Date$
+$Revision$
+-->
+
+<?xml-stylesheet href="chrome://nightly/skin/browser.css" type="text/css"?>
+
+<overlay id="NightlyToolbarOverlay"
+                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+       
+</overlay>

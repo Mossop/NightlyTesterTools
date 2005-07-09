@@ -7,10 +7,10 @@ $Date$
 $Revision$
 -->
 
-<overlay id="NightlyBrowserOverlay"
+<overlay id="NightlyMessengerOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
-  <toolbarpalette id="BrowserToolbarPalette">
+  <toolbarpalette id="MailToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
             class="toolbarbutton-1"
             label="Insert Build ID"
@@ -19,10 +19,10 @@ $Revision$
   </toolbarpalette>
 
 	<menupopup id="menu_HelpPopup">
-		<menuseparator insertbefore="aboutSeparator"/>
-		<menuitem label="Copy Build ID" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
-		<menuitem label="Insert Build ID" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
-		<menuitem label="Launch Talkback" oncommand="nightly.launchTalkback();" insertbefore="aboutSeparator"/>
+		<menuseparator insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="Copy Build ID" oncommand="nightly.copyTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="Insert Build ID" oncommand="nightly.insertTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="Launch Talkback" oncommand="nightly.launchTalkback();" insertbefore="menu_HelpAboutSeparator"/>
 	</menupopup>
 
 </overlay>
