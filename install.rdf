@@ -27,7 +27,7 @@
 
     <!-- Front End MetaData -->
     <em:name>Nightly Tester Tools</em:name>
-    <em:description>Useful tools for the nightly tester.</em:description>
+    <em:description>Useful tools for the nightly tester (Formerly known as the Build ID Copier).</em:description>
     <em:creator>Dave Townsend</em:creator>
     <em:iconURL>chrome://nightly/skin/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options.xul</em:optionsURL>

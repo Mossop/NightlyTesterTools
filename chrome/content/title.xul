@@ -37,7 +37,7 @@ $Revision$
     <label id="name">${Name} - The application name</label>
     <label id="version">${Version} - The application version</label>
     <label id="appbuildid">${AppBuildID} - The application build identifier</label>
-    <label id="geckobuildid">${GeckoBuildID} - The gecko build identifier (usually as above)</label>
+    <label id="geckobuildid">${GeckoBuildID} - The gecko build identifier</label>
     <label id="brandname">${BrandName} - The application brand name</label>
     <label id="useragent">${UserAgent} - The application user agent string</label>
 

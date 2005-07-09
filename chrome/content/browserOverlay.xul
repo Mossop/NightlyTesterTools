@@ -17,7 +17,7 @@ $Revision$
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
             label="Insert Build ID"
-            tooltiptext="Inserts the Build ID into the current text box"
+            tooltiptext="Inserts the build identifier into the current text box."
             oncommand="nightly.insertTemplate('buildid');"/>
   </toolbarpalette>
 

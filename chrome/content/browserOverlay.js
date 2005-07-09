@@ -134,16 +134,16 @@ generateText: function(template)
 	return template;
 },
 
-copyTemplate: function(template)
+copyText: function(text)
 {
   var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].
                                          getService(Components.interfaces.nsIClipboardHelper);
-  clipboard.copyString(nightly.generateText(template));
+  clipboard.copyString(text);
 },
 
 copyTemplate: function(template)
 {
-	nightly.copyTemplate(nightly.getTemplate(template));
+	nightly.copyText(nightly.generateText(nightly.getTemplate(template)));
 },
 
 insertTemplate: function(template)
