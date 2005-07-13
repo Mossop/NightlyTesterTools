@@ -5,13 +5,13 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{8620c15f-30dc-4dba-a131-7c5d20cf4a29}</em:id>
-    <em:version>0.5.5</em:version>
+    <em:version>0.5.6</em:version>
     
     <!-- Firefox version --> 
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>1.0+</em:minVersion>
+        <em:minVersion>1.0</em:minVersion>
         <em:maxVersion>1.0+</em:maxVersion>
       </Description>
     </em:targetApplication>
@@ -20,7 +20,7 @@
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>1.0+</em:minVersion>
+        <em:minVersion>1.0</em:minVersion>
         <em:maxVersion>1.0+</em:maxVersion>
       </Description>
     </em:targetApplication>
@@ -28,11 +28,18 @@
     <!-- Front End MetaData -->
     <em:name>Nightly Tester Tools</em:name>
     <em:description>Useful tools for the nightly tester (Formerly known as the Build ID Copier).</em:description>
-    <em:creator>Dave Townsend</em:creator>
+    <em:creator>Mossop</em:creator>
     <em:iconURL>chrome://nightly/skin/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options.xul</em:optionsURL>
-    <em:homepageURL>http://www.blueprintit.co.uk/~dave/web/firefox/buildid/index.html</em:homepageURL>
+    <em:homepageURL>http://www.blueprintit.co.uk/~dave/web/firefox/buildid/nightly.html</em:homepageURL>
     <em:updateURL>http://www.blueprintit.co.uk/~dave/web/firefox/update.rdf?guid=%ITEM_ID%&amp;version=%ITEM_VERSION%&amp;app=%APP_ID%&amp;appver=%APP_VERSION%</em:updateURL>
     
+	<em:file>
+		<Description about="urn:mozilla:extension:file:nightly.jar">
+			<em:package>content/</em:package>
+			<em:skin>skin/</em:skin>
+		</Description>
+	</em:file>
+
   </Description>      
 </RDF>

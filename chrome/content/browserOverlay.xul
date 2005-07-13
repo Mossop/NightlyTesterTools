@@ -10,6 +10,7 @@ $Revision$
 <overlay id="NightlyBrowserOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
+  <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
 
   <toolbarpalette id="BrowserToolbarPalette">

@@ -9,11 +9,11 @@
 var nightly = {
 
 variables: {
-	vendor: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).vendor,
-	name: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).name,
-	version: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).version,
-	appbuildid: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).appBuildID,
-	geckobuildid: Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo).geckoBuildID,
+	vendor: "Mozilla",
+	name: null,
+	version: null,
+	appbuildid: null,
+	geckobuildid: null,
 	brandname: document.documentElement.getAttribute("titlemodifier"),
 	useragent: navigator.userAgent
 },
@@ -23,8 +23,54 @@ templates: {
 
 preferences: null,
 
-init: function()
+loadBuildIDFromFile: function()
 {
+	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].
+										getService(Components.interfaces.nsIFileInputStream);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
+										getService(Components.interfaces.nsIProperties);
+
+	var datafile = directoryService.get("ProfD",Components.interfaces.nsIFile);
+	datafile.append("compatibility.ini");
+	stream.init(datafile,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
+	stream.QueryInterface(Components.interfaces.nsILineInputStream);
+
+	var line = { value: null };
+	while (stream.readLine(line))
+	{
+		var bits = line.value.split("=");
+		if (bits[0]=="Build ID")
+		{
+			return bits[1];
+		}
+		else if (bits[0]=="LastVersion")
+		{
+			bits=bits[1].split("_");
+			return bits[bits.length-1];
+		}
+	}
+	return null;
+},
+
+init: function()
+{	
+	if (Components.classes['@mozilla.org/xre/app-info;1'])
+	{
+		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+		nightly.variables.vendor=appinfo.vendor;
+		nightly.variables.name=appinfo.name;
+		nightly.variables.version=appinfo.version;
+		nightly.variables.appbuildid=appinfo.appBuildID;
+		nightly.variables.geckobuildid=appinfo.geckoBuildID;
+	}
+	else
+	{
+		nightly.variables.appbuildid=nightly.loadBuildIDFromFile();
+		dump(nightly.variables.appbuildid+"\n");
+		nightly.variables.geckobuildid=nightly.variables.appbuildid;
+		dump(nightly.variables.geckobuildid+"\n");
+	}
+
 	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
 							.getService(Components.interfaces.nsIPrefService);
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
@@ -216,25 +262,30 @@ findTalkbackInDir: function(dir)
 
 findTalkback: function()
 {	
+	var dir = null;
 	var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"].
 										getService(Components.interfaces.nsIExtensionManager);
-	var installloc = extensionManager.getInstallLocation("talkback@mozilla.org");
-	if (installloc)
+
+	if (extensionManager.getInstallLocation)
 	{
-		var dir = installloc.getItemLocation("talkback@mozilla.org");
-		if (dir)
+		var installloc = extensionManager.getInstallLocation("talkback@mozilla.org");
+		if (installloc)
 		{
-			var talkback=nightly.findTalkbackInDir(dir);
-			if (talkback)
+			dir = installloc.getItemLocation("talkback@mozilla.org");
+			if (dir)
 			{
-				return talkback;
+				var talkback=nightly.findTalkbackInDir(dir);
+				if (talkback)
+				{
+					return talkback;
+				}
 			}
 		}
 	}
 
 	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
 										getService(Components.interfaces.nsIProperties);
-	var dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
+	dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
 	return nightly.findTalkbackInDir(dir);
 },
 

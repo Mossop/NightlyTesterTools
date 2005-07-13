@@ -10,6 +10,7 @@ $Revision$
 <overlay id="NightlyMessengerOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
+  <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="messenger.js" />
 
   <toolbarpalette id="MailToolbarPalette">
