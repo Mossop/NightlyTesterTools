@@ -9,13 +9,18 @@
 var nightly = {
 
 variables: {
-	vendor: "Mozilla",
+	appid: null,
+	vendor: null,
 	name: null,
 	version: null,
 	appbuildid: null,
 	geckobuildid: null,
-	brandname: document.documentElement.getAttribute("titlemodifier"),
-	useragent: navigator.userAgent
+	brandname: null,
+	useragent: navigator.userAgent,
+	locale: null,
+	os: null,
+	processor: null,
+	compiler: null
 },
 
 templates: {
@@ -54,26 +59,40 @@ loadBuildIDFromFile: function()
 
 init: function()
 {	
+	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+							.getService(Components.interfaces.nsIPrefService);
+	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
+	
 	if (Components.classes['@mozilla.org/xre/app-info;1'])
 	{
 		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+		nightly.variables.appid=appinfo.ID;
 		nightly.variables.vendor=appinfo.vendor;
 		nightly.variables.name=appinfo.name;
 		nightly.variables.version=appinfo.version;
 		nightly.variables.appbuildid=appinfo.appBuildID;
 		nightly.variables.geckobuildid=appinfo.geckoBuildID;
+		
+		appinfo=appinfo.QueryInterface(Components.interfaces.nsIXULRuntime);
+		nightly.variables.os=appinfo.OS;
+		var bits=appinfo.XPCOMABI.split("-");
+		nightly.variables.processor=bits[0];
+		nightly.variables.compiler=bits[1];
 	}
 	else
 	{
+		nightly.variables.appid=prefservice.getCharPref('app.id');
+		nightly.variables.vendor='Mozilla';
+		nightly.variables.name=null;
+		nightly.variables.version=prefservice.getCharPref('app.version');
 		nightly.variables.appbuildid=nightly.loadBuildIDFromFile();
-		dump(nightly.variables.appbuildid+"\n");
 		nightly.variables.geckobuildid=nightly.variables.appbuildid;
-		dump(nightly.variables.geckobuildid+"\n");
 	}
+	nightly.variables.locale=prefservice.getCharPref("general.useragent.locale");
 
-	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-							.getService(Components.interfaces.nsIPrefService);
-	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+	nightlyApp.init();
+	
 	nightly.preferences.addObserver("",nightly,false);
 	nightly.prefChange("idtitle");
 },

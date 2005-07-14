@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{8620c15f-30dc-4dba-a131-7c5d20cf4a29}</em:id>
-    <em:version>0.5.6</em:version>
+    <em:version>0.6</em:version>
     
     <!-- Firefox version --> 
     <em:targetApplication>
@@ -34,10 +34,12 @@
     <em:homepageURL>http://www.blueprintit.co.uk/~dave/web/firefox/buildid/nightly.html</em:homepageURL>
     <em:updateURL>http://www.blueprintit.co.uk/~dave/web/firefox/update.rdf?guid=%ITEM_ID%&amp;version=%ITEM_VERSION%&amp;app=%APP_ID%&amp;appver=%APP_VERSION%</em:updateURL>
     
+    <!-- Chrome registration for pre-1.1 apps -->
 	<em:file>
 		<Description about="urn:mozilla:extension:file:nightly.jar">
 			<em:package>content/</em:package>
 			<em:skin>skin/</em:skin>
+			<em:locale>locale/en-US/</em:locale>
 		</Description>
 	</em:file>
 

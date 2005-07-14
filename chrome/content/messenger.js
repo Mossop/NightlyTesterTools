@@ -11,14 +11,44 @@ var nightlyApp = {
 savedSetTitleFromFolder: window.setTitleFromFolder,
 customTitle: '',
 
+init: function()
+{
+	if (nightly.variables.name==null)
+	{
+		nightly.variables.name="Thunderbird";
+	}
+	var brandbundle = document.getElementById("bundle_brand");
+	nightly.variables.brandname=brandbundle.getString("brandShortName");
+},
+
 customSetTitleFromFolder: function(msgfolder, subject)
 {
-	var end = " - "+gBrandBundle.getString("brandShortName");
+	var brandbundle = document.getElementById("bundle_brand");
+	var end = " - "+brandbundle.getString("brandShortName");
 	nightlyApp.savedSetTitleFromFolder(msgfolder,subject);
-	var title = document.title;
+
+	var title;
+	if ((document.title)&&(document.title.length>0))
+	{
+		title = document.title;
+	}
+	else
+	{
+		title = window.title;
+	}
+
 	if (title.substring(title.length-end.length)==end)
 	{
-		document.title=title.substring(0,title.length-end.length)+' - '+nightlyApp.customTitle;
+		title=title.substring(0,title.length-end.length)+' - '+nightlyApp.customTitle;
+	}
+
+	if ((document.title)&&(document.title.length>0))
+	{
+		document.title=title;
+	}
+	else
+	{
+		window.title=title;
 	}
 },
 

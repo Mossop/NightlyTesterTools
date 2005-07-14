@@ -22,10 +22,7 @@
     <RDF:Description RDF:about="urn:mozilla:package:nightly"
         chrome:displayName="Nightly Tester Tools"
         chrome:author="Dave Townsend"
-        chrome:authorURL="mailto:mossop@blueprintit.co.uk"
-        chrome:name="nightly"
-        chrome:extension="true"
-        chrome:description="">
+        chrome:name="nightly">
     </RDF:Description>
 
 </RDF:RDF>

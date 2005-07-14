@@ -32,4 +32,10 @@
 		<RDF:li>chrome://nightly/skin/browser.css</RDF:li>
 	</RDF:Seq>
 
+    <RDF:Description RDF:about="urn:mozilla:skin:classic/1.0:nightly"
+        chrome:displayName="Nightly Tester Tools"
+        chrome:author="Dave Townsend"
+        chrome:name="nightly">
+    </RDF:Description>
+
 </RDF:RDF>

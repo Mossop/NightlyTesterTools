@@ -14,30 +14,40 @@ $Revision$
             title="Nightly Tester Options" style="padding: 10px"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
-  <script type="application/x-javascript" src="title.js"/>
+	<script type="application/x-javascript" src="prefs.js"/>
+	<script type="application/x-javascript" src="title.js"/>
 
-  <description>You can use a custom title to always display the current build in the titlebar.</description>
-    
-  <checkbox id="enableTitleBar" label="Use custom title"/>
-                
-  <hbox align="center" flex="1">
-    <label value="Custom title template:" control="customTitle"/>
-    <textbox id="customTitle" flex="1"/>
-  </hbox>
+	<stringbundle id="variablesBundle" src="chrome://nightly/locale/variables.properties"/>
+  
+	<vbox style="padding-bottom: 5px">
+		<description style="padding-bottom: 5px">You can use a custom title to always display the current build in the titlebar.</description>
+	    
+		<checkbox style="padding-bottom: 5px" id="enableTitleBar" label="Use custom title"/>
+	                
+		<hbox style="padding-bottom: 5px" align="center" flex="1">
+			<label value="Custom title template:" control="customTitle"/>
+			<textbox id="customTitle" flex="1"/>
+		</hbox>
+	
+		<description style="padding-bottom: 5px">The following variables can be used in the title (case insensitive).</description>
+	
+		<listbox id="varList">
+			<listhead>
+				<listheader label="Variable"/>
+				<listheader label="Description"/>
+				<listheader label="Value"/>
+			</listhead>
+			<listcols>
+				<listcol style="width: 8em"/>
+				<listcol flex="1"/>
+				<listcol style="width: 15em"/>
+			</listcols>
+		</listbox>
+	</vbox>
 
-  <description>The following variables can be used in the title (case insensitive):</description>
-
-  <label id="vendor">${Vendor} - The application vendor</label>
-  <label id="name">${Name} - The application name</label>
-  <label id="version">${Version} - The application version</label>
-  <label id="appbuildid">${AppBuildID} - The application build identifier</label>
-  <label id="geckobuildid">${GeckoBuildID} - The gecko build identifier</label>
-  <label id="brandname">${BrandName} - The application brand name</label>
-  <label id="useragent">${UserAgent} - The application user agent string</label>
-
-  <hbox pack="end">
-  	<button id="btnOK" label="OK" onclick="paneTitle.ok()"/>
-  	<button id="btnCancel" label="Cancel" onclick="paneTitle.cancel()"/>
-  </hbox>
+	<hbox pack="end">
+		<button id="btnOK" label="OK" onclick="prefs.apply()"/>
+		<button id="btnCancel" label="Cancel" onclick="prefs.cancel()"/>
+	</hbox>
   
 </window>
