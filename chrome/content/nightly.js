@@ -17,6 +17,7 @@ variables: {
 	platformbuildid: null,
 	platformversion: null,
 	geckobuildid: null,
+	geckoversion: null,
 	brandname: null,
 	useragent: navigator.userAgent,
 	locale: null,
@@ -39,21 +40,24 @@ loadBuildIDFromFile: function()
 
 	var datafile = directoryService.get("ProfD",Components.interfaces.nsIFile);
 	datafile.append("compatibility.ini");
-	stream.init(datafile,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
-	stream.QueryInterface(Components.interfaces.nsILineInputStream);
-
-	var line = { value: null };
-	while (stream.readLine(line))
+	if (datafile.exists())
 	{
-		var bits = line.value.split("=");
-		if (bits[0]=="Build ID")
+		stream.init(datafile,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
+		stream.QueryInterface(Components.interfaces.nsILineInputStream);
+	
+		var line = { value: null };
+		while (stream.readLine(line))
 		{
-			return bits[1];
-		}
-		else if (bits[0]=="LastVersion")
-		{
-			bits=bits[1].split("_");
-			return bits[bits.length-1];
+			var bits = line.value.split("=");
+			if (bits[0]=="Build ID")
+			{
+				return bits[1];
+			}
+			else if (bits[0]=="LastVersion")
+			{
+				bits=bits[1].split("_");
+				return bits[bits.length-1];
+			}
 		}
 	}
 	return null;
@@ -71,7 +75,7 @@ init: function()
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
 	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
 	
-	nightly.versionCheck('0.6.1');
+	nightly.versionCheck('0.6.5');
 	
 	if (Components.classes['@mozilla.org/xre/app-info;1'])
 	{
@@ -101,10 +105,13 @@ init: function()
 	}
 	else
 	{
-		nightly.variables.appid=prefservice.getCharPref('app.id');
+		try
+		{
+			nightly.variables.appid=prefservice.getCharPref('app.id');
+			nightly.variables.version=prefservice.getCharPref('app.version');
+		} catch (e) { }
 		nightly.variables.vendor='Mozilla';
 		nightly.variables.name=null;
-		nightly.variables.version=prefservice.getCharPref('app.version');
 		nightly.variables.appbuildid=nightly.loadBuildIDFromFile();
 		nightly.variables.platformbuildid=nightly.variables.appbuildid;
 		nightly.variables.geckobuildid=nightly.variables.appbuildid;
@@ -310,21 +317,24 @@ findTalkbackInDir: function(dir)
 findTalkback: function()
 {	
 	var dir = null;
-	var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"].
-										getService(Components.interfaces.nsIExtensionManager);
-
-	if (extensionManager.getInstallLocation)
+	if (Components.classes["@mozilla.org/extensions/manager;1"])
 	{
-		var installloc = extensionManager.getInstallLocation("talkback@mozilla.org");
-		if (installloc)
+		var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"].
+											getService(Components.interfaces.nsIExtensionManager);
+	
+		if (extensionManager.getInstallLocation)
 		{
-			dir = installloc.getItemLocation("talkback@mozilla.org");
-			if (dir)
+			var installloc = extensionManager.getInstallLocation("talkback@mozilla.org");
+			if (installloc)
 			{
-				var talkback=nightly.findTalkbackInDir(dir);
-				if (talkback)
+				dir = installloc.getItemLocation("talkback@mozilla.org");
+				if (dir)
 				{
-					return talkback;
+					var talkback=nightly.findTalkbackInDir(dir);
+					if (talkback)
+					{
+						return talkback;
+					}
 				}
 			}
 		}
@@ -347,6 +357,11 @@ launchTalkback: function()
 	{
 		alert("Could not find talkback. Perhaps it isn't installed.");
 	}
+},
+
+launchOptions: function()
+{
+	openDialog("chrome://nightly/content/options.xul", "", "chrome,titlebar,toolbar,centerscreen,modal");
 }
 
 }

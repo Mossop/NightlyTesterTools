@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{8620c15f-30dc-4dba-a131-7c5d20cf4a29}</em:id>
-    <em:version>0.6.1</em:version>
+    <em:version>0.6.5</em:version>
     
     <!-- Firefox version --> 
     <em:targetApplication>
@@ -13,6 +13,15 @@
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>1.0</em:minVersion>
         <em:maxVersion>1.0+</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    
+    <!-- Seamonkey version --> 
+    <em:targetApplication>
+      <Description>
+        <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
+        <em:minVersion>1.7</em:minVersion>
+        <em:maxVersion>1.7</em:maxVersion>
       </Description>
     </em:targetApplication>
     

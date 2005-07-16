@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<!--
+$HeadURL$
+$LastChangedBy$
+$Date$
+$Revision$
+-->
+<!DOCTYPE window [
+<!ENTITY % buildDTD SYSTEM "chrome://global/content/build.dtd" >
+%buildDTD;
+]>
+
+<overlay id="NightlyNavigatorOverlay"
+                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+       
+	<script type="application/x-javascript" src="nightly.js" />
+	<script type="application/x-javascript" src="navigator.js" />
+
+	<menupopup id="helpPopup">
+		<menuseparator insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem id="nightlyBuildID" label="&buildId.label;" hidden="true" disabled="true" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="Copy Build ID" oncommand="nightly.copyTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="Insert Build ID" oncommand="nightly.insertTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="Launch Talkback" oncommand="nightly.launchTalkback();" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="Customise Nightly Tester Tools" oncommand="nightly.launchOptions();" insertbefore="menu_HelpAboutSeparator"/>
+	</menupopup>
+
+</overlay>

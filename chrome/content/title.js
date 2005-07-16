@@ -43,7 +43,8 @@ init: function()
 addVariable: function(name)
 {
 	var list = document.getElementById("varList");
-	var item = list.appendItem("${"+name+"}");
+	var item = document.createElement("listitem");
+	item.appendChild(document.createElement("listcell")).setAttribute('label',"${"+name+"}");
 	var text = null;
 	try
 	{
@@ -60,6 +61,7 @@ addVariable: function(name)
 		value="Undefined";
 	}
 	item.appendChild(document.createElement("listcell")).setAttribute('label',value);
+	list.appendChild(item);
 },
 
 textEntered: function()

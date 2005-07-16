@@ -31,7 +31,7 @@ $Revision$
 	
 		<description style="padding-bottom: 5px">The following variables can be used in the title (case insensitive).</description>
 	
-		<listbox id="varList">
+		<listbox id="varList" rows="8">
 			<listhead>
 				<listheader label="Variable"/>
 				<listheader label="Description"/>
