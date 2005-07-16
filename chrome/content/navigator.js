@@ -12,10 +12,6 @@ storedTitle: document.documentElement.getAttribute("titlemodifier"),
 
 init: function()
 {
-	if (nightly.variables.name==null)
-	{
-		nightly.variables.name="Application Suite";
-	}
 	nightly.variables.appid="{86c18b42-e466-45a9-ae7a-9b95ba6f5640}";
 	nightly.variables.version=nightly.variables.geckoversion;
 	var modifier=document.documentElement.getAttribute("titlemodifier")
@@ -25,6 +21,10 @@ init: function()
 		modifier=modifier.substring(0,pos);
 	}
 	nightly.variables.brandname=modifier;
+	if (nightly.variables.name==null)
+	{
+		nightly.variables.name=modifier;
+	}
 	var build = document.getElementById("nightlyBuildID").getAttribute("label");
 	dump('"'+build+'"'+"\n");
 	build=build.substring(10);
