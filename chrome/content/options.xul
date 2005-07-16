@@ -38,7 +38,7 @@ $Revision$
 				<listheader label="Value"/>
 			</listhead>
 			<listcols>
-				<listcol style="width: 8em"/>
+				<listcol style="width: 9em"/>
 				<listcol flex="1"/>
 				<listcol style="width: 15em"/>
 			</listcols>

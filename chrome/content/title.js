@@ -29,7 +29,9 @@ init: function()
 	paneTitle.addVariable("Name");
 	paneTitle.addVariable("Version");
 	paneTitle.addVariable("AppBuildID");
-	paneTitle.addVariable("GeckoBuildID");
+	paneTitle.addVariable("PlatformBuildID");
+	paneTitle.addVariable("PlatformVersion");
+	paneTitle.addVariable("GeckoVersion");
 	paneTitle.addVariable("BrandName");
 	paneTitle.addVariable("UserAgent");
 	paneTitle.addVariable("Locale");

@@ -14,6 +14,8 @@ variables: {
 	name: null,
 	version: null,
 	appbuildid: null,
+	platformbuildid: null,
+	platformversion: null,
 	geckobuildid: null,
 	brandname: null,
 	useragent: navigator.userAgent,
@@ -57,12 +59,19 @@ loadBuildIDFromFile: function()
 	return null;
 },
 
+versionCheck: function(version)
+{
+	nightly.preferences.setCharPref('lastversion',version);
+},
+
 init: function()
 {	
 	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
 							.getService(Components.interfaces.nsIPrefService);
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
 	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
+	
+	nightly.versionCheck('0.6.1');
 	
 	if (Components.classes['@mozilla.org/xre/app-info;1'])
 	{
@@ -72,7 +81,17 @@ init: function()
 		nightly.variables.name=appinfo.name;
 		nightly.variables.version=appinfo.version;
 		nightly.variables.appbuildid=appinfo.appBuildID;
-		nightly.variables.geckobuildid=appinfo.geckoBuildID;
+		
+		if (appinfo.platformBuildID)
+		{
+			nightly.variables.platformbuildid=appinfo.platformBuildID;
+			nightly.variables.platformversion=appinfo.platformVersion;
+			nightly.variables.geckobuildid=appinfo.platformBuildID;
+		}
+		else
+		{
+			nightly.variables.geckobuildid=appinfo.geckoBuildID;
+		}
 		
 		appinfo=appinfo.QueryInterface(Components.interfaces.nsIXULRuntime);
 		nightly.variables.os=appinfo.OS;
@@ -87,9 +106,18 @@ init: function()
 		nightly.variables.name=null;
 		nightly.variables.version=prefservice.getCharPref('app.version');
 		nightly.variables.appbuildid=nightly.loadBuildIDFromFile();
+		nightly.variables.platformbuildid=nightly.variables.appbuildid;
 		nightly.variables.geckobuildid=nightly.variables.appbuildid;
 	}
 	nightly.variables.locale=prefservice.getCharPref("general.useragent.locale");
+	ua=nightly.variables.useragent;
+	ua=ua.substring(ua.indexOf("rv:")+3,ua.indexOf(")"));
+	nightly.variables.geckoversion=ua;
+
+	if (!nightly.variables.platformversion)
+	{
+		nightly.variables.platformversion=nightly.variables.geckoversion;
+	}
 
 	nightlyApp.init();
 	
