@@ -14,7 +14,7 @@ $Revision$
 
 	<vbox id="contextMenuPalette">
 		<menuitem id="menuitem_appenable" insertafter="menuitem_disable"
-				oncommand="extensionAppEnabler.appEnable();" label="Force enable"/>
+				oncommand="extensionAppEnabler.appEnable();" label="Make compatible"/>
 	</vbox>
 	
 </overlay>
