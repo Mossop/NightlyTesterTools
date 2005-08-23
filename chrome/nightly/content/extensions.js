@@ -143,7 +143,7 @@ confirmChange: function()
 	    if (promptService.confirmCheck(window,"Really change extension compatibility",
 	  		"This will force the extension to try to work in a version of the application that it normally would not. "+
 	  		"This could cause the application to stop working correctly. Are you sure you want to do this?",
-	  		"Don't show this message again",
+	  		"Don't ask me this again, I know what I'm doing and I'm not going to complain to Mossop when it all goes horribly wrong.",
 	  		checkResult))
 		{
 		  	prefservice.setBoolPref("nightly.showExtensionConfirm",!checkResult.value);
