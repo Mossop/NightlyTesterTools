@@ -1,0 +1,19 @@
+<!ENTITY nightly.options.height         "25em">
+
+<!ENTITY nightly.options.title          "Nightly Tester Options">
+<!ENTITY nightly.options.description    "You can use a custom title to always display the current build in the titlebar.">
+<!ENTITY nightly.customtitle.label      "Use custom title">
+<!ENTITY nightly.customtemplate.label   "Custom title template:">
+<!ENTITY nightly.variables.description  "The following variables can be used in the title (case insensitive).">
+<!ENTITY nightly.variable.label         "Variable">
+<!ENTITY nightly.variabledesc.label     "Description">
+<!ENTITY nightly.variablevalue.label    "Value">
+<!ENTITY nightly.ok.label               "Ok">
+<!ENTITY nightly.close.label            "Close">
+<!ENTITY nightly.cancel.label           "Cancel">
+<!ENTITY nightly.copy-id.label          "Copy Build ID">
+<!ENTITY nightly.insert-id.label        "Insert Build ID">
+<!ENTITY nightly.insert-id.tooltip      "Inserts the build identifier into the current text box.">
+<!ENTITY nightly.talkback.label         "Launch Talkback">
+<!ENTITY nightly.customize.label        "Customize Nightly Tester Tools">
+<!ENTITY nightly.appenable.label        "Make compatible">

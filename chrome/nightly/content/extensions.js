@@ -140,10 +140,11 @@ confirmChange: function()
 	    
 	    var checkResult = { };
 	    
-	    if (promptService.confirmCheck(window,"Really change extension compatibility",
-	  		"This will force the extension to try to work in a version of the application that it normally would not. "+
-	  		"This could cause the application to stop working correctly. Are you sure you want to do this?",
-	  		"Don't ask me this again, I know what I'm doing and I'm not going to complain to Mossop when it all goes horribly wrong.",
+	    var bundle = document.getElementById("nightlylocale");
+	    
+	    if (promptService.confirmCheck(window,bundle.getString("nightly.confirm.title"),
+	    	bundle.getString("nightly.confirm.description"),
+	    	bundle.getString("nightly.confirm.checkbox"),
 	  		checkResult))
 		{
 		  	prefservice.setBoolPref("nightly.showExtensionConfirm",!checkResult.value);

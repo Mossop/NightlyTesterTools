@@ -10,7 +10,8 @@ const APP_PREFS_FILES = [
 const APP_JAR_FILE = "nightly.jar";
 const APP_CONTENT_FOLDER = "content/";
 const APP_LOCALES = [
-  "en-US"
+  "en-US",
+  "it-IT"
   ];
 
 const APP_SUCCESS_MESSAGE = "";

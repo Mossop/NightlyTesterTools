@@ -10,8 +10,10 @@ $Revision$
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 <?xml-stylesheet href="chrome://nightly/skin/options.css" type="text/css"?>
 
+<!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
+
 <window id="NightlyTesterOptions" windowtype="NightlyTester:Options"
-            title="Nightly Tester Options" style="padding: 10px"
+            title="&nightly.options.title;" style="padding: 10px"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
 	<script type="application/x-javascript" src="prefs.js"/>
@@ -19,17 +21,17 @@ $Revision$
 
 	<stringbundle id="variablesBundle" src="chrome://nightly/locale/variables.properties"/>
   
-	<vbox style="padding-bottom: 5px">
-		<description style="padding-bottom: 5px">You can use a custom title to always display the current build in the titlebar.</description>
+	<vbox style="padding-bottom: 5px; height: &nightly.options.height;" flex="1">
+		<description style="padding-bottom: 5px">&nightly.options.description;</description>
 	    
-		<checkbox style="padding-bottom: 5px" id="enableTitleBar" label="Use custom title"/>
+		<checkbox style="padding-bottom: 5px" id="enableTitleBar" label="&nightly.customtitle.label;"/>
 	                
 		<hbox style="padding-bottom: 5px" align="center" flex="1">
 			<label value="Custom title template:" control="customTitle"/>
 			<textbox id="customTitle" flex="1"/>
 		</hbox>
 	
-		<description style="padding-bottom: 5px">The following variables can be used in the title (case insensitive).</description>
+		<description style="padding-bottom: 5px">&nightly.variables.description;</description>
 	
 		<listbox id="varList" rows="8">
 			<listhead>
@@ -46,8 +48,9 @@ $Revision$
 	</vbox>
 
 	<hbox pack="end">
-		<button id="btnOK" label="OK" onclick="prefs.apply()"/>
-		<button id="btnCancel" label="Cancel" onclick="prefs.cancel()"/>
+		<button id="btnOK" label="&nightly.ok.label;" onclick="prefs.apply()"/>
+		<button id="btnCancel" label="&nightly.cancel.label;" onclick="prefs.cancel()"/>
+		<button id="btnClose" hidden="true" label="&nightly.close.label;" onclick="prefs.close()"/>
 	</hbox>
   
 </window>

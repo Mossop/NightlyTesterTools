@@ -50,7 +50,9 @@ init: function()
 		var btn = document.getElementById("btnOK");
 		btn.hidden=true;
 		btn = document.getElementById("btnCancel");
-		btn.label="Close";
+		btn.hidden=true;
+		btn = document.getElementById("btnClose");
+		btn.hidden=false;
  	}
 },
 
@@ -100,10 +102,15 @@ apply: function()
 	{
 		prefs.preferences.setBoolPref(pref,prefs.boolPrefs[pref]);
 	}
-	window.close();
+	prefs.close();
 },
 
 cancel: function()
+{
+	prefs.close();
+},
+
+close: function()
 {
 	window.close();
 }

@@ -7,14 +7,20 @@ $Date$
 $Revision$
 -->
 
+<!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
+
 <overlay id="NightlyExtensionsOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript" src="extensions.js" />
+  
+  <stringbundleset id="extensionsSet">
+	  <stringbundle id="nightlylocale" src="chrome://nightly/locale/nightly.properties"/>
+	</stringbundleset>
 
 	<vbox id="contextMenuPalette">
 		<menuitem id="menuitem_appenable" insertafter="menuitem_disable"
-				oncommand="extensionAppEnabler.appEnable();" label="Make compatible"/>
+				oncommand="extensionAppEnabler.appEnable();" label="&nightly.appenable.label;"/>
 	</vbox>
 	
 </overlay>

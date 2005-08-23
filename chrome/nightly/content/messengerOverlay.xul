@@ -7,6 +7,8 @@ $Date$
 $Revision$
 -->
 
+<!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
+
 <overlay id="NightlyMessengerOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
@@ -16,16 +18,16 @@ $Revision$
   <toolbarpalette id="MailToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
             class="toolbarbutton-1"
-            label="Insert Build ID"
-            tooltiptext="Inserts the build identifier into the current text box."
+            label="&nightly.insert-id.label;"
+            tooltiptext="&nightly.insert-id.tooltip;"
             oncommand="nightly.insertTemplate('buildid');"/>
   </toolbarpalette>
 
 	<menupopup id="menu_HelpPopup">
 		<menuseparator insertbefore="menu_HelpAboutSeparator"/>
-		<menuitem label="Copy Build ID" oncommand="nightly.copyTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
-		<menuitem label="Insert Build ID" oncommand="nightly.insertTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
-		<menuitem label="Launch Talkback" oncommand="nightly.launchTalkback();" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="&nightly.insert-id.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
+		<menuitem label="&nightly.talkback.label;" oncommand="nightly.launchTalkback();" insertbefore="menu_HelpAboutSeparator"/>
 	</menupopup>
 
 </overlay>
