@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!--
+$HeadURL$
+$LastChangedBy$
+$Date$
+$Revision$
+-->
+
+<overlay id="NightlyExtensionsOverlay"
+                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="extensions.js" />
+
+	<vbox id="contextMenuPalette">
+		<menuitem id="menuitem_appenable" insertafter="menuitem_disable"
+				oncommand="extensionAppEnabler.appEnable();" label="Force enable"/>
+	</vbox>
+	
+</overlay>
