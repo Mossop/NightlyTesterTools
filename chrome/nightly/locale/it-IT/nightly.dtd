@@ -1,7 +1,7 @@
 <!ENTITY nightly.options.height         "26em">
 
 <!ENTITY nightly.options.title          "Opzioni di Nightly Tester">
-<!ENTITY nightly.options.description    "Si può usare un titolo personalizzato della build attuale da visualizzare sempre nella barra del titolo">
+<!ENTITY nightly.options.description    "Si pu&#242; usare un titolo personalizzato della build attuale da visualizzare sempre nella barra del titolo">
 <!ENTITY nightly.customtitle.label      "Usa un titolo personalizzato">
 <!ENTITY nightly.customtemplate.label   "Titolo personalizzato:">
 <!ENTITY nightly.variables.description  "Le seguenti variabili possono essere usate nel titolo">
@@ -16,4 +16,4 @@
 <!ENTITY nightly.insert-id.tooltip      "Inserisce l'identificante della build nell'attuale riquadro per il testo">
 <!ENTITY nightly.talkback.label         "Avvia Talkback">
 <!ENTITY nightly.customize.label        "Personalizza Nightly Tester">
-<!ENTITY nightly.appenable.label        "Make compatible">
+<!ENTITY nightly.appenable.label        "Rendi compatibile">

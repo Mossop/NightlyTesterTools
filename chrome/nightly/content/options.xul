@@ -27,7 +27,7 @@ $Revision$
 		<checkbox style="padding-bottom: 5px" id="enableTitleBar" label="&nightly.customtitle.label;"/>
 	                
 		<hbox style="padding-bottom: 5px" align="center" flex="1">
-			<label value="Custom title template:" control="customTitle"/>
+			<label value="&nightly.customtemplate.label;" control="customTitle"/>
 			<textbox id="customTitle" flex="1"/>
 		</hbox>
 	
