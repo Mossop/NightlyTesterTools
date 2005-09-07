@@ -26,7 +26,7 @@ startDownload: function(name,url)
 			break;
 		}
 		i++
-	} while (i<100);
+	} while (i<1000);
 	if (i<1000)
 	{
 	  var ioService = Components.classes["@mozilla.org/network/io-service;1"]

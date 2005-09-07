@@ -16,7 +16,7 @@ $Revision$
 	<script type="application/x-javascript" src="xpinstall.js" />
 
 	<vbox insertafter="dialogContentBox">
-		<checkbox id="nightlyoverride" label="Install using nightly tester tools."/>
+		<checkbox id="nightlyoverride" label="&nightly.xpinstall.checkbox;"/>
 	</vbox>
 
 </dialog>
