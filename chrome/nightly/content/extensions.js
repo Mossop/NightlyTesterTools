@@ -27,18 +27,30 @@ function EM_R(property)
 
 var extensionAppEnabler = {
 
-addInArray: function(menus,item,before)
+addInArray: function(menus,item,before,after)
 {
 	var temp = [];
 	var shift=0;
+	var added=false;
 	for (var i = 0; i < menus.length; i++)
 	{
 		if (menus[i]==before)
 		{
 			temp[i+shift]=item;
+			added=true;
 			shift++;
 		}
 		temp[i+shift]=menus[i];
+		if (menus[i]==after)
+		{
+			shift++;
+			temp[i+shift]=item;
+			added=true;
+		}
+	}
+	if (!added)
+	{
+		temp[i+shift]=item;
 	}
 	return temp;
 },
@@ -48,8 +60,8 @@ init: function()
 	gRDF = Components.classes["@mozilla.org/rdf/rdf-service;1"]
                    .getService(Components.interfaces.nsIRDFService);
 
-	gExtensionContextMenus=extensionAppEnabler.addInArray(gExtensionContextMenus,"menuitem_appenable","menuseparator_2");
-	gThemeContextMenus=extensionAppEnabler.addInArray(gThemeContextMenus,"menuitem_appenable","menuseparator_3");
+	gExtensionContextMenus=extensionAppEnabler.addInArray(gExtensionContextMenus,"menuitem_appenable","menuseparator_2",null);
+	gThemeContextMenus=extensionAppEnabler.addInArray(gThemeContextMenus,"menuitem_appenable",null,"menuitem_enable");
 	
 	document.getElementById("extensionContextMenu").addEventListener("popupshowing",extensionAppEnabler.popupShowing,false);
 },

@@ -17,3 +17,4 @@
 <!ENTITY nightly.talkback.label         "Avvia Talkback">
 <!ENTITY nightly.customize.label        "Personalizza Nightly Tester">
 <!ENTITY nightly.appenable.label        "Rendi compatibile">
+<!ENTITY nightly.xpinstall.checkbox		"Install using Nightly Tester Tools to override compatibility.">
