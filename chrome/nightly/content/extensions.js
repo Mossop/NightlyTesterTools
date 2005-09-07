@@ -60,10 +60,10 @@ isCompatible: function(id)
 	{
 		var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
                                  .getService(Components.interfaces.nsIVersionComparator);
-	  	var ds = gExtensionManager.datasource;
-	  	var extension = gRDF.GetResource(id);
-	  	var compatible = ds.GetTarget(extension,EM_R("compatible"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
-	  	return (compatible.Value=="true");
+	  var ds = gExtensionManager.datasource;
+	  var extension = gRDF.GetResource(id);
+	  var compatible = ds.GetTarget(extension,EM_R("compatible"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+	  return (compatible.Value=="true");
 	}
 	else
 	{
@@ -78,37 +78,37 @@ makeCompatible: function(id,app,version)
 	{
 		var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
                                  .getService(Components.interfaces.nsIVersionComparator);
-	  	var ds = gExtensionManager.datasource;
-	  	var extension = gRDF.GetResource(id);
-	  	var targets = ds.GetTargets(extension,EM_R("targetApplication"),true);
-	  	while (targets.hasMoreElements())
-	  	{
-	  		var targapp = targets.getNext();
-	  		var targid = ds.GetTarget(targapp,EM_R("id"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
-	  		if (targid.Value==app)
+  	var ds = gExtensionManager.datasource;
+  	var extension = gRDF.GetResource(id);
+  	var targets = ds.GetTargets(extension,EM_R("targetApplication"),true);
+  	while (targets.hasMoreElements())
+  	{
+  		var targapp = targets.getNext();
+  		var targid = ds.GetTarget(targapp,EM_R("id"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+  		if (targid.Value==app)
+  		{
+	  		var targmin = ds.GetTarget(targapp,EM_R("minVersion"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+	  		if (vc.compare(version,targmin.Value)<0)
 	  		{
-		  		var targmin = ds.GetTarget(targapp,EM_R("minVersion"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
-		  		if (vc.compare(version,targmin.Value)<0)
-		  		{
-			  		var newtargmin = gRDF.GetLiteral(version);
-			  		ds.Change(targapp,EM_R("minVersion"),targmin,newtargmin);
-			  		result=true;
-			  	}
-		  		var targmax = ds.GetTarget(targapp,EM_R("maxVersion"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
-		  		if (vc.compare(version,targmax.Value)>0)
-		  		{
-			  		var newtargmax = gRDF.GetLiteral(version);
-			  		ds.Change(targapp,EM_R("maxVersion"),targmax,newtargmax);
-			  		result=true;
-			  	}
+		  		var newtargmin = gRDF.GetLiteral(version);
+		  		ds.Change(targapp,EM_R("minVersion"),targmin,newtargmin);
+		  		result=true;
+		  	}
+	  		var targmax = ds.GetTarget(targapp,EM_R("maxVersion"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+	  		if (vc.compare(version,targmax.Value)>0)
+	  		{
+		  		var newtargmax = gRDF.GetLiteral(version);
+		  		ds.Change(targapp,EM_R("maxVersion"),targmax,newtargmax);
+		  		result=true;
 		  	}
 	  	}
-	  	if (result)
-	  	{
-            ds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
-            ds.Flush();
+  	}
+  	if (result)
+  	{
+      ds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
+      ds.Flush();
 			gExtensionManager.enableItem(getIDFromResourceURI(id));
-	  	}
+  	}
 	}
 	else
 	{
@@ -147,7 +147,7 @@ confirmChange: function()
 	    	bundle.getString("nightly.confirm.checkbox"),
 	  		checkResult))
 		{
-		  	prefservice.setBoolPref("nightly.showExtensionConfirm",!checkResult.value);
+		  prefservice.setBoolPref("nightly.showExtensionConfirm",!checkResult.value);
 			return true;
 		}
 		else

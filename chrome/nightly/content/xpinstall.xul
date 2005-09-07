@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!--
+$HeadURL$
+$LastChangedBy$
+$Date$
+$Revision$
+-->
+<!DOCTYPE dialog SYSTEM "chrome://nightly/locale/nightly.dtd">
+
+<overlay id="XPInstallOverlay"
+                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+       
+<dialog id="xpinstallConfirm" ondialogaccept="NightlyXPInstall.accept()">
+
+	<script type="application/x-javascript" src="xpinstall.js" />
+
+	<vbox insertafter="dialogContentBox">
+		<checkbox id="nightlyoverride" label="Install using nightly tester tools."/>
+	</vbox>
+
+</dialog>
+
+</overlay>

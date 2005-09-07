@@ -1,7 +1,25 @@
 
 <project name="nightly" default="package">
 
-	<target name="package">
+	<property name="xpidl" value="c:\\mozilla\\moztools\\bin\\xpidl.exe"/>
+	
+	<target name="components">
+		<apply executable="${xpidl}" dir="${basedir}/components" dest="${basedir}/components">
+			<mapper type="glob" from="*.idl" to="*.xpt"/>
+			<fileset dir="${basedir}/components" includes="*.idl"/>
+			<arg line="-m typelib -w -v"/>
+			<arg value="-I"/>
+			<arg value="c:\\mozilla\\mozilla\\xpcom\\base"/>
+			<arg value="-I"/>
+			<arg value="c:\\mozilla\\mozilla\\uriloader\\base"/>
+			<arg value="-I"/>
+			<arg value="c:\\mozilla\\mozilla\\netwerk\\base\\public"/>
+			<arg value="-I"/>
+			<arg value="c:\\mozilla\\mozilla\\xpcom\\io"/>
+		</apply>
+	</target>
+	
+	<target name="package" depends="components">
 		<zip destfile="${basedir}/${ant.project.name}.xpi">
 			<fileset dir="${basedir}">
 				<include name="**/*"/>

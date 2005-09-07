@@ -7,6 +7,7 @@ overlay			chrome://browser/content/browser.xul								chrome://nightly/content/b
 overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly/content/messengerOverlay.xul
 overlay			chrome://mozapps/content/extensions/extensions.xul?type=extensions	chrome://nightly/content/extensions.xul
 overlay			chrome://mozapps/content/extensions/extensions.xul?type=themes	chrome://nightly/content/extensions.xul
+overlay			chrome://mozapps/content/xpinstall/xpinstallConfirm.xul	chrome://nightly/content/xpinstall.xul
 
 style 			chrome://browser/content/browser.xul 								chrome://nightly/skin/browser.css
 style 			chrome://messenger/content/messenger.xul 						chrome://nightly/skin/browser.css
