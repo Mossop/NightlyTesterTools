@@ -10,8 +10,9 @@ function DownloadListener()
 {
 }
 
-DownloadListener.prototype.init = function(name,file,transfer)
+DownloadListener.prototype.init = function(name,uri,file,transfer)
 {
+  this.uri=uri;
   this.name=name;
 	this.file=file;
 	this.transfer=transfer;
@@ -38,9 +39,27 @@ DownloadListener.prototype.onStateChange = function(webProgress, request, stateF
 	if (stateFlags&Components.interfaces.nsIWebProgressListener.STATE_STOP)
 	{
     var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
-                              .getService(Components.interfaces.nsINightlyToolsService);
-    nightlyService.installLocalExtension(this.name,this.file);
-  	this.file.remove(false);
+                              .getService(Components.interfaces.nsINightlyToolsCallback);
+    if (status==0)
+    {
+      nightlyService.installLocalExtension(this.name,this.uri,this.file);
+    }
+    else
+    {
+     	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
+    									.getService(Components.interfaces.nsIStringBundleService);
+    	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
+   		var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+  	                    .getService(Components.interfaces.nsIPromptService);
+  	  
+      var text=bundle.formatStringFromName("nightly.downloadfail.message",[this.name, status],2);
+      promptService.alert(null,"Nightly Tester Tools",text);
+
+      nightlyService.installFailed(this.name,this.uri);
+    }
+    
+    if (this.file.exists())
+    	this.file.remove(false);
 	}
 }
 

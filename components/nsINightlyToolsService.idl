@@ -1,9 +1,16 @@
 #include "nsISupports.idl"
-#include "nsIURI.idl"
 #include "nsIFile.idl"
+#include "nsIURI.idl"
 [scriptable, uuid(74535621-1999-45d3-86f3-4c165849db3e)]
 interface nsINightlyToolsService : nsISupports
 {
 	void installExtension(in AString name, in nsIURI uri);
-	void installLocalExtension(in AString name, in nsIFile file);
+};
+
+[scriptable, uuid(53adb9f4-d648-46ca-9d96-c15cf1904ddd)]
+interface nsINightlyToolsCallback : nsISupports
+{
+	void installLocalExtension(in AString name, in nsIURI uri, in nsIFile file);
+	void installSucceeded(in AString name, in nsIURI uri);
+	void installFailed(in AString name, in nsIURI uri);
 };

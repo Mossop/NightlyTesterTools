@@ -39,7 +39,7 @@
     <em:description>Useful tools for the nightly tester (Formerly known as the Build ID Copier).</em:description>
     <em:creator>Mossop</em:creator>
     <em:contributor>Peter van der Woude (original idea)</em:contributor>
-    <em:contributor>Jesse Ruderman (Mac fixed)</em:contributor>
+    <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
     <em:contributor>Luana - MatrixIsAllOver (Italian translation)</em:contributor>
     <em:iconURL>chrome://nightly/skin/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options.xul</em:optionsURL>
