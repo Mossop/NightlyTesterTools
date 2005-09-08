@@ -301,8 +301,26 @@ findTalkbackInDir: function(dir)
 		else
 		{
 			dir.append("talkback");
+			
 			if (dir.exists())
 			{
+				var macCheck = dir.clone();
+				macCheck.append("Talkback.app");
+
+				// nsProcess.init() doesn't know what to do with Mac OS X
+				// application bundles, so dig down to the executable.
+				// https://bugzilla.mozilla.org/show_bug.cgi?id=307463
+				macCheck.append("Contents");
+				macCheck.append("MacOS");
+				macCheck.append("Talkback");
+				
+				// Don't check isExecutable() for Mac.
+				// For some reason, it's false, but running it works anyway.
+				if ((macCheck.exists()))
+				{
+					return macCheck;
+				}
+
 				dir.append("talkback");
 				if ((dir.exists()) && (dir.isExecutable()))
 				{
@@ -317,6 +335,8 @@ findTalkbackInDir: function(dir)
 findTalkback: function()
 {	
 	var dir = null;
+	
+	// Firefox 1.5 location
 	if (Components.classes["@mozilla.org/extensions/manager;1"])
 	{
 		var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"].
@@ -340,6 +360,8 @@ findTalkback: function()
 		}
 	}
 
+	// Firefox 1.0 location
+	// (before the fix for https://bugzilla.mozilla.org/show_bug.cgi?id=299040)
 	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
 										getService(Components.interfaces.nsIProperties);
 	dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);

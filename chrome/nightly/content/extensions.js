@@ -150,14 +150,14 @@ confirmChange: function()
 		var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
 	                    .getService(Components.interfaces.nsIPromptService);
 	    
-	    var checkResult = { };
-	    
-	    var bundle = document.getElementById("nightlylocale");
-	    
-	    if (promptService.confirmCheck(window,bundle.getString("nightly.confirm.title"),
-	    	bundle.getString("nightly.confirm.description"),
-	    	bundle.getString("nightly.confirm.checkbox"),
-	  		checkResult))
+    var checkResult = { };
+    
+    var bundle = document.getElementById("nightlylocale");
+    
+    if (promptService.confirmCheck(window,bundle.getString("nightly.confirm.title"),
+    	bundle.getString("nightly.confirm.description"),
+    	bundle.getString("nightly.confirm.checkbox"),
+  		checkResult))
 		{
 		  prefservice.setBoolPref("nightly.showExtensionConfirm",!checkResult.value);
 			return true;
@@ -166,11 +166,11 @@ confirmChange: function()
 		{
 			return false;
 		}	  	
-  	}
-  	else
-  	{
-  		return true;
-  	}
+	}
+	else
+	{
+		return true;
+	}
 },
 
 appEnable: function()
