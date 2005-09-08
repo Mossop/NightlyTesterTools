@@ -56,20 +56,38 @@ installExtension: function(name, uri)
 {
   this.installCount++;
   
+ 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
+									.getService(Components.interfaces.nsIStringBundleService);
+	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
+	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                    .getService(Components.interfaces.nsIPromptService);
+  var ioService = Components.classes["@mozilla.org/network/io-service;1"]
+                            .getService(Components.interfaces.nsIIOService);
+
   if (uri.schemeIs("file"))
   {
-    this.installLocalExtension(name,uri,uri); //TODO add in 
+    try
+    {
+      var fph = ioService.getProtocolHandler("file").QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+      var file = fph.getFileFromURLSpec(uri.spec);
+      if ((file)&&(file.exists()))
+      {
+        this.installLocalExtension(name,uri,file);
+        return;
+      }
+    }
+    catch (e)
+    {
+      dump("Failed - "+e+"\n");
+    }
+    var text=bundle.formatStringFromName("nightly.nofile.message",[name],1);
+    promptService.alert(null,"Nightly Tester Tools",text);
+    this.installFailed(name,uri);
   }
   else
   {
     try
-    {
-     	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-    									.getService(Components.interfaces.nsIStringBundleService);
-    	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
-   		var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-  	                    .getService(Components.interfaces.nsIPromptService);
-  
+    {  
      	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
     										getService(Components.interfaces.nsIProperties);
     	dir = directoryService.get("TmpD",Components.interfaces.nsIFile);
@@ -89,8 +107,6 @@ installExtension: function(name, uri)
     	} while (i<1000);
     	if (i<1000)
     	{
-    	  var ioService = Components.classes["@mozilla.org/network/io-service;1"]
-    	                            .getService(Components.interfaces.nsIIOService);
     	  fileuri=ioService.newFileURI(file);
     		
     		var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
