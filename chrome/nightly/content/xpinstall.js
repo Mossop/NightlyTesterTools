@@ -22,11 +22,10 @@ startDownload: function(name,url)
 accept: function()
 {
 	var check = document.getElementById("nightlyoverride");
-	if (check.checked)
+	if ((check)&&(check.checked))
 	{
 		var itemList = document.getElementById("itemList");
 		var items = itemList.getElementsByTagName("installitem");
-		var urls = [];
 		for (var i=0; i<items.length; i++)
 		{
 			NightlyXPInstall.startDownload(items[i].name,items[i].url);
