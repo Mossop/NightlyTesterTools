@@ -35,9 +35,9 @@ $Revision$
 	
 		<listbox id="varList" rows="8">
 			<listhead>
-				<listheader label="Variable"/>
-				<listheader label="Description"/>
-				<listheader label="Value"/>
+				<listheader label="&nightly.variable.label;"/>
+				<listheader label="&nightly.variabledesc.label;"/>
+				<listheader label="&nightly.variablevalue.label;"/>
 			</listhead>
 			<listcols>
 				<listcol style="width: 9em"/>
