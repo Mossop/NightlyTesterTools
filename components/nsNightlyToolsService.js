@@ -143,6 +143,8 @@ installExtension: function(name, uri)
 
 installLocalExtension: function(name, uri, file)
 {
+  var guidTest = /^(\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}|[a-z0-9-\._]*\@[a-z0-9-\._]+)\/?$/i;
+  
  	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
 									.getService(Components.interfaces.nsIStringBundleService);
 	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
@@ -201,7 +203,7 @@ installLocalExtension: function(name, uri, file)
 	var maxprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#maxVersion");
 
   var zipReader;
-  var id;
+  var originalID;
   var ds;
   
   try
@@ -219,7 +221,7 @@ installLocalExtension: function(name, uri, file)
   	  var fileuri=ioService.newFileURI(rdffile);
   
   		ds = rdfService.GetDataSourceBlocking(fileuri.spec);
-  		id = ds.GetTarget(source,idprop,true);
+  		originalID = ds.GetTarget(source,idprop,true);
   	}
   	catch (e)
   	{
@@ -246,7 +248,7 @@ installLocalExtension: function(name, uri, file)
 		rdffile.remove(false);
 	}
 	catch (e) { }
-  if (!id)
+  if (!originalID)
   {
 		dump("Failed - "+e+"\n");
 		zipReader.close();
@@ -256,9 +258,26 @@ installLocalExtension: function(name, uri, file)
     return;
   }
   
-	id=id.QueryInterface(Components.interfaces.nsIRDFLiteral);
-	extensionID=id.Value;
+	originalID=originalID.QueryInterface(Components.interfaces.nsIRDFLiteral);
+	extensionID=originalID.Value;
 	
+  var simpleTest = /^[a-z0-9-\._]*$/i;
+
+	if (!extensionID || !guidTest.test(extensionID))
+	{
+		if (/^[a-z0-9-\._]*$/i.test(extensionID))
+		{
+			extensionID = extensionID;
+		}
+		else
+	  {
+			extensionID = 'extension-'+parseInt((Math.random()*10000));
+		}
+		extensionID+="@invalid-guid";
+    var text=bundle.formatStringFromName("nightly.badguid.message",[name],1);
+    promptService.alert(null,"Nightly Tester Tools",text);
+	}
+
 	var em = Components.classes["@mozilla.org/extensions/manager;1"]
 							.getService(Components.interfaces.nsIExtensionManager);
 	var installLocation = em.getInstallLocation(extensionID);
@@ -343,6 +362,14 @@ installLocalExtension: function(name, uri, file)
   	ds = rdfService.GetDataSourceBlocking(manifest.spec);
   	
   	var changed=false;
+
+
+	  if (extensionID!=originalID.Value)
+	  {
+		  ds.Change(source,idprop,originalID,rdfService.GetLiteral(extensionID));
+		  changed = true;
+	  }
+
   	var apps = ds.GetTargets(source,targappprop,true);
   	while (apps.hasMoreElements())
   	{
