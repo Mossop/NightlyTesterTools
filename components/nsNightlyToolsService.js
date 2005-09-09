@@ -271,6 +271,7 @@ installLocalExtension: function(name, uri, file)
 		}
 		else
 	  {
+	    // TODO see if there is a sensible way to not use random behaviour.
 			extensionID = 'extension-'+parseInt((Math.random()*10000));
 		}
 		extensionID+="@invalid-guid";

@@ -31,6 +31,17 @@ templates: {
 
 preferences: null,
 
+showAlert: function(id,args)
+{
+ 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
+									.getService(Components.interfaces.nsIStringBundleService);
+	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
+	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                    .getService(Components.interfaces.nsIPromptService);
+  var text=bundle.formatStringFromName(id,args,args.length);
+  promptService.alert(null,"Nightly Tester Tools",text);
+},
+
 loadBuildIDFromFile: function()
 {
 	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].
@@ -249,16 +260,10 @@ insertTemplate: function(template)
 			element.value=value.substring(0,element.selectionStart)+text+value.substring(element.selectionEnd);
 			element.selectionStart=newpos;
 			element.selectionEnd=newpos;
-		}
-		else
-		{
-			alert("You must select a text box before using this function.");
+			return;
 		}
 	}
-	else
-	{
-		alert("You must select a text box before using this function.");
-	}
+	nightly.showAlert("nightly.notextbox.message",[]);
 },
 
 launch: function(file, args)
@@ -377,7 +382,7 @@ launchTalkback: function()
 	}
 	else
 	{
-		alert("Could not find talkback. Perhaps it isn't installed.");
+  	nightly.showAlert("nightly.notalkback.message",[]);
 	}
 },
 
