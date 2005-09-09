@@ -12,27 +12,31 @@ installs: [],
 failCount: 0,
 successCount: 0,
 
+displayAlert: function(id,args)
+{
+ 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
+									.getService(Components.interfaces.nsIStringBundleService);
+	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
+	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                    .getService(Components.interfaces.nsIPromptService);
+  var text = bundle.formatStringFromName(id,args,args.length);
+  promptService.alert(null,"Nightly Tester Tools",text);
+},
+
 installComplete: function()
 {
   if ((this.failCount+this.successCount)==this.installs.length)
   {
     if (this.successCount>0)
     {
-     	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-    									.getService(Components.interfaces.nsIStringBundleService);
-    	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
-   		var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-  	                    .getService(Components.interfaces.nsIPromptService);
-      var text;
       if (this.failCount==0)
       {
-        text=bundle.formatStringFromName("nightly.installsuccess.message",[this.successCount],1);
+        this.displayAlert("nightly.installsuccess.message",[]);
       }
       else
       {
-        text=bundle.formatStringFromName("nightly.installpartial.message",[this.successCount],1);
+        this.displayAlert("nightly.installpartial.message",[this.successCount]);
       }
-      promptService.alert(null,"Nightly Tester Tools",text);
     }
     this.successCount=0;
     this.failCount=0;
@@ -71,11 +75,6 @@ performInstalls: function()
 performInstall: function(name, uri)
 {
   dump("Installing "+name+" from "+uri+"\n");
- 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-									.getService(Components.interfaces.nsIStringBundleService);
-	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
-	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                    .getService(Components.interfaces.nsIPromptService);
   var ioService = Components.classes["@mozilla.org/network/io-service;1"]
                             .getService(Components.interfaces.nsIIOService);
 
@@ -95,8 +94,7 @@ performInstall: function(name, uri)
     {
       dump("Failed - "+e+"\n");
     }
-    var text=bundle.formatStringFromName("nightly.nofile.message",[name],1);
-    promptService.alert(null,"Nightly Tester Tools",text);
+    this.displayAlert("nightly.nofile.message",[name]);
     this.installFailed(name,uri);
   }
   else
@@ -142,15 +140,13 @@ performInstall: function(name, uri)
     	}
     	else
     	{
-        var text=bundle.formatStringFromName("nightly.notemp.message",[name],1);
-        promptService.alert(null,"Nightly Tester Tools",text);
+        this.displayAlert("nightly.notemp.message",[name]);
         this.installFailed(name,uri);
     	}
     }
     catch (e)
     {
-      var text=bundle.formatStringFromName("nightly.notemp.message",[name],1);
-      promptService.alert(null,"Nightly Tester Tools",text);
+      this.displayAlert("nightly.notemp.message",[name]);
       this.installFailed(name,uri);
     }
   }
@@ -160,11 +156,6 @@ installLocalExtension: function(name, uri, file)
 {
   var guidTest = /^(\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}|[a-z0-9-\._]*\@[a-z0-9-\._]+)\/?$/i;
   
- 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-									.getService(Components.interfaces.nsIStringBundleService);
-	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
-	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                    .getService(Components.interfaces.nsIPromptService);
 	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
 										getService(Components.interfaces.nsIProperties);
   var ioService = Components.classes["@mozilla.org/network/io-service;1"]
@@ -196,8 +187,7 @@ installLocalExtension: function(name, uri, file)
   
     if (i==1000)
     {
-      var text=bundle.formatStringFromName("nightly.notemp.message",[name],1);
-      promptService.alert(null,"Nightly Tester Tools",text);
+      this.displayAlert("nightly.notemp.message",[name]);
   	  this.installFailed(name,uri);
   	  return;
     }
@@ -205,8 +195,7 @@ installLocalExtension: function(name, uri, file)
   catch (e)
   {
     dump("Failed - "+e+"\n");
-    var text=bundle.formatStringFromName("nightly.notemp.message",[name],1);
-    promptService.alert(null,"Nightly Tester Tools",text);
+    this.displayAlert("nightly.notemp.message",[name]);
 	  this.installFailed(name,uri);
 	  return;
   }
@@ -242,8 +231,7 @@ installLocalExtension: function(name, uri, file)
   	{
   		dump("Failed - "+e+"\n");
   		zipReader.close();
-      var text=bundle.formatStringFromName("nightly.badrdf.message",[name],1);
-      promptService.alert(null,"Nightly Tester Tools",text);
+      this.displayAlert("nightly.badrdf.message",[name]);
       this.installFailed(name,uri);
       return;
   	}
@@ -251,8 +239,7 @@ installLocalExtension: function(name, uri, file)
   catch (e)
   {
 		dump("Failed - "+e+"\n");
-    var text=bundle.formatStringFromName("nightly.badrdf.message",[name],1);
-    promptService.alert(null,"Nightly Tester Tools",text);
+    this.displayAlert("nightly.badrdf.message",[name]);
     this.installFailed(name,uri);
     return;
   }
@@ -277,8 +264,7 @@ installLocalExtension: function(name, uri, file)
   {
 		dump("Failed - "+e+"\n");
 		zipReader.close();
-    var text=bundle.formatStringFromName("nightly.badrdf.message",[name],1);
-    promptService.alert(null,"Nightly Tester Tools",text);
+    this.displayAlert("nightly.badrdf.message",[name]);
     this.installFailed(name,uri);
     return;
   }
@@ -300,8 +286,7 @@ installLocalExtension: function(name, uri, file)
 			extensionID = 'extension-'+parseInt((Math.random()*10000));
 		}
 		extensionID+="@invalid-guid";
-    var text=bundle.formatStringFromName("nightly.badguid.message",[name],1);
-    promptService.alert(null,"Nightly Tester Tools",text);
+    this.displayAlert("nightly.badguid.message",[name]);
 	}
 
 	var em = Components.classes["@mozilla.org/extensions/manager;1"]
@@ -364,8 +349,7 @@ installLocalExtension: function(name, uri, file)
 		dump("Failed - "+e+"\n");
 		zipReader.close();
 		dest.remove(true);
-    var text=bundle.formatStringFromName("nightly.cannotwrite.message",[name],1);
-    promptService.alert(null,"Nightly Tester Tools",text);
+    this.displayAlert("nightly.cannotwrite.message",[name]);
 		this.installFailed(name,uri);
 		return;
 	}
@@ -434,8 +418,7 @@ installLocalExtension: function(name, uri, file)
   {
 		dump("Failed - "+e+"\n");
 		dest.remove(true);
-    var text=bundle.formatStringFromName("nightly.badrdf.message",[name],1);
-    promptService.alert(null,"Nightly Tester Tools",text);
+    this.displayAlert("nightly.badrdf.message",[name]);
 		this.installFailed(name,uri);
 		return;
   }

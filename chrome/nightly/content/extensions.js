@@ -85,7 +85,7 @@ isCompatible: function(id)
 
 makeCompatible: function(id,app,version)
 {
-	var result=false;
+	var changed=false;
 	if (gExtensionManager)
 	{
 		var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
@@ -104,18 +104,18 @@ makeCompatible: function(id,app,version)
 	  		{
 		  		var newtargmin = gRDF.GetLiteral(version);
 		  		ds.Change(targapp,EM_R("minVersion"),targmin,newtargmin);
-		  		result=true;
+		  		changed=true;
 		  	}
 	  		var targmax = ds.GetTarget(targapp,EM_R("maxVersion"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
 	  		if (vc.compare(version,targmax.Value)>0)
 	  		{
 		  		var newtargmax = gRDF.GetLiteral(version);
 		  		ds.Change(targapp,EM_R("maxVersion"),targmax,newtargmax);
-		  		result=true;
+		  		changed=true;
 		  	}
 	  	}
   	}
-  	if (result)
+  	if (changed)
   	{
       ds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
       ds.Flush();

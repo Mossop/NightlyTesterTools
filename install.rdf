@@ -21,7 +21,7 @@
       <Description>
         <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
         <em:minVersion>1.7</em:minVersion>
-        <em:maxVersion>1.7</em:maxVersion>
+        <em:maxVersion>1.8</em:maxVersion>
       </Description>
     </em:targetApplication>
     
@@ -40,6 +40,7 @@
     <em:creator>Mossop</em:creator>
     <em:contributor>Peter van der Woude (original idea)</em:contributor>
     <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
+    <em:contributor>Shimoda "Piro" Hiroshi (Fixing invalid guids)</em:contributor>
     <em:contributor>Luana - MatrixIsAllOver (Italian translation)</em:contributor>
     <em:iconURL>chrome://nightly/skin/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options.xul</em:optionsURL>
