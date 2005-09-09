@@ -8,13 +8,13 @@
 
 var nsNightlyToolsService = {
 
-installCount: 0,
+installs: [],
 failCount: 0,
 successCount: 0,
 
 installComplete: function()
 {
-  if ((this.failCount+this.successCount)==this.installCount)
+  if ((this.failCount+this.successCount)==this.installs.length)
   {
     if (this.successCount>0)
     {
@@ -36,7 +36,7 @@ installComplete: function()
     }
     this.successCount=0;
     this.failCount=0;
-    this.installCount=0;
+    this.installs=[];
   }
 },
 
@@ -52,10 +52,25 @@ installSucceeded: function(name, uri)
   this.installComplete();
 },
 
-installExtension: function(name, uri)
+queueInstall: function(name, url)
 {
-  this.installCount++;
-  
+  var newinstall = new Object();
+  newinstall.name=name;
+  newinstall.url=url;
+  this.installs[this.installs.length]=newinstall;
+},
+
+performInstalls: function()
+{
+  for (var i in this.installs)
+  {
+    this.performInstall(this.installs[i].name,this.installs[i].url);
+  }
+},
+
+performInstall: function(name, uri)
+{
+  dump("Installing "+name+" from "+uri+"\n");
  	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
 									.getService(Components.interfaces.nsIStringBundleService);
 	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
@@ -242,12 +257,22 @@ installLocalExtension: function(name, uri, file)
     return;
   }
 
+  if (ds)
+  {
+  	try
+  	{
+  		rdfService.UnregisterDataSource(ds);
+  	}
+  	catch (e) { }
+  }
+  
 	// Read all we need, delete the rdf file but dont care if this fails.
 	try
 	{
 		rdffile.remove(false);
 	}
 	catch (e) { }
+
   if (!originalID)
   {
 		dump("Failed - "+e+"\n");
