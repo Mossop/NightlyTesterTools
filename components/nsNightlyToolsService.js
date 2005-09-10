@@ -272,25 +272,39 @@ installLocalExtension: function(name, uri, file)
 	originalID=originalID.QueryInterface(Components.interfaces.nsIRDFLiteral);
 	extensionID=originalID.Value;
 	
-  var simpleTest = /^[a-z0-9-\._]*$/i;
+  var simpleTest = /^[\w-\.]*$/;
+	var em = Components.classes["@mozilla.org/extensions/manager;1"]
+							.getService(Components.interfaces.nsIExtensionManager);
 
 	if (!extensionID || !guidTest.test(extensionID))
 	{
-		if (/^[a-z0-9-\._]*$/i.test(extensionID))
+	  var invalid="@invalid-guid";
+		if (simpleTest.test(extensionID))
 		{
-			extensionID = extensionID;
+		  // Valid for simple @ form
+			extensionID = extensionID+invalid;
+		}
+		else if (/^\{[\w-\.]*\}$/.test(extensionID))
+		{
+		  // Just a bad guid, convert for simple @ form
+		  extensionID = extensionID.substring(1,extensionID.length-1)+invalid;
 		}
 		else
 	  {
 	    // TODO see if there is a sensible way to not use random behaviour.
-			extensionID = 'extension-'+parseInt((Math.random()*10000));
+	    do
+	    {
+  			extensionID = "extension-"+parseInt((Math.random()*10000))+invalid;
+	      var testLoc = em.getInstallLocation(extensionID);
+	      if (!testLoc)
+	      {
+	        break;
+	      }
+  		} while (true);
 		}
-		extensionID+="@invalid-guid";
     this.displayAlert("nightly.badguid.message",[name]);
 	}
 
-	var em = Components.classes["@mozilla.org/extensions/manager;1"]
-							.getService(Components.interfaces.nsIExtensionManager);
 	var installLocation = em.getInstallLocation(extensionID);
 	if (!installLocation)
 	{
