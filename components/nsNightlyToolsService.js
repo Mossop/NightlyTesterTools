@@ -312,9 +312,10 @@ installLocalExtension: function(name, uri, file)
 	}
 	else
 	{
-	  // Maybe we want to wipe the extension dir here?
-	  // var dest = installLocation.getItemLocation(extensionID);
-	  // dest.remove(true);
+	  // Might be nice to implement the level of safety that the EM uses when there is an old version in place.
+	  var dest = installLocation.getItemLocation(extensionID);
+	  if (dest.exists())
+	    dest.remove(true);
 	}
 	
 	var dest = installLocation.getItemLocation(extensionID);
