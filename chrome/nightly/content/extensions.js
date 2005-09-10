@@ -50,37 +50,19 @@ isCompatible: function(id)
 							.getService(Components.interfaces.nsIExtensionManager);
   var rdfService = Components.classes["@mozilla.org/rdf/rdf-service;1"]
   											.getService(Components.interfaces.nsIRDFService);
-	if (em && rdfService)
-	{
-		var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
-                                 .getService(Components.interfaces.nsIVersionComparator);
-	  var ds = em.datasource;
-	  var extension = rdfService.GetResource(id);
-	  var compatprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#compatible");
-	  var compatible = ds.GetTarget(extension,compatprop,true);
-	  if (compatible)
-	  {
-	    compatible=compatible.QueryInterface(Components.interfaces.nsIRDFLiteral)
-  	  return (compatible.Value=="true");
-    }
-    return true;
-	}
-	else
-	{
-  	var console = Components.classes["@mozilla.org/consoleservice;1"]
-  							.getService(Components.interfaces.nsIConsoleService);
-    var type;
-  	if (em)
-  	{
-  	  type="rdf service";
-  	}
-  	else
-  	{
-  	  type="extension manager";
-  	}
-  	console.logStringMessage("Could not access "+type);
-		return true;
-	}
+	var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
+                               .getService(Components.interfaces.nsIVersionComparator);
+  
+  var ds = em.datasource;
+  var extension = rdfService.GetResource(id);
+  var compatprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#compatible");
+  var compatible = ds.GetTarget(extension,compatprop,true);
+  if (compatible)
+  {
+    compatible=compatible.QueryInterface(Components.interfaces.nsIRDFLiteral)
+	  return (compatible.Value=="true");
+  }
+  return true;
 },
 
 makeCompatible: function(id,app,version)
@@ -90,69 +72,50 @@ makeCompatible: function(id,app,version)
   var rdfService = Components.classes["@mozilla.org/rdf/rdf-service;1"]
   											.getService(Components.interfaces.nsIRDFService);
 	var changed=false;
-	if (em && rdfService)
-	{
-  	var idprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#id");
-  	var targappprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#targetApplication");
-  	var minprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#minVersion");
-  	var maxprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#maxVersion");
+	var idprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#id");
+	var targappprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#targetApplication");
+	var minprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#minVersion");
+	var maxprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#maxVersion");
 
-		var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
-                                 .getService(Components.interfaces.nsIVersionComparator);
-  	var ds = em.datasource;
-  	var extension = rdfService.GetResource(id);
-  	var targets = ds.GetTargets(extension,targappprop,true);
-  	while (targets.hasMoreElements())
-  	{
-  		var targapp = targets.getNext();
-  		var targid = ds.GetTarget(targapp,idprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
-  		if (targid.Value==app)
+	var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
+                               .getService(Components.interfaces.nsIVersionComparator);
+	var ds = em.datasource;
+	var extension = rdfService.GetResource(id);
+	var targets = ds.GetTargets(extension,targappprop,true);
+	while (targets.hasMoreElements())
+	{
+		var targapp = targets.getNext();
+		var targid = ds.GetTarget(targapp,idprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+		if (targid.Value==app)
+		{
+  		var targmin = ds.GetTarget(targapp,minprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+  		if (vc.compare(version,targmin.Value)<0)
   		{
-	  		var targmin = ds.GetTarget(targapp,minprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
-	  		if (vc.compare(version,targmin.Value)<0)
-	  		{
-		  		var newtargmin = rdfService.GetLiteral(version);
-		  		ds.Change(targapp,minprop,targmin,newtargmin);
-		  		changed=true;
-		  	}
-	  		var targmax = ds.GetTarget(targapp,maxprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
-	  		if (vc.compare(version,targmax.Value)>0)
-	  		{
-		  		var newtargmax = rdfService.GetLiteral(version);
-		  		ds.Change(targapp,maxprop,targmax,newtargmax);
-		  		changed=true;
-		  	}
+	  		var newtargmin = rdfService.GetLiteral(version);
+	  		ds.Change(targapp,minprop,targmin,newtargmin);
+	  		changed=true;
+	  	}
+  		var targmax = ds.GetTarget(targapp,maxprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+  		if (vc.compare(version,targmax.Value)>0)
+  		{
+	  		var newtargmax = rdfService.GetLiteral(version);
+	  		ds.Change(targapp,maxprop,targmax,newtargmax);
+	  		changed=true;
 	  	}
   	}
-  	if (changed)
-  	{
-      ds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
-      ds.Flush();
-			em.enableItem(getIDFromResourceURI(id));
-  	}
 	}
-	else
+	if (changed)
 	{
-  	var console = Components.classes["@mozilla.org/consoleservice;1"]
-  							.getService(Components.interfaces.nsIConsoleService);
-    var type;
-  	if (em)
-  	{
-  	  type="rdf service";
-  	}
-  	else
-  	{
-  	  type="extension manager";
-  	}
-  	console.logStringMessage("Could not access "+type);
-		return false;
+    ds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
+    ds.Flush();
+		em.enableItem(getIDFromResourceURI(id));
 	}
 	return changed;
 },
 
 popupShowing: function(event)
 {
-	var item = gExtensionsView.selectedItem;
+	var item = document.getElementById("extensionsView").selectedItem;
 	var menu = document.getElementById("menuitem_appenable");
 	var menuclone = document.getElementById("menuitem_appenable_clone");
 	menu.hidden=extensionAppEnabler.isCompatible(item.id);
@@ -197,8 +160,9 @@ appEnable: function()
 {
 	if (extensionAppEnabler.confirmChange())
 	{
+    var ev = document.getElementById("extensionsView");
 		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
-		var item = gExtensionsView.selectedItem;
+		var item = ev.selectedItem;
 		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
 							.getService(Components.interfaces.nsIPrefBranch);
 		
@@ -213,13 +177,60 @@ appEnable: function()
 		
 		if (extensionAppEnabler.makeCompatible(item.id,appinfo.ID,version))
 		{
-			gExtensionsView.selectedItem = document.getElementById(item.id);
+			ev.selectedItem = document.getElementById(item.id);
 		}
 	}
 },
 
 enableAll: function()
 {
+	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+						.getService(Components.interfaces.nsIPrefBranch);
+	
+	var version = appinfo.version;
+	try
+	{
+		version=prefservice.getCharPref("app.extensions.version");
+		if (!version)
+			version=appinfo.version;
+	}
+	catch (e) { }
+	
+	var confirmed=false;
+	
+  var ev = document.getElementById("extensionsView");
+  var count = ev.getRowCount();
+  for (var i=0; i<count; i++)
+  {
+    var item = ev.getItemAtIndex(i);
+    dump(item.id+"\n");
+    if (!extensionAppEnabler.isCompatible(item.id))
+    {
+      if (!confirmed)
+      {
+        confirmed=extensionAppEnabler.confirmChange();
+        if (!confirmed)
+          return;
+      }
+      extensionAppEnabler.makeCompatible(item.id,appinfo.ID,version);
+    }
+  }
+ 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
+									.getService(Components.interfaces.nsIStringBundleService);
+	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
+	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                    .getService(Components.interfaces.nsIPromptService);
+  var text;
+  if (!confirmed)
+  {
+    text=bundle.GetStringFromName("nightly.noincompatible.message");
+  }
+  else
+  {
+    text=bundle.GetStringFromName("nightly.madecompatible.message");
+  }
+  promptService.alert(null,"Nightly Tester Tools",text);
 }
 
 }

@@ -8,12 +8,6 @@
 
 var NightlyXPInstall = {
 
-addExtension: function(name,url)
-{
-  
-  
-},
-
 accept: function()
 {
 	var check = document.getElementById("nightlyoverride");

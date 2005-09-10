@@ -9,6 +9,8 @@ $Revision$
 
 <!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
 
+<?xml-stylesheet href="chrome://nightly/skin/extensions.css" type="text/css"?>
+
 <overlay id="NightlyExtensionsOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
@@ -22,5 +24,10 @@ $Revision$
 		<menuitem id="menuitem_appenable" insertafter="menuitem_disable"
 				oncommand="extensionAppEnabler.appEnable();" label="&nightly.appenable.label;"/>
 	</vbox>
+	
+	<hbox id="commandBar">
+  	<button id="enableallButton" label="&nightly.enableall.label;" oncommand="extensionAppEnabler.enableAll()" insertbefore="updateButton"/>
+  	<separator class="commandBarSeparator" insertbefore="updateButton"/>
+	</hbox>
 	
 </overlay>

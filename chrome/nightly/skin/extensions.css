@@ -1,0 +1,15 @@
+#enableallButton {
+  margin: 0px;
+  list-style-image: url("chrome://nightly/skin/enableallButton.png");
+}
+
+#enableallButton[disabled="true"] {
+  list-style-image: url("chrome://nightly/skin/enableallButtonDisabled.png");
+}
+
+#enableallButton .button-icon {
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+  -moz-margin-start: 0px !important;
+  -moz-margin-end: 5px !important;
+}
