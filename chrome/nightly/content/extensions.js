@@ -6,25 +6,6 @@
  *
  */
 
-var gRDF = null;
-const PREFIX_NS_EM                    = "http://www.mozilla.org/2004/em-rdf#";
-const PREFIX_NS_CHROME                = "http://www.mozilla.org/rdf/chrome#";
-
-function EM_NS(property)
-{
-  return PREFIX_NS_EM + property;
-}
-
-function CHROME_NS(property)
-{
-  return PREFIX_NS_CHROME + property;
-}
-
-function EM_R(property)
-{
-  return gRDF.GetResource(EM_NS(property));
-}
-
 var extensionAppEnabler = {
 
 addInArray: function(menus,item,before,after)
@@ -57,9 +38,6 @@ addInArray: function(menus,item,before,after)
 
 init: function()
 {
-	gRDF = Components.classes["@mozilla.org/rdf/rdf-service;1"]
-                   .getService(Components.interfaces.nsIRDFService);
-
 	gExtensionContextMenus=extensionAppEnabler.addInArray(gExtensionContextMenus,"menuitem_appenable","menuseparator_2",null);
 	gThemeContextMenus=extensionAppEnabler.addInArray(gThemeContextMenus,"menuitem_appenable",null,"menuitem_enable");
 	
@@ -68,49 +46,80 @@ init: function()
 
 isCompatible: function(id)
 {
-	if (gExtensionManager)
+	var em = Components.classes["@mozilla.org/extensions/manager;1"]
+							.getService(Components.interfaces.nsIExtensionManager);
+  var rdfService = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+  											.getService(Components.interfaces.nsIRDFService);
+	if (em && rdfService)
 	{
 		var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
                                  .getService(Components.interfaces.nsIVersionComparator);
-	  var ds = gExtensionManager.datasource;
-	  var extension = gRDF.GetResource(id);
-	  var compatible = ds.GetTarget(extension,EM_R("compatible"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
-	  return (compatible.Value=="true");
+	  var ds = em.datasource;
+	  var extension = rdfService.GetResource(id);
+	  var compatprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#compatible");
+	  var compatible = ds.GetTarget(extension,compatprop,true);
+	  if (compatible)
+	  {
+	    compatible=compatible.QueryInterface(Components.interfaces.nsIRDFLiteral)
+  	  return (compatible.Value=="true");
+    }
+    return true;
 	}
 	else
 	{
+  	var console = Components.classes["@mozilla.org/consoleservice;1"]
+  							.getService(Components.interfaces.nsIConsoleService);
+    var type;
+  	if (em)
+  	{
+  	  type="rdf service";
+  	}
+  	else
+  	{
+  	  type="extension manager";
+  	}
+  	console.logStringMessage("Could not access "+type);
 		return true;
 	}
 },
 
 makeCompatible: function(id,app,version)
 {
+	var em = Components.classes["@mozilla.org/extensions/manager;1"]
+							.getService(Components.interfaces.nsIExtensionManager);
+  var rdfService = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+  											.getService(Components.interfaces.nsIRDFService);
 	var changed=false;
-	if (gExtensionManager)
+	if (em && rdfService)
 	{
+  	var idprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#id");
+  	var targappprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#targetApplication");
+  	var minprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#minVersion");
+  	var maxprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#maxVersion");
+
 		var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
                                  .getService(Components.interfaces.nsIVersionComparator);
-  	var ds = gExtensionManager.datasource;
-  	var extension = gRDF.GetResource(id);
-  	var targets = ds.GetTargets(extension,EM_R("targetApplication"),true);
+  	var ds = em.datasource;
+  	var extension = rdfService.GetResource(id);
+  	var targets = ds.GetTargets(extension,targappprop,true);
   	while (targets.hasMoreElements())
   	{
   		var targapp = targets.getNext();
-  		var targid = ds.GetTarget(targapp,EM_R("id"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+  		var targid = ds.GetTarget(targapp,idprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
   		if (targid.Value==app)
   		{
-	  		var targmin = ds.GetTarget(targapp,EM_R("minVersion"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+	  		var targmin = ds.GetTarget(targapp,minprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
 	  		if (vc.compare(version,targmin.Value)<0)
 	  		{
-		  		var newtargmin = gRDF.GetLiteral(version);
-		  		ds.Change(targapp,EM_R("minVersion"),targmin,newtargmin);
+		  		var newtargmin = rdfService.GetLiteral(version);
+		  		ds.Change(targapp,minprop,targmin,newtargmin);
 		  		changed=true;
 		  	}
-	  		var targmax = ds.GetTarget(targapp,EM_R("maxVersion"),true).QueryInterface(Components.interfaces.nsIRDFLiteral);
+	  		var targmax = ds.GetTarget(targapp,maxprop,true).QueryInterface(Components.interfaces.nsIRDFLiteral);
 	  		if (vc.compare(version,targmax.Value)>0)
 	  		{
-		  		var newtargmax = gRDF.GetLiteral(version);
-		  		ds.Change(targapp,EM_R("maxVersion"),targmax,newtargmax);
+		  		var newtargmax = rdfService.GetLiteral(version);
+		  		ds.Change(targapp,maxprop,targmax,newtargmax);
 		  		changed=true;
 		  	}
 	  	}
@@ -119,15 +128,26 @@ makeCompatible: function(id,app,version)
   	{
       ds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
       ds.Flush();
-			gExtensionManager.enableItem(getIDFromResourceURI(id));
+			em.enableItem(getIDFromResourceURI(id));
   	}
 	}
 	else
 	{
-		dump("No extension manager\n");
+  	var console = Components.classes["@mozilla.org/consoleservice;1"]
+  							.getService(Components.interfaces.nsIConsoleService);
+    var type;
+  	if (em)
+  	{
+  	  type="rdf service";
+  	}
+  	else
+  	{
+  	  type="extension manager";
+  	}
+  	console.logStringMessage("Could not access "+type);
 		return false;
 	}
-	return result;
+	return changed;
 },
 
 popupShowing: function(event)
@@ -196,6 +216,10 @@ appEnable: function()
 			gExtensionsView.selectedItem = document.getElementById(item.id);
 		}
 	}
+},
+
+enableAll: function()
+{
 }
 
 }
