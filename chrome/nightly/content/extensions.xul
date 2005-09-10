@@ -26,7 +26,7 @@ $Revision$
 	</vbox>
 	
 	<hbox id="commandBar">
-  	<button id="enableallButton" label="&nightly.enableall.label;" oncommand="extensionAppEnabler.enableAll()" insertbefore="updateButton"/>
+  	<button id="enableallButton" hidden="true" label="&nightly.enableall.label;" oncommand="extensionAppEnabler.enableAll()" insertbefore="updateButton"/>
   	<separator class="commandBarSeparator" insertbefore="updateButton"/>
 	</hbox>
 	

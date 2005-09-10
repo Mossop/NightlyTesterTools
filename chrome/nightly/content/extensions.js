@@ -40,6 +40,15 @@ init: function()
 {
 	gExtensionContextMenus=extensionAppEnabler.addInArray(gExtensionContextMenus,"menuitem_appenable","menuseparator_2",null);
 	gThemeContextMenus=extensionAppEnabler.addInArray(gThemeContextMenus,"menuitem_appenable",null,"menuitem_enable");
+},
+
+load: function()
+{
+	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+							.getService(Components.interfaces.nsIPrefService);
+	var prefs = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+	  
+	document.getElementById("enableallButton").setAttribute("hidden",!prefs.getBoolPref("showEnableAll"));
 	
 	document.getElementById("extensionContextMenu").addEventListener("popupshowing",extensionAppEnabler.popupShowing,false);
 },
@@ -236,3 +245,5 @@ enableAll: function()
 }
 
 extensionAppEnabler.init();
+
+window.addEventListener("load",extensionAppEnabler.load,false);

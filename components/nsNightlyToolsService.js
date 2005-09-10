@@ -107,42 +107,26 @@ performInstall: function(name, uri)
     
     	var i=0;
     	var file;
-    	do
-    	{
-    		file=dir.clone();
-    		file.append("nightly-"+i+".xpi");
-    		if (!file.exists())
-    		{
-    			file.create(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
-    			break;
-    		}
-    		i++
-    	} while (i<1000);
-    	if (i<1000)
-    	{
-    	  fileuri=ioService.newFileURI(file);
-    		
-    		var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-    											.createInstance(Components.interfaces.nsIWebBrowserPersist);
-    		const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
-    		const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-    		persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
-    		persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
-    	
-    		// Create download and initiate it (below)
-    		var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
-    	  tr.init(uri, fileuri, name, null, null, null, persist);
-    	  var listener = Components.classes["@blueprintit.co.uk/downloadlistener;1"]
-    	  											.createInstance(Components.interfaces.nsIDownloadListener);
-    	  listener.init(name,uri,file,tr);
-    	  persist.progressListener = listener;
-    	  persist.saveURI(uri, null, null, null, null, fileuri);
-    	}
-    	else
-    	{
-        this.displayAlert("nightly.notemp.message",[name]);
-        this.installFailed(name,uri);
-    	}
+  		file=dir.clone();
+  		file.append("nightlytmp.xpi");
+  		file.createUnique(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
+  	  fileuri=ioService.newFileURI(file);
+  		
+  		var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+  											.createInstance(Components.interfaces.nsIWebBrowserPersist);
+  		const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
+  		const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+  		persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
+  		persist.persistFlags |= nsIWBP.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
+  	
+  		// Create download and initiate it (below)
+  		var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
+  	  tr.init(uri, fileuri, name, null, null, null, persist);
+  	  var listener = Components.classes["@blueprintit.co.uk/downloadlistener;1"]
+  	  											.createInstance(Components.interfaces.nsIDownloadListener);
+  	  listener.init(name,uri,file,tr);
+  	  persist.progressListener = listener;
+  	  persist.saveURI(uri, null, null, null, null, fileuri);
     }
     catch (e)
     {
@@ -168,29 +152,14 @@ installLocalExtension: function(name, uri, file)
                            .getService(Components.interfaces.nsIVersionComparator);
 	
   // Find a temporary name for the rdf file.
-	dir = directoryService.get("TmpD",Components.interfaces.nsIFile);
 	try
 	{
+  	var dir = directoryService.get("TmpD",Components.interfaces.nsIFile);
   	var i=0;
   	var rdffile;
-  	do
-  	{
-  		rdffile=dir.clone();
-  		rdffile.append("nightly-rdf-"+i+".rdf");
-  		if (!rdffile.exists())
-  		{
-  			rdffile.create(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
-  			break;
-  		}
-  		i++
-  	} while (i<1000);
-  
-    if (i==1000)
-    {
-      this.displayAlert("nightly.notemp.message",[name]);
-  	  this.installFailed(name,uri);
-  	  return;
-    }
+		rdffile=dir.clone();
+		rdffile.append("nightlytmp.rdf");
+		rdffile.createUnique(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644); 
   }
   catch (e)
   {
