@@ -18,3 +18,4 @@
 <!ENTITY nightly.customize.label        "Personalizza Nightly Tester">
 <!ENTITY nightly.appenable.label        "Rendi compatibile">
 <!ENTITY nightly.xpinstall.checkbox		"Usa Nightly Tester Tools per installare come compatibile">
+<!ENTITY nightly.enableall.label        "Rendi tutte compatibili">
