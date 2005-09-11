@@ -12,14 +12,12 @@ storedTitle: document.documentElement.getAttribute("titlemodifier"),
 
 init: function()
 {
-	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-									.getService(Components.interfaces.nsIStringBundleService);
-	var bundle = sbs.createBundle("chrome://branding/locale/brand.properties");
+	var brandbundle = document.getElementById("bundle_brand");
 	if (nightly.variables.name==null)
 	{
-		nightly.variables.name=bundle.GetStringFromName("brandShortName");
+  	nightly.variables.name=brandbundle.getString("brandShortName");
 	}
-	nightly.variables.brandname=bundle.GetStringFromName("brandFullName");
+  nightly.variables.brandname=brandbundle.getString("brandFullName");
 	document.getElementById("content").addEventListener("DOMTitleChanged",nightlyApp.titleUpdated,false);
 },
 

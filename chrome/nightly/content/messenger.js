@@ -13,12 +13,12 @@ customTitle: '',
 
 init: function()
 {
+	var brandbundle = document.getElementById("bundle_brand");
 	if (nightly.variables.name==null)
 	{
-		nightly.variables.name="Thunderbird";
+  	nightly.variables.name=brandbundle.getString("brandShortName");
 	}
-	var brandbundle = document.getElementById("bundle_brand");
-	nightly.variables.brandname=brandbundle.getString("brandShortName");
+  nightly.variables.brandname=brandbundle.getString("brandFullName");
 },
 
 customSetTitleFromFolder: function(msgfolder, subject)
