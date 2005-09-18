@@ -1,6 +1,6 @@
 <!ENTITY nightly.options.height         "26em">
 
-<!ENTITY nightly.options.title          "Opzioni di Nightly Tester">
+<!ENTITY nightly.options.title          "Opzioni di Nightly Tester Tools">
 <!ENTITY nightly.options.description    "Si pu&#242; usare un titolo personalizzato della build attuale da visualizzare sempre nella barra del titolo">
 <!ENTITY nightly.customtitle.label      "Usa un titolo personalizzato">
 <!ENTITY nightly.customtemplate.label   "Titolo personalizzato:">
@@ -15,7 +15,7 @@
 <!ENTITY nightly.insert-id.label        "Inserisci ID della build">
 <!ENTITY nightly.insert-id.tooltip      "Inserisce l'identificante della build nell'attuale riquadro per il testo">
 <!ENTITY nightly.talkback.label         "Avvia Talkback">
-<!ENTITY nightly.customize.label        "Personalizza Nightly Tester">
+<!ENTITY nightly.customize.label        "Personalizza Nightly Tester Tools">
 <!ENTITY nightly.appenable.label        "Rendi compatibile">
 <!ENTITY nightly.xpinstall.checkbox		"Usa Nightly Tester Tools per installare come compatibile">
-<!ENTITY nightly.enableall.label        "Rendi tutte compatibili">
+<!ENTITY nightly.enableall.label        "Rendi compatibili">
