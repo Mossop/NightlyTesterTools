@@ -1,5 +1,6 @@
 content			nightly																							file:chrome/nightly/content/
 skin				nightly					classic/1.0													file:chrome/nightly/skin/
+
 locale			nightly					en-US																file:chrome/nightly/locale/en-US/
 locale			nightly					it-IT																file:chrome/nightly/locale/it-IT/
 locale			nightly					ru-RU																file:chrome/nightly/locale/ru-RU/

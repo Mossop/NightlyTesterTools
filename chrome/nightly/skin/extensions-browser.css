@@ -1,0 +1,7 @@
+#enableallButton {
+  list-style-image: url("chrome://nightly/skin/extensions/enable-browser.png");
+}
+
+#enableallButton[disabled="true"] {
+  list-style-image: url("chrome://nightly/skin/extensions/enableDisabled-browser.png");
+}

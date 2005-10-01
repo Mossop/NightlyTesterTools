@@ -122,7 +122,7 @@ init: function()
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
 	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
 	
-	nightly.versionCheck('0.6.5');
+	nightly.versionCheck('0.7.9.4');
 	
 	if (Components.classes['@mozilla.org/xre/app-info;1'])
 	{
