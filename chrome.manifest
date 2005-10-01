@@ -3,6 +3,11 @@ skin				nightly					classic/1.0													file:chrome/nightly/skin/
 locale			nightly					en-US																file:chrome/nightly/locale/en-US/
 locale			nightly					it-IT																file:chrome/nightly/locale/it-IT/
 locale			nightly					ru-RU																file:chrome/nightly/locale/ru-RU/
+locale			nightly					de-DE																file:chrome/nightly/locale/de-DE/
+locale			nightly					es-ES																file:chrome/nightly/locale/es-ES/
+locale			nightly					fr-FR																file:chrome/nightly/locale/fr-FR/
+locale			nightly					hu-HU																file:chrome/nightly/locale/hu-HU/
+locale			nightly					pt-BR																file:chrome/nightly/locale/pt-BR/
 
 overlay			chrome://browser/content/browser.xul								chrome://nightly/content/browserOverlay.xul
 overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly/content/messengerOverlay.xul

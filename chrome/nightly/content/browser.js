@@ -73,12 +73,21 @@ updateTitlebar: function()
 setCustomTitle: function(title)
 {
 	document.documentElement.setAttribute("titlemodifier",title);
+	document.documentElement.setAttribute("titlemenuseparator"," - ");
+	nightlyApp.updateTitlebar();
+},
+
+setBlankTitle: function()
+{
+	document.documentElement.setAttribute("titlemodifier","");
+	document.documentElement.setAttribute("titlemenuseparator","");
 	nightlyApp.updateTitlebar();
 },
 
 setStandardTitle: function()
 {
 	document.documentElement.setAttribute("titlemodifier",nightlyApp.storedTitle);
+	document.documentElement.setAttribute("titlemenuseparator"," - ");
 	nightlyApp.updateTitlebar();
 }
 

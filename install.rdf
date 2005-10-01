@@ -41,7 +41,13 @@
     <em:contributor>Peter van der Woude (original idea)</em:contributor>
     <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
     <em:contributor>Shimoda "Piro" Hiroshi (Fixing invalid guids)</em:contributor>
-    <em:contributor>Luana - MatrixIsAllOver (Italian translation)</em:contributor>
+    <em:contributor>Luana - MatrixIsAllOver (Italian localisation)</em:contributor>
+    <em:contributor>Unghost (Russian localisation)</em:contributor>
+    <em:contributor>Frackounet (Limited French localisation)</em:contributor>
+    <em:contributor>Fernando Pereira Silveira (Limited Brazilian Portuguese localisation)</em:contributor>
+    <em:contributor>Armin C. Schneider (Limited German localisation)</em:contributor>
+    <em:contributor>Henriett Peller (Limited Hungarian localisation)</em:contributor>
+    <em:contributor>Proyecto Nave (Limited Spanish localisation)</em:contributor>
     <em:iconURL>chrome://nightly/skin/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options.xul</em:optionsURL>
     <em:homepageURL>http://users.blueprintit.co.uk/~dave/web/firefox/buildid/nightly.html</em:homepageURL>
@@ -54,6 +60,12 @@
 				<em:skin>skin/</em:skin>
 				<em:locale>locale/en-US/</em:locale>
 				<em:locale>locale/it-IT/</em:locale>
+				<em:locale>locale/de-DE/</em:locale>
+				<em:locale>locale/es-ES/</em:locale>
+				<em:locale>locale/fr-FR/</em:locale>
+				<em:locale>locale/hu-HU/</em:locale>
+				<em:locale>locale/pt-BR/</em:locale>
+				<em:locale>locale/ru-RU/</em:locale>
 			</Description>
 		</em:file>
 

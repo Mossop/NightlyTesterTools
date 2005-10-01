@@ -75,7 +75,9 @@ customSetTitleFromFolder: function(msgfolder, subject)
 
 	if (title.substring(title.length-end.length)==end)
 	{
-		title=title.substring(0,title.length-end.length)+' - '+nightlyApp.customTitle;
+		title=title.substring(0,title.length-end.length);
+		if (nightlyApp.customTitle && nightlyApp.customTitle.length>0)
+		  title=title+' - '+nightlyApp.customTitle;
 	}
 
 	if ((document.title)&&(document.title.length>0))
@@ -97,6 +99,13 @@ updateTitle: function()
 setCustomTitle: function(title)
 {
 	nightlyApp.customTitle=title;
+	window.setTitleFromFolder=nightlyApp.customSetTitleFromFolder;
+	nightlyApp.updateTitle();
+},
+
+setBlankTitle: function()
+{
+	nightlyApp.customTitle='';
 	window.setTitleFromFolder=nightlyApp.customSetTitleFromFolder;
 	nightlyApp.updateTitle();
 },

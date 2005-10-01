@@ -185,7 +185,11 @@ prefChange: function(pref)
 	{
 		if (nightly.preferences.getBoolPref("idtitle"))
 		{
-			nightlyApp.setCustomTitle(nightly.generateText(nightly.getTemplate("title")));
+		  var title = nightly.getTemplate("title");
+		  if (title && title.length>0)
+  			nightlyApp.setCustomTitle(nightly.generateText(title));
+  	  else
+  	    nightlyApp.setBlankTitle();
 		}
 		else
 		{

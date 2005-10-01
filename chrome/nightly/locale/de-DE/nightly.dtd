@@ -1,0 +1,21 @@
+<!ENTITY nightly.options.height         "25em">
+
+<!ENTITY nightly.options.title          "Nightly-Tester-Einstellungen">
+<!ENTITY nightly.options.description    "Es kann ein angepasster Titel angegeben werden, der die aktuelle Build-ID stets in der Titelleiste anzeigt.">
+<!ENTITY nightly.customtitle.label      "Angepassten Titel verwenden">
+<!ENTITY nightly.customtemplate.label   "Vorlage für den angepassten Titel:">
+<!ENTITY nightly.variables.description  "The following variables can be used in the title (case insensitive).">
+<!ENTITY nightly.variable.label         "Variable">
+<!ENTITY nightly.variabledesc.label     "Beschreibung">
+<!ENTITY nightly.variablevalue.label    "Wert">
+<!ENTITY nightly.ok.label               "OK">
+<!ENTITY nightly.close.label            "Schließen">
+<!ENTITY nightly.cancel.label           "Abbrechen">
+<!ENTITY nightly.copy-id.label          "Build-ID kopieren">
+<!ENTITY nightly.insert-id.label        "Build-ID einfügen">
+<!ENTITY nightly.insert-id.tooltip      "Die Build-ID in das aktuelle Textfeld einfügen">
+<!ENTITY nightly.talkback.label         "Talkback aufrufen">
+<!ENTITY nightly.customize.label        "Nightly-Tester-Werkzeuge anpassen">
+<!ENTITY nightly.appenable.label        "Kompatibilität anpassen">
+<!ENTITY nightly.xpinstall.checkbox     "Den Kompatibiltitätstest ('maxVersion') deaktivieren">
+<!ENTITY nightly.enableall.label        "Alle Erweiterungen in der Kompatibilität anpassen">

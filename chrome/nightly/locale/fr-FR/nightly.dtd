@@ -1,0 +1,21 @@
+<!ENTITY nightly.options.height         "25em">
+
+<!ENTITY nightly.options.title          "Options 'Nightly Tester'">
+<!ENTITY nightly.options.description    "Vous pouvez utiliser un titre customise pour toujours montrer la version de generation actuelle dans la barre de titre.">
+<!ENTITY nightly.customtitle.label      "Utiliser un titre customise">
+<!ENTITY nightly.customtemplate.label   "Titre customise:">
+<!ENTITY nightly.variables.description  "Les variables suivantes peuvent etre utilisees dans le titre (case insensitive).">
+<!ENTITY nightly.variable.label         "Variable">
+<!ENTITY nightly.variabledesc.label     "Description">
+<!ENTITY nightly.variablevalue.label    "Valeur">
+<!ENTITY nightly.ok.label               "Ok">
+<!ENTITY nightly.close.label            "Fermer">
+<!ENTITY nightly.cancel.label           "Annuler">
+<!ENTITY nightly.copy-id.label          "Copier l'ID de Generation">
+<!ENTITY nightly.insert-id.label        "Inserer l'ID de Generation">
+<!ENTITY nightly.insert-id.tooltip      "Insere l'identifiant de construction dans la boite courante des textes.">
+<!ENTITY nightly.talkback.label         "Lancement Talkback">
+<!ENTITY nightly.customize.label        "Customiser les outils 'Nightly Tester'">
+<!ENTITY nightly.appenable.label        "Rendre compatible">
+<!ENTITY nightly.xpinstall.checkbox     "Verification de compatibilite du depassement de 'maxVersion'.">
+<!ENTITY nightly.enableall.label        "Rendre tout compatible">

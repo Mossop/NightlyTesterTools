@@ -1,0 +1,21 @@
+<!ENTITY nightly.options.height         "25em">
+
+<!ENTITY nightly.options.title          "Opções do Nightly Tester">
+<!ENTITY nightly.options.description    "Você pode usar um título personalizado para exibir o build atual na barra de título.">
+<!ENTITY nightly.customtitle.label      "Usar título personalizado">
+<!ENTITY nightly.customtemplate.label   "Título personalizado:">
+<!ENTITY nightly.variables.description  "As seguintes variáveis podem ser usadas no título:">
+<!ENTITY nightly.variable.label         "Variável">
+<!ENTITY nightly.variabledesc.label     "Descrição">
+<!ENTITY nightly.variablevalue.label    "Valor">
+<!ENTITY nightly.ok.label               "Ok">
+<!ENTITY nightly.close.label            "Fechar">
+<!ENTITY nightly.cancel.label           "Cancelar">
+<!ENTITY nightly.copy-id.label          "Copiar Build ID">
+<!ENTITY nightly.insert-id.label        "Inserir Build ID">
+<!ENTITY nightly.insert-id.tooltip      "Inserir o identificador do build na caixa de testo selecionada.">
+<!ENTITY nightly.talkback.label         "Carregar Talkback">
+<!ENTITY nightly.customize.label        "Personalizar o Nightly Tester">
+<!ENTITY nightly.appenable.label        "Tornar compatível">
+<!ENTITY nightly.xpinstall.checkbox     "Ignorar verificação de compatibilidade &quot;maxVersion&quot;.">
+<!ENTITY nightly.enableall.label        "Tornar tudo compatível">
