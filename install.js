@@ -43,8 +43,7 @@
  */
 
 const APP_DISPLAY_NAME = "Nightly Tester Tools";
-const APP_NAME = "nightly";
-const APP_PACKAGE = APP_NAME;
+const APP_PACKAGE = "nightly";
 const APP_VERSION = "0.7.9.5";
 
 const APP_PREFS_FILES = [
@@ -66,54 +65,65 @@ const APP_LOCALES = [
 const INST_TO_PROFILE = "Do you wish to install "+APP_DISPLAY_NAME+" to your profile?\nThis will mean it does not need reinstalling when you update Seamonkey.\n(Click Cancel if you want "+APP_DISPLAY_NAME+" to be installed to the application directory.)";
 const APP_SUCCESS_MESSAGE = "You must restart Seamonkey to activate "+APP_DISPLAY_NAME;
 
-const APP_JAR_FILE = APP_NAME;
+const APP_CHROME_FOLDER = "chrome/" + APP_PACKAGE;
 const APP_CONTENT_FOLDER = "content/";
 const APP_SKIN_FOLDER = "skin/";
 const APP_LOCALE_FOLDER = "locale/";
+const APP_PREF_FOLDER = "defaults/preferences/"
 
 var err;
-initInstall(APP_NAME, APP_PACKAGE, APP_VERSION);
+initInstall(APP_DISPLAY_NAME, APP_PACKAGE, APP_VERSION);
 
 // profile installs only work since 2003-03-06
 var instToProfile = (buildID>2003030600 && confirm(INST_TO_PROFILE));
 
-var chromef = instToProfile ? getFolder("Profile", "chrome") : getFolder("chrome");
-err = addDirectory(APP_PACKAGE, APP_VERSION, "chrome/" + APP_JAR_FILE, chromef, APP_JAR_FILE);
-
-if(err == SUCCESS) {
-  var prefDir = false ? getFolder(getFolder("Profile"),"pref")
+const chromeFolder = instToProfile ? getFolder("Profile", "chrome") : getFolder("chrome");
+const chromeFlag = instToProfile ? PROFILE_CHROME : DELAYED_CHROME;
+const prefFolder = false ? getFolder(getFolder("Profile"),"pref")
                               : getFolder(getFolder(getFolder("Program"),"defaults"),"pref");
-  if(!File.exists(prefDir)) {
-    File.dirCreate(prefDir);
+
+err = addDirectory(APP_PACKAGE, APP_VERSION, APP_CHROME_FOLDER, chromeFolder, APP_PACKAGE);
+
+if (err == SUCCESS)
+{
+  if (!File.exists(prefFolder))
+  {
+    File.dirCreate(prefFolder);
   }
-  for(var j=APP_PREFS_FILES.length; (j-->0)&&(err==SUCCESS);) {
-    err = addFile(APP_PACKAGE, APP_VERSION,  "defaults/preferences/" + APP_PREFS_FILES[j], prefDir, null, true);
-    logComment("Adding "+APP_PREFS_FILES[j]+" in "+prefDir+": exit code = "+err);
+  for (var j=0; (j<APP_PREFS_FILES.length && err==SUCCESS); j++)
+  {
+    err = addFile(APP_PACKAGE, APP_VERSION,  APP_PREF_FOLDER + APP_PREFS_FILES[j], prefFolder, null, true);
+    logComment("Adding "+APP_PREFS_FILES[j]+" in "+prefFolder+": exit code = "+err);
   }
 }
 
-if(err == SUCCESS) {
-	var jar = getFolder(chromef, APP_JAR_FILE);
-	const chromeFlag=instToProfile?PROFILE_CHROME:DELAYED_CHROME;
+if (err == SUCCESS)
+{
+	var base = getFolder(chromeFolder, APP_PACKAGE);
  
-  registerChrome(CONTENT | chromeFlag, jar, APP_CONTENT_FOLDER);
-  var localesCount=APP_LOCALES.length;
-  while(localesCount-- >0) {
-    registerChrome(LOCALE  | chromeFlag, jar, APP_LOCALE_FOLDER+APP_LOCALES[localesCount]+"/");
+  registerChrome(CONTENT | chromeFlag, base, APP_CONTENT_FOLDER);
+  registerChrome(SKIN | chromeFlag, base, APP_SKIN_FOLDER);
+  for (var l=0; l<APP_LOCALES.length; l++)
+  {
+    registerChrome(LOCALE | chromeFlag, base, APP_LOCALE_FOLDER + APP_LOCALES[l] + "/");
   }
-  registerChrome(SKIN | chromeFlag, jar, APP_SKIN_FOLDER);
   
   err = performInstall();
-  if(err == SUCCESS || err == 999) {
+  if (err == SUCCESS || err == 999)
+  {
     alert(APP_DISPLAY_NAME+" "+APP_VERSION+" has been succesfully installed.\n"+APP_SUCCESS_MESSAGE);
-  } else {
-    alert("Install failed!!! Error code:" + err);
+  }
+  else
+  {
+    alert("Installation failed for an unknown reason. Error code:" + err);
     cancelInstall(err);
   }
-} else {
+}
+else
+{
   alert("Failed to install " +APP_DISPLAY_NAME +"\n"
     +"You probably don't have appropriate permissions \n"
     +"(write access to your profile or chrome directory). \n"
-    +"_____________________________\nError code:" + err);
+    +"Error code: " + err);
   cancelInstall(err);
 }
