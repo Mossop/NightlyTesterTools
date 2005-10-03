@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{8620c15f-30dc-4dba-a131-7c5d20cf4a29}</em:id>
-    <em:version>0.7.9.4</em:version>
+    <em:version>0.7.9.5</em:version>
     
     <!-- Firefox version --> 
     <em:targetApplication>
@@ -16,14 +16,14 @@
       </Description>
     </em:targetApplication>
     
-    <!-- Seamonkey version --> 
+    <!-- Seamonkey version
     <em:targetApplication>
       <Description>
         <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
         <em:minVersion>1.7</em:minVersion>
         <em:maxVersion>1.8</em:maxVersion>
       </Description>
-    </em:targetApplication>
+    </em:targetApplication> -->
     
     <!-- Thunderbird version -->
     <em:targetApplication>
@@ -43,6 +43,7 @@
     <em:contributor>Shimoda "Piro" Hiroshi (Fixing invalid guids)</em:contributor>
     <em:contributor>Luana - MatrixIsAllOver (Italian localisation)</em:contributor>
     <em:contributor>Unghost (Russian localisation)</em:contributor>
+    <em:contributor>SION (Japanese localisation)</em:contributor>
     <em:contributor>Frackounet (Limited French localisation)</em:contributor>
     <em:contributor>Fernando Pereira Silveira (Limited Brazilian Portuguese localisation)</em:contributor>
     <em:contributor>Armin C. Schneider (Limited German localisation)</em:contributor>
@@ -66,6 +67,7 @@
 				<em:locale>locale/hu-HU/</em:locale>
 				<em:locale>locale/pt-BR/</em:locale>
 				<em:locale>locale/ru-RU/</em:locale>
+				<em:locale>locale/ja/</em:locale>
 			</Description>
 		</em:file>
 

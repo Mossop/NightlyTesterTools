@@ -1,0 +1,21 @@
+<!ENTITY nightly.options.height "25em">
+
+<!ENTITY nightly.options.title "Nightly Testerのオプション">
+<!ENTITY nightly.options.description "タイトルをカスタムしていつでもビルドをタイトルバーに表示できます">
+<!ENTITY nightly.customtitle.label "カスタムタイトルを表示">
+<!ENTITY nightly.customtemplate.label "カスタムタイトルのテンプレート:">
+<!ENTITY nightly.variables.description "タイトルで以下の変数を使用することができます">
+<!ENTITY nightly.variable.label "変数">
+<!ENTITY nightly.variabledesc.label "説明">
+<!ENTITY nightly.variablevalue.label "値">
+<!ENTITY nightly.ok.label "Ok">
+<!ENTITY nightly.close.label "閉じる">
+<!ENTITY nightly.cancel.label "キャンセル">
+<!ENTITY nightly.copy-id.label "ビルドIDをコピー">
+<!ENTITY nightly.insert-id.label "ビルドIDを挿入">
+<!ENTITY nightly.insert-id.tooltip "ビルドIDを選択しているテキストボックスに挿入">
+<!ENTITY nightly.talkback.label "トークバック">
+<!ENTITY nightly.customize.label "Nightly Tester Toolsをカスタマイズ">
+<!ENTITY nightly.appenable.label "互換性をもたせます">
+<!ENTITY nightly.xpinstall.checkbox "Nightly Tester Toolsで互換性をもたせインストールします">
+<!ENTITY nightly.enableall.label "すべてに互換性をもたせます">

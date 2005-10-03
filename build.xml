@@ -64,6 +64,7 @@
 		<zip destfile="${basedir}/${ant.project.name}.xpi">
 			<fileset dir="${basedir}">
 				<include name="**/*"/>
+				<exclude name="install.js"/>
 				<exclude name="components/*.idl"/>
 				<exclude name="*.xpi"/>
 				<exclude name="build.xml"/>
