@@ -1,20 +1,21 @@
-<!ENTITY nightly.appenable.label "Сделать совместимым">
-<!ENTITY nightly.cancel.label "Отмена">
-<!ENTITY nightly.close.label "Закрыть">
-<!ENTITY nightly.copy-id.label "Копировать ID сборки">
-<!ENTITY nightly.customize.label "Настроить Nightly Tester Tools">
-<!ENTITY nightly.customtemplate.label "Шаблон настраиваемого заголовка:">
-<!ENTITY nightly.customtitle.label "Использовать настраиваемый заголовок">
-<!ENTITY nightly.enableall.label "Сделать все совместимыми">
-<!ENTITY nightly.insert-id.label "Вставить ID сборки">
-<!ENTITY nightly.insert-id.tooltip "Вставляет ID сборки в текущее текстовое поле.">
-<!ENTITY nightly.ok.label "OK">
-<!ENTITY nightly.options.description "Вы можете использовать настраиваемый заголовок, чтобы всегда отображать в заголовке окна номер текущей сборки.">
 <!ENTITY nightly.options.height "26em">
-<!ENTITY nightly.options.title "Настройки Nightly Tester">
-<!ENTITY nightly.talkback.label "Запустить Talkback">
-<!ENTITY nightly.variable.label "Переменная">
-<!ENTITY nightly.variabledesc.label "Описание">
-<!ENTITY nightly.variables.description "В заголовке могут быть использованы следующие переменные (регистр не различается)">
-<!ENTITY nightly.variablevalue.label "Значение">
-<!ENTITY nightly.xpinstall.checkbox "Установить с помощью Nightly Tester Tools, не обращая внимания на совместимость.">
+
+<!ENTITY nightly.options.title "Ð�Ð°Ñ�Ñ‚Ñ€Ð¾Ð¹ÐºÐ¸ Nightly Tester">
+<!ENTITY nightly.options.description "Ð’Ñ‹ Ð¼Ð¾Ð¶ÐµÑ‚Ðµ Ð¸Ñ�Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÑŒ Ð½Ð°Ñ�Ñ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ñ‹Ð¹ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð²Ñ�ÐµÐ³Ð´Ð° Ð¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶Ð°Ñ‚ÑŒ Ð² Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐµ Ð¾ÐºÐ½Ð° Ð½Ð¾Ð¼ÐµÑ€ Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¹ Ñ�Ð±Ð¾Ñ€ÐºÐ¸.">
+<!ENTITY nightly.customtitle.label "Ð˜Ñ�Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÑŒ Ð½Ð°Ñ�Ñ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ñ‹Ð¹ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº">
+<!ENTITY nightly.customtemplate.label "Ð¨Ð°Ð±Ð»Ð¾Ð½ Ð½Ð°Ñ�Ñ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ð¾Ð³Ð¾ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐ°:">
+<!ENTITY nightly.variables.description "Ð’ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐµ Ð¼Ð¾Ð³ÑƒÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¸Ñ�Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ð½Ñ‹ Ñ�Ð»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ðµ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ðµ (Ñ€ÐµÐ³Ð¸Ñ�Ñ‚Ñ€ Ð½Ðµ Ñ€Ð°Ð·Ð»Ð¸Ñ‡Ð°ÐµÑ‚Ñ�Ñ�)">
+<!ENTITY nightly.variable.label "ÐŸÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð°Ñ�">
+<!ENTITY nightly.variabledesc.label "ÐžÐ¿Ð¸Ñ�Ð°Ð½Ð¸Ðµ">
+<!ENTITY nightly.variablevalue.label "Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ">
+<!ENTITY nightly.ok.label "OK">
+<!ENTITY nightly.close.label "Ð—Ð°ÐºÑ€Ñ‹Ñ‚ÑŒ">
+<!ENTITY nightly.cancel.label "ÐžÑ‚Ð¼ÐµÐ½Ð°">
+<!ENTITY nightly.copy-id.label "ÐšÐ¾Ð¿Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ ID Ñ�Ð±Ð¾Ñ€ÐºÐ¸">
+<!ENTITY nightly.insert-id.label "Ð’Ñ�Ñ‚Ð°Ð²Ð¸Ñ‚ÑŒ ID Ñ�Ð±Ð¾Ñ€ÐºÐ¸">
+<!ENTITY nightly.insert-id.tooltip "Ð’Ñ�Ñ‚Ð°Ð²Ð»Ñ�ÐµÑ‚ ID Ñ�Ð±Ð¾Ñ€ÐºÐ¸ Ð² Ñ‚ÐµÐºÑƒÑ‰ÐµÐµ Ñ‚ÐµÐºÑ�Ñ‚Ð¾Ð²Ð¾Ðµ Ð¿Ð¾Ð»Ðµ.">
+<!ENTITY nightly.talkback.label "Ð—Ð°Ð¿ÑƒÑ�Ñ‚Ð¸Ñ‚ÑŒ Talkback">
+<!ENTITY nightly.customize.label "Ð�Ð°Ñ�Ñ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Nightly Tester Tools">
+<!ENTITY nightly.appenable.label "Ð¡Ð´ÐµÐ»Ð°Ñ‚ÑŒ Ñ�Ð¾Ð²Ð¼ÐµÑ�Ñ‚Ð¸Ð¼Ñ‹Ð¼">
+<!ENTITY nightly.xpinstall.checkbox "Ð£Ñ�Ñ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ñ� Ð¿Ð¾Ð¼Ð¾Ñ‰ÑŒÑŽ Nightly Tester Tools, Ð½Ðµ Ð¾Ð±Ñ€Ð°Ñ‰Ð°Ñ� Ð²Ð½Ð¸Ð¼Ð°Ð½Ð¸Ñ� Ð½Ð° Ñ�Ð¾Ð²Ð¼ÐµÑ�Ñ‚Ð¸Ð¼Ð¾Ñ�Ñ‚ÑŒ.">
+<!ENTITY nightly.enableall.label "Ð¡Ð´ÐµÐ»Ð°Ñ‚ÑŒ Ð²Ñ�Ðµ Ñ�Ð¾Ð²Ð¼ÐµÑ�Ñ‚Ð¸Ð¼Ñ‹Ð¼Ð¸">

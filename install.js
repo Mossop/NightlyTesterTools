@@ -44,24 +44,32 @@
 
 const APP_DISPLAY_NAME = "Nightly Tester Tools";
 const APP_NAME = "nightly";
-const APP_PACKAGE = "nightly";
-const APP_VERSION = "0.6.5";
+const APP_PACKAGE = APP_NAME;
+const APP_VERSION = "0.7.9.5";
 
 const APP_PREFS_FILES = [
-  "defaults/preferences/nightlytools.js",
-  "defaults/preferences/variables.js"
+  "nightlytools.js",
+  "variables.js"
   ];
-const APP_JAR_FILE = "nightly.jar";
-const APP_CONTENT_FOLDER = "content/";
 const APP_LOCALES = [
   "en-US",
-  "it-IT"
+  "it-IT",
+  "de-DE",
+  "es-ES",
+  "fr-FR",
+  "hu-HU",
+  "pt-BR",
+  "ru-RU",
+  "ja"
   ];
 
-const APP_SUCCESS_MESSAGE = "";
+const INST_TO_PROFILE = "Do you wish to install "+APP_DISPLAY_NAME+" to your profile?\nThis will mean it does not need reinstalling when you update Seamonkey.\n(Click Cancel if you want "+APP_DISPLAY_NAME+" to be installed to the application directory.)";
+const APP_SUCCESS_MESSAGE = "You must restart Seamonkey to activate "+APP_DISPLAY_NAME;
 
-const INST_TO_PROFILE = "Do you wish to install "+APP_DISPLAY_NAME+" to your profile?\nThis will mean it does not need reinstalling when you update Mozilla.\n(Click Cancel if you want "+APP_DISPLAY_NAME+" installing to the Mozilla directory.)";
-
+const APP_JAR_FILE = APP_NAME;
+const APP_CONTENT_FOLDER = "content/";
+const APP_SKIN_FOLDER = "skin/";
+const APP_LOCALE_FOLDER = "locale/";
 
 var err;
 initInstall(APP_NAME, APP_PACKAGE, APP_VERSION);
@@ -70,22 +78,17 @@ initInstall(APP_NAME, APP_PACKAGE, APP_VERSION);
 var instToProfile = (buildID>2003030600 && confirm(INST_TO_PROFILE));
 
 var chromef = instToProfile ? getFolder("Profile", "chrome") : getFolder("chrome");
-err = addFile(APP_PACKAGE, APP_VERSION, "chrome/" + APP_JAR_FILE, chromef, null);
+err = addDirectory(APP_PACKAGE, APP_VERSION, "chrome/" + APP_JAR_FILE, chromef, APP_JAR_FILE);
 
 if(err == SUCCESS) {
-  const prefDirs=[
-    getFolder(getFolder("Profile"),"pref"),
-    getFolder(getFolder(getFolder("Program"),"defaults"),"pref")
-    ];
-  for(var j=prefDirs.length; j-->0;) {
-    var prefDir=prefDirs[j];
-    if(!File.exists(prefDir)) {
-      File.dirCreate(prefDir);
-    }
-    for(var j=APP_PREFS_FILES.length; (j-->0)&&(err==SUCCESS);) {
-      err = addFile(APP_PACKAGE, APP_VERSION,  APP_PREFS_FILES[j], prefDir, null, true);
-      logComment("Adding "+APP_PREFS_FILES[j]+" in "+prefDir+": exit code = "+err);
-    }
+  var prefDir = false ? getFolder(getFolder("Profile"),"pref")
+                              : getFolder(getFolder(getFolder("Program"),"defaults"),"pref");
+  if(!File.exists(prefDir)) {
+    File.dirCreate(prefDir);
+  }
+  for(var j=APP_PREFS_FILES.length; (j-->0)&&(err==SUCCESS);) {
+    err = addFile(APP_PACKAGE, APP_VERSION,  "defaults/preferences/" + APP_PREFS_FILES[j], prefDir, null, true);
+    logComment("Adding "+APP_PREFS_FILES[j]+" in "+prefDir+": exit code = "+err);
   }
 }
 
@@ -96,9 +99,9 @@ if(err == SUCCESS) {
   registerChrome(CONTENT | chromeFlag, jar, APP_CONTENT_FOLDER);
   var localesCount=APP_LOCALES.length;
   while(localesCount-- >0) {
-    registerChrome(LOCALE  | chromeFlag, jar, "locale/"+APP_LOCALES[localesCount]+"/");
+    registerChrome(LOCALE  | chromeFlag, jar, APP_LOCALE_FOLDER+APP_LOCALES[localesCount]+"/");
   }
-  registerChrome(SKIN | chromeFlag, jar, "skin/");
+  registerChrome(SKIN | chromeFlag, jar, APP_SKIN_FOLDER);
   
   err = performInstall();
   if(err == SUCCESS || err == 999) {
@@ -108,7 +111,7 @@ if(err == SUCCESS) {
     cancelInstall(err);
   }
 } else {
-  alert("Failed to create " +APP_JAR_FILE +"\n"
+  alert("Failed to install " +APP_DISPLAY_NAME +"\n"
     +"You probably don't have appropriate permissions \n"
     +"(write access to your profile or chrome directory). \n"
     +"_____________________________\nError code:" + err);

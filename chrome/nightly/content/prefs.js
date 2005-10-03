@@ -96,7 +96,7 @@ getBoolPref: function(pref)
 {
 	if (prefs.boolPrefs[pref]==null)
 	{
-		prefs.boolPrefs[pref]=prefs.preferences.getBoolPref(pref);
+ 		prefs.boolPrefs[pref]=prefs.preferences.getBoolPref(pref);
 	}
 	return prefs.boolPrefs[pref];
 },

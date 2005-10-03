@@ -44,10 +44,10 @@
 
 <!DOCTYPE window [
 <!ENTITY % buildDTD SYSTEM "chrome://global/content/build.dtd" >
+<!ENTITY % localeDTD SYSTEM "chrome://nightly/locale/nightly.dtd">
 %buildDTD;
+%localeDTD;
 ]>
-
-<!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
 
 <overlay id="NightlyNavigatorOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">

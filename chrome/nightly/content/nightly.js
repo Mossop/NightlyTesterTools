@@ -122,9 +122,9 @@ init: function()
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
 	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
 	
-	nightly.versionCheck('0.7.9.4');
+	nightly.versionCheck('0.7.9.5');
 	
-	if (Components.classes['@mozilla.org/xre/app-info;1'])
+	if ((Components.classes['@mozilla.org/xre/app-info;1'])&&(Components.interfaces.nsIXULAppInfo))
 	{
 		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
 		nightly.variables.appid=appinfo.ID;
@@ -144,11 +144,14 @@ init: function()
 			nightly.variables.geckobuildid=appinfo.geckoBuildID;
 		}
 		
-		appinfo=appinfo.QueryInterface(Components.interfaces.nsIXULRuntime);
-		nightly.variables.os=appinfo.OS;
-		var bits=appinfo.XPCOMABI.split("-");
-		nightly.variables.processor=bits[0];
-		nightly.variables.compiler=bits[1];
+		if (Components.interfaces.nsIXULRuntime)
+		{
+  		appinfo=appinfo.QueryInterface(Components.interfaces.nsIXULRuntime);
+  		nightly.variables.os=appinfo.OS;
+  		var bits=appinfo.XPCOMABI.split("-");
+  		nightly.variables.processor=bits[0];
+  		nightly.variables.compiler=bits[1];
+		}
 	}
 	else
 	{
@@ -163,7 +166,14 @@ init: function()
 		nightly.variables.platformbuildid=nightly.variables.appbuildid;
 		nightly.variables.geckobuildid=nightly.variables.appbuildid;
 	}
-	nightly.variables.locale=prefservice.getCharPref("general.useragent.locale");
+  try {
+    nightly.variables.locale = prefservice.getComplexValue("general.useragent.locale",
+                        Components.interfaces.nsIPrefLocalizedString).data;
+  }
+  catch (e)
+  {
+    nightly.variables.locale = prefservice.getCharPref(PREF_GENERAL_USERAGENT_LOCALE);
+  }
 	ua=nightly.variables.useragent;
 	ua=ua.substring(ua.indexOf("rv:")+3,ua.indexOf(")"));
 	nightly.variables.geckoversion=ua;
