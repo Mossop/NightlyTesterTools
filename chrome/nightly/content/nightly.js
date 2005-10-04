@@ -122,7 +122,7 @@ init: function()
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
 	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
 	
-	nightly.versionCheck('0.7.9.5');
+	nightly.versionCheck('0.7.9.6');
 	
 	if ((Components.classes['@mozilla.org/xre/app-info;1'])&&(Components.interfaces.nsIXULAppInfo))
 	{
@@ -172,7 +172,7 @@ init: function()
   }
   catch (e)
   {
-    nightly.variables.locale = prefservice.getCharPref(PREF_GENERAL_USERAGENT_LOCALE);
+    nightly.variables.locale = prefservice.getCharPref("general.useragent.locale");
   }
 	ua=nightly.variables.useragent;
 	ua=ua.substring(ua.indexOf("rv:")+3,ua.indexOf(")"));
