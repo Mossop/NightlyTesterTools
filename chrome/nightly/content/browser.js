@@ -54,6 +54,7 @@ init: function()
   	nightly.variables.name=brandbundle.getString("brandShortName");
 	}
   nightly.variables.brandname=brandbundle.getString("brandFullName");
+  nightly.variables.defaulttitle=nightlyApp.storedTitle;
 	document.getElementById("content").addEventListener("DOMTitleChanged",nightlyApp.titleUpdated,false);
 },
 

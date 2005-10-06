@@ -67,6 +67,7 @@ init: function()
 	nightly.variables.platformbuildid=build;
 	nightly.variables.geckobuildid=build;
 	nightly.variables.appbuildid=build;
+  nightly.variables.defaulttitle=modifier;
 	document.getElementById("content").addEventListener("DOMTitleChanged",nightlyApp.titleUpdated,false);
 },
 

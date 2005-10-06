@@ -59,7 +59,8 @@ variables: {
 	locale: null,
 	os: null,
 	processor: null,
-	compiler: null
+	compiler: null,
+	defaulttitle: null
 },
 
 templates: {
@@ -112,6 +113,22 @@ loadBuildIDFromFile: function()
 
 versionCheck: function(version)
 {
+	var oldversion = null;
+	try
+	{
+	  oldversion = nightly.preferences.getCharPref('lastversion');
+	}
+	catch (e)
+	{
+	}
+	
+	var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
+                           .getService(Components.interfaces.nsIVersionComparator);
+                           
+	if (oldversion && vc.compare(version,oldversion)>0)
+	{
+	}
+	
 	nightly.preferences.setCharPref('lastversion',version);
 },
 
@@ -121,8 +138,6 @@ init: function()
 							.getService(Components.interfaces.nsIPrefService);
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
 	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
-	
-	nightly.versionCheck('0.7.9.6');
 	
 	if ((Components.classes['@mozilla.org/xre/app-info;1'])&&(Components.interfaces.nsIXULAppInfo))
 	{
@@ -187,6 +202,8 @@ init: function()
 	
 	nightly.preferences.addObserver("",nightly,false);
 	nightly.prefChange("idtitle");
+
+	nightly.versionCheck('0.7.9.7');	
 },
 
 prefChange: function(pref)

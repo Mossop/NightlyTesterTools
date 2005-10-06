@@ -44,7 +44,7 @@
 
 const APP_DISPLAY_NAME = "Nightly Tester Tools";
 const APP_PACKAGE = "nightly";
-const APP_VERSION = "0.7.9.6";
+const APP_VERSION = "0.7.9.7";
 
 const APP_PREFS_FILES = [
   "nightlytools.js",

@@ -60,6 +60,7 @@ init: function()
 	
 	paneTitle.bundle=document.getElementById("variablesBundle");
 	
+	//paneTitle.addVariable("DefaultTitle");
 	paneTitle.addVariable("AppID");
 	paneTitle.addVariable("Vendor");
 	paneTitle.addVariable("Name");
