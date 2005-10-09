@@ -10,6 +10,7 @@ locale			nightly					fr-FR																file:chrome/nightly/locale/fr-FR/
 locale			nightly					hu-HU																file:chrome/nightly/locale/hu-HU/
 locale			nightly					pt-BR																file:chrome/nightly/locale/pt-BR/
 locale			nightly					ja																	file:chrome/nightly/locale/ja/
+locale			nightly					tr-TR																file:chrome/nightly/locale/tr-TR/
 
 overlay			chrome://browser/content/browser.xul								chrome://nightly/content/browserOverlay.xul
 overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly/content/messengerOverlay.xul
