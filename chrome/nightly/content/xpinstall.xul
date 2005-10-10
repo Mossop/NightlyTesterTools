@@ -51,7 +51,9 @@
 
 	<script type="application/x-javascript" src="xpinstall.js" />
 
-	<checkbox id="nightlyoverride" label="&nightly.xpinstall.checkbox;"/>
+  <vbox id="dialogContentBox">
+  	<checkbox id="nightlyoverride" label="&nightly.xpinstall.checkbox;"/>
+  </vbox>
 
 </dialog>
 
