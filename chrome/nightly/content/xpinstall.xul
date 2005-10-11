@@ -47,7 +47,7 @@
 <overlay id="XPInstallOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
-<dialog id="xpinstallConfirm" ondialogaccept="NightlyXPInstall.accept()">
+<dialog id="xpinstallConfirm">
 
 	<script type="application/x-javascript" src="xpinstall.js" />
 

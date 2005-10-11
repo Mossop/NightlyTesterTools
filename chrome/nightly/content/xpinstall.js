@@ -44,7 +44,7 @@
 
 var NightlyXPInstall = {
 
-accept: function()
+accept: function(event)
 {
 	var check = document.getElementById("nightlyoverride");
 	if ((check)&&(check.checked))
@@ -61,13 +61,16 @@ accept: function()
       var xpiuri=ioService.newURI(items[i].url,null,null);
 		  nightlyService.queueInstall(items[i].name,xpiuri);
 		}
+		XPInstallConfirm.onCancel();
+		event.stopPropagation();
+		window.close();
 		nightlyService.performInstalls();
-
-		return XPInstallConfirm.onCancel();
 	}
 	else
 	{
-		return XPInstallConfirm.onOK();
 	}
 }
 }
+
+document.documentElement.addEventListener("dialogaccept",NightlyXPInstall.accept,true);
+document.documentElement.addEventListener("dialogextra1",NightlyXPInstall.accept,true);

@@ -319,8 +319,8 @@ installLocalExtension: function(name, uri, file)
 	{
 	  // Might be nice to implement the level of safety that the EM uses when there is an old version in place.
 	  var dest = installLocation.getItemLocation(extensionID);
-	  if (dest.exists())
-	    dest.remove(true);
+	  /*if (dest.exists())
+	    dest.remove(true);*/
 	}
 	
 	var dest = installLocation.getItemLocation(extensionID);
