@@ -44,33 +44,44 @@
 
 var NightlyXPInstall = {
 
-accept: function(event)
+savedAccept: null,
+
+init: function(event)
+{
+	NightlyXPInstall.savedAccept=XPInstallConfirm.onOK;
+	XPInstallConfirm.onOK=NightlyXPInstall.dialogAccept;
+},
+
+dialogAccept: function()
 {
 	var check = document.getElementById("nightlyoverride");
 	if ((check)&&(check.checked))
 	{
-    var ioService = Components.classes["@mozilla.org/network/io-service;1"]
-                              .getService(Components.interfaces.nsIIOService);
-    var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
-                              .getService(Components.interfaces.nsINightlyToolsService);
-
-		var itemList = document.getElementById("itemList");
-		var items = itemList.getElementsByTagName("installitem");
-		for (var i=0; i<items.length; i++)
-		{
-      var xpiuri=ioService.newURI(items[i].url,null,null);
-		  nightlyService.queueInstall(items[i].name,xpiuri);
-		}
-		XPInstallConfirm.onCancel();
-		event.stopPropagation();
-		window.close();
-		nightlyService.performInstalls();
+		NightlyXPInstall.installExtensions();
+		return XPInstallConfirm.onCancel();
 	}
 	else
 	{
+		return NightlyXPInstall.savedAccept();
 	}
+},
+
+installExtensions: function()
+{
+	var ioService = Components.classes["@mozilla.org/network/io-service;1"]
+                          .getService(Components.interfaces.nsIIOService);
+	var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
+                          .getService(Components.interfaces.nsINightlyToolsService);
+
+	var itemList = document.getElementById("itemList");
+	var items = itemList.getElementsByTagName("installitem");
+	for (var i=0; i<items.length; i++)
+	{
+  var xpiuri=ioService.newURI(items[i].url,null,null);
+	  nightlyService.queueInstall(items[i].name,xpiuri);
+	}
+	nightlyService.performInstalls();
 }
 }
 
-document.documentElement.addEventListener("dialogaccept",NightlyXPInstall.accept,true);
-document.documentElement.addEventListener("dialogextra1",NightlyXPInstall.accept,true);
+window.addEventListener("load",NightlyXPInstall.init,true);

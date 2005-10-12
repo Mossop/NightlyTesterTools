@@ -1,10 +1,10 @@
 <!ENTITY nightly.options.height         "25em">
 
-<!ENTITY nightly.options.title          "Nightly-Tester-Einstellungen">
+<!ENTITY nightly.options.title          "Nightly Tester - Einstellungen">
 <!ENTITY nightly.options.description    "Es kann ein angepasster Titel angegeben werden, der die aktuelle Build-ID stets in der Titelleiste anzeigt.">
 <!ENTITY nightly.customtitle.label      "Angepassten Titel verwenden">
 <!ENTITY nightly.customtemplate.label   "Vorlage für den angepassten Titel:">
-<!ENTITY nightly.variables.description  "The following variables can be used in the title (case insensitive).">
+<!ENTITY nightly.variables.description  "Diese Variablen können im Titel verwendet werden (Groß-/Kleinschreibung wird nicht beachtet).">
 <!ENTITY nightly.variable.label         "Variable">
 <!ENTITY nightly.variabledesc.label     "Beschreibung">
 <!ENTITY nightly.variablevalue.label    "Wert">
