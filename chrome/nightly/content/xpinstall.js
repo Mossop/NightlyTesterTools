@@ -62,7 +62,8 @@ dialogAccept: function()
 	}
 	else
 	{
-		return NightlyXPInstall.savedAccept();
+		XPInstallConfirm._param.SetInt(0, 0);
+		return true;
 	}
 },
 
