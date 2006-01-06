@@ -45,6 +45,7 @@
 #include "nsISupports.idl"
 #include "nsIFile.idl"
 #include "nsIURI.idl"
+
 [scriptable, uuid(74535621-1999-45d3-86f3-4c165849db3e)]
 interface nsINightlyToolsService : nsISupports
 {

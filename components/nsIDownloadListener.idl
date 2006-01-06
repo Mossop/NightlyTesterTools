@@ -44,9 +44,11 @@
 
 #include "nsISupports.idl"
 #include "nsIWebProgressListener.idl"
-#include "nsITransfer.idl"
 #include "nsIFile.idl"
 #include "nsIURI.idl"
+
+interface nsITransfer;
+
 [scriptable, uuid(43f1a600-bc98-4fd3-8078-a5bbc75cf92d)]
 interface nsIDownloadListener : nsIWebProgressListener
 {
