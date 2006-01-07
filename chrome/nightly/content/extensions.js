@@ -76,18 +76,6 @@ init: function()
 {
 	gExtensionContextMenus=extensionAppEnabler.addInArray(gExtensionContextMenus,"menuitem_appenable","menuseparator_2",null);
 	gThemeContextMenus=extensionAppEnabler.addInArray(gThemeContextMenus,"menuitem_appenable",null,"menuitem_enable");
-	
-	var app = "browser";
-	if (Components.classes['@mozilla.org/xre/app-info;1'])
-	{
-		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
-		if (appinfo.ID=="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}")
-		  app = "browser";
-		else if (appinfo.ID=="{3550f703-e582-4d05-9a08-453d09bdfdc6}")
-		  app = "messenger";
-	}
-	var pi = document.createProcessingInstruction("xml-stylesheet","href=\"chrome://nightly/skin/extensions-"+app+".css\" type=\"text/css\"");
-	document.insertBefore(pi,document.firstChild);
 },
 
 load: function()
