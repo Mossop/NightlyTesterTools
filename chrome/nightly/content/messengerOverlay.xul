@@ -58,6 +58,14 @@
             oncommand="nightly.insertTemplate('buildid');"/>
   </toolbarpalette>
 
+  <menupopup id="taskPopup">
+    <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">
+      <menupopup>
+        <menuitem label="Copy extensions to clipboard" oncommand="nightly.copyExtensions();" insertbefore="aboutSeparator"/>
+      </menupopup>
+    </menu>
+  </menupopup>
+  
 	<menupopup id="menu_HelpPopup">
 		<menuseparator insertbefore="menu_HelpAboutSeparator"/>
 		<menuitem label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>

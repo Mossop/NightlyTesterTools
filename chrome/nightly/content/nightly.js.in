@@ -333,6 +333,43 @@ insertTemplate: function(template)
 	nightly.showAlert("nightly.notextbox.message",[]);
 },
 
+copyExtensions: function()
+{
+	var em = Components.classes["@mozilla.org/extensions/manager;1"]
+										 .getService(Components.interfaces.nsIExtensionManager);
+										 
+	var items = em.getItemList(Components.interfaces.nsIUpdateItem.TYPE_EXTENSION, {});
+
+	if (items.length==0)
+	{
+		alert("No extensions were found.");
+	}
+	else
+	{
+		var rdfS = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
+		var ds = em.datasource;
+		var enabledResource = rdfS.GetResource("http://www.mozilla.org/2004/em-rdf#disabled");
+		var text="";
+		for (var i=0; i<items.length; i++)
+		{
+			text+=items[i].name+" "+items[i].version;
+			var source = rdfS.GetResource("urn:mozilla:item:"+items[i].id);
+			var enabled = ds.GetTarget(source, enabledResource, true);
+			try
+			{
+				enabled=enabled.QueryInterface(Components.interfaces.nsIRDFLiteral);
+				if (enabled.Value=="true")
+				{
+					text+=" [DISABLED]";
+				}
+			}
+			catch (e) { }
+			text+="\n";
+		}
+		nightly.copyText(text);
+	}
+},
+
 launch: function(file, args)
 {
 	var process = Components.classes["@mozilla.org/process/util;1"].
