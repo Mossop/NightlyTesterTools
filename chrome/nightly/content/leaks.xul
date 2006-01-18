@@ -42,36 +42,23 @@
    - $Revision$
    -->
 
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://nightly/skin/leaks.css" type="text/css"?>
+
 <!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
 
-<overlay id="NightlyBrowserOverlay"
-                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-       
-  <script type="application/x-javascript" src="nightly.js" />
-  <script type="application/x-javascript" src="browser.js" />
-
-  <toolbarpalette id="BrowserToolbarPalette">
-    <toolbarbutton id="nightly-tester-enter"
-            class="toolbarbutton-1"
-            label="&nightly.insert-id.label;"
-            tooltiptext="&nightly.insert-id.tooltip;"
-            oncommand="nightly.insertTemplate('buildid');"/>
-  </toolbarpalette>
-
-  <menupopup id="menu_ToolsPopup">
-    <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">
-      <menupopup>
-        <menuitem label="Detect Leaks..." oncommand="nightly.detectLeaks();"/>
-        <menuitem label="Copy extensions to clipboard" oncommand="nightly.copyExtensions();"/>
-      </menupopup>
-    </menu>
-  </menupopup>
+<window id="NightlyTesterOptions" windowtype="NightlyTester:Options"
+            title="&nightly.options.title;" style="padding: 10px"
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
-	<menupopup id="menu_HelpPopup">
-		<menuseparator insertbefore="aboutSeparator"/>
-		<menuitem label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
-		<menuitem label="&nightly.insert-id.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
-		<menuitem label="&nightly.talkback.label;" oncommand="nightly.launchTalkback();" insertbefore="aboutSeparator"/>
-	</menupopup>
+  <script type="application/x-javascript" src="leaks.js"/>
+  
+  <hbox>
+    <label value="Log file:"/>
+    <textbox id="nsprlog" flex="1"/>
+    <button oncommand="selectLog()" label="Browse..."/>
+  </hbox>
+  
+  <browser id="leakbrowser" flex="1"/>
 
-</overlay>
+</window>

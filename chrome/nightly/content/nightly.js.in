@@ -333,6 +333,11 @@ insertTemplate: function(template)
 	nightly.showAlert("nightly.notextbox.message",[]);
 },
 
+detectLeaks: function()
+{
+	gBrowser.selectedTab=gBrowser.addTab("chrome://nightly/content/leaks.xul");
+},
+
 copyExtensions: function()
 {
 	var em = Components.classes["@mozilla.org/extensions/manager;1"]
