@@ -333,9 +333,9 @@ insertTemplate: function(template)
 	nightly.showAlert("nightly.notextbox.message",[]);
 },
 
-detectLeaks: function()
+detectLeaks: function(event)
 {
-	gBrowser.selectedTab=gBrowser.addTab("chrome://nightly/content/leaks.xul");
+	openUILink("chrome://nightly/content/leaks.xul", event, false, true);
 },
 
 copyExtensions: function()
