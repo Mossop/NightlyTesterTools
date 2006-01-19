@@ -61,7 +61,7 @@
   <menupopup id="menu_ToolsPopup">
     <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">
       <menupopup>
-        <menuitem label="Leak Reporter" oncommand="nightly.detectLeaks(event);" onclick="nightly.detectLeaks(event);"/>
+        <menuitem label="Leak Reporter" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
         <menuitem label="Copy extensions to clipboard" oncommand="nightly.copyExtensions();"/>
       </menupopup>
     </menu>
