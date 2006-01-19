@@ -62,7 +62,8 @@
   <hbox flex="1" align="stretch">
     <browser id="leakbrowser" flex="1"/>
     <vbox>
-      <button oncommand="clipboardCopy()" label="Copy to clipboard"/>
+      <button oncommand="clipboardCopy()" label="Copy to Clipboard"/>
+      <button oncommand="save()" label="Save As..."/>
     </vbox>
   </hbox>
 

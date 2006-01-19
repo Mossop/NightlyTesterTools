@@ -257,9 +257,16 @@ function init(event)
 	}
 }
 
-function clipboardCopy()
+function pad(value)
 {
-	text="Summary\n\n";
+	if (value<10)
+		return "0"+value;
+	return ""+value;
+}
+
+function getTextOverview()
+{
+	var text="Summary\n\n";
 	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
 	text+=navigator.userAgent+" ID:"+appinfo.appBuildID+"\n\n";
 	var date = new Date(nsprlog.lastModifiedTime);
@@ -270,9 +277,57 @@ function clipboardCopy()
 		text+="\nDetails\n\n";
 		text+=detailsText;
 	}
+	return text;
+}
+
+function save()
+{
+	var target = null;
+	try
+	{
+		target = preferences.getComplexValue("leaksave", Components.interfaces.nsILocalFile);
+	}
+	catch (e) { }
+
+	var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(Components.interfaces.nsIFilePicker);
+	fp.init(window, "Select Log File", fp.modeSave);
+	fp.appendFilter("Log Files (*.log)", "*.log");
+	fp.appendFilter("All Files (*.*)", "*.*");
+	if (target)
+		fp.displayDirectory=target.parent;
+
+	var date = new Date(nsprlog.lastModifiedTime);
+	fp.defaultString=date.getFullYear()+pad(date.getMonth()+1)+pad(date.getDate())+"-"+pad(date.getHours())+pad(date.getMinutes())+"_leaklog.log";
+
+	var result = fp.show();
+	if (result==fp.returnOK || result==fp.returnReplace)
+	{
+		target=fp.file;
+		preferences.setComplexValue("leaksave", Components.interfaces.nsILocalFile, target);
+
+		var text = getTextOverview();
+		
+		// file is nsIFile, data is a string
+		var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
+		                         .createInstance(Components.interfaces.nsIFileOutputStream);
+		
+		// use 0x02 | 0x10 to open file for appending.
+		foStream.init(target, 0x02 | 0x08 | 0x20, 0664, 0); // write, create, truncate
+		var os = Components.classes["@mozilla.org/intl/converter-output-stream;1"]
+    		               .createInstance(Components.interfaces.nsIConverterOutputStream);
+
+		os.init(foStream, "UTF-8", 0, 0x0000);
+		os.writeString(text);
+		os.close();
+		foStream.close();
+	}
+}
+
+function clipboardCopy()
+{
   var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].
                                          getService(Components.interfaces.nsIClipboardHelper);
-  clipboard.copyString(text);
+  clipboard.copyString(getTextOverview());
 }
 
 function browserLoad(event)
