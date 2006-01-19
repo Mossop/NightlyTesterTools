@@ -1,4 +1,5 @@
 content			nightly																							file:chrome/nightly/content/
+content			nightly-platform																		file:chrome/nightly/content/				platform
 skin				nightly					classic/1.0													file:chrome/nightly/skin/
 
 locale			nightly					en-US																file:chrome/nightly/locale/en-US/
@@ -16,6 +17,10 @@ locale			nightly					zh-TW																file:chrome/nightly/locale/zh-TW/
 overlay			chrome://browser/content/browser.xul								chrome://nightly/content/browserOverlay.xul
 overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly/content/messengerOverlay.xul
 overlay			chrome://mozapps/content/xpinstall/xpinstallConfirm.xul	chrome://nightly/content/xpinstall.xul
+
+overlay			chrome://browser/content/browser.xul								chrome://nightly-platform/content/platform.xul
+overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly-platform/content/platform.xul
+overlay 		chrome://nightly/content/leaks.xul 									chrome://nightly-platform/content/platform.xul
 
 style 			chrome://browser/content/browser.xul 								chrome://nightly/skin/browser.css
 style 			chrome://messenger/content/messenger.xul 						chrome://nightly/skin/browser.css
