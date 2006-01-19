@@ -261,6 +261,13 @@ function browserLoad(event)
 	fulllog=browser.contentDocument.getElementById("fulllog");
 	leaklog=browser.contentDocument.getElementById("leaks");
 	summary=browser.contentDocument.getElementById("summary");
+	
+	var p = browser.contentDocument.getElementById("build");
+	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+	p.innerHTML="Current application: "+navigator.userAgent+" ID:"+appinfo.appBuildID;
+	p = browser.contentDocument.getElementById("date");
+	var date = new Date(nsprlog.lastModifiedTime);
+	p.innerHTML="Log finished: "+date.toLocaleString();
 	run();
 }
 
