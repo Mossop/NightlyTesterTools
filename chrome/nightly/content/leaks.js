@@ -208,7 +208,7 @@ function run(summary, leaklog, fulllog) {
 		for (var handler in handlers)
 		    handlers[handler].dump();
 		
-		detailsText=result;
+		detailsText=result.replace(/\n/g,nightlyplatform.eol);
 		result=result.replace(/\n/g,"<br>");
 		result=result.replace(/URI \"(.*?)\"/g,"URI \"<a href=\"$1\">$1</a>\"");
 		leaklog.innerHTML=result;
@@ -217,7 +217,7 @@ function run(summary, leaklog, fulllog) {
 		for (var handler in handlers)
 		    handlers[handler].summary();
 		
-		summaryText=result;
+		summaryText=result.replace(/\n/g,nightlyplatform.eol);
 		result=result.replace(/\n/g,"<br>");
 		result=result.replace(/URI \"(.*?)\"/g,"URI \"<a href=\"$1\">$1</a>\"");
 		
@@ -266,15 +266,15 @@ function pad(value)
 
 function getTextOverview()
 {
-	var text="Summary\n\n";
+	var text="Summary"+nightlyplatform.eol+nightlyplatform.eol;
 	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
-	text+=navigator.userAgent+" ID:"+appinfo.appBuildID+"\n\n";
+	text+=navigator.userAgent+" ID:"+appinfo.appBuildID+nightlyplatform.eol+nightlyplatform.eol;
 	var date = new Date(nsprlog.lastModifiedTime);
-	text+="Session ended "+date.toLocaleString()+"\n\n";
+	text+="Session ended "+date.toLocaleString()+nightlyplatform.eol+nightlyplatform.eol;
 	text+=summaryText;
 	if (detailsText.length>0)
 	{
-		text+="\nDetails\n\n";
+		text+=nightlyplatform.eol+"Details"+nightlyplatform.eol+nightlyplatform.eol;
 		text+=detailsText;
 	}
 	return text;
