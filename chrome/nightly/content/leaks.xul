@@ -53,12 +53,17 @@
   
   <script type="application/x-javascript" src="leaks.js"/>
   
-  <hbox align="center">
+  <hbox align="center" style="padding-bottom: 1em">
     <label value="Log file:"/>
     <textbox id="nsprlog" flex="1"/>
     <button oncommand="selectLog()" label="Browse..."/>
   </hbox>
   
-  <browser id="leakbrowser" flex="1"/>
+  <hbox flex="1" align="stretch">
+    <browser id="leakbrowser" flex="1"/>
+    <vbox>
+      <button oncommand="clipboardCopy()" label="Copy to clipboard"/>
+    </vbox>
+  </hbox>
 
 </window>

@@ -42,7 +42,7 @@
  *
  */
 
-function run() {
+function run(summary, leaklog, fulllog) {
 		var result = "";
 		
 		// A hash of objects (keyed by the first word of the line in the log)
@@ -208,6 +208,7 @@ function run() {
 		for (var handler in handlers)
 		    handlers[handler].dump();
 		
+		detailsText=result;
 		result=result.replace(/\n/g,"<br>");
 		result=result.replace(/URI \"(.*?)\"/g,"URI \"<a href=\"$1\">$1</a>\"");
 		leaklog.innerHTML=result;
@@ -216,6 +217,7 @@ function run() {
 		for (var handler in handlers)
 		    handlers[handler].summary();
 		
+		summaryText=result;
 		result=result.replace(/\n/g,"<br>");
 		result=result.replace(/URI \"(.*?)\"/g,"URI \"<a href=\"$1\">$1</a>\"");
 		
@@ -227,9 +229,8 @@ var nsprlog = null;
 var browser = null;
 var preferences = null;
 
-var leaklog = null;
-var fulllog = null;
-var summary = null;
+var summaryText = "";
+var detailsText = "";
 
 function init(event)
 {
@@ -256,19 +257,37 @@ function init(event)
 	}
 }
 
+function clipboardCopy()
+{
+	text="Summary\n\n";
+	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+	text+=navigator.userAgent+" ID:"+appinfo.appBuildID+"\n\n";
+	var date = new Date(nsprlog.lastModifiedTime);
+	text+="Session ended "+date.toLocaleString()+"\n\n";
+	text+=summaryText;
+	if (detailsText.length>0)
+	{
+		text+="\nDetails\n\n";
+		text+=detailsText;
+	}
+  var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].
+                                         getService(Components.interfaces.nsIClipboardHelper);
+  clipboard.copyString(text);
+}
+
 function browserLoad(event)
 {
-	fulllog=browser.contentDocument.getElementById("fulllog");
-	leaklog=browser.contentDocument.getElementById("leaks");
-	summary=browser.contentDocument.getElementById("summary");
+	var fulllog=browser.contentDocument.getElementById("fulllog");
+	var leaklog=browser.contentDocument.getElementById("leaks");
+	var summary=browser.contentDocument.getElementById("summary");
 	
 	var p = browser.contentDocument.getElementById("build");
 	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
-	p.innerHTML="Current application: "+navigator.userAgent+" ID:"+appinfo.appBuildID;
+	p.innerHTML=navigator.userAgent+" ID:"+appinfo.appBuildID;
 	p = browser.contentDocument.getElementById("date");
 	var date = new Date(nsprlog.lastModifiedTime);
-	p.innerHTML="Log finished: "+date.toLocaleString();
-	run();
+	p.innerHTML="Session ended "+date.toLocaleString();
+	run(summary,leaklog,fulllog);
 }
 
 function parseLog()
