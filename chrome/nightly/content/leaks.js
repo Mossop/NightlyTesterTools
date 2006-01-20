@@ -47,36 +47,30 @@ var handlers = {
 		count: 0,
 		leaked: 0,
     windows: {},
-    handle_line: function(addr,line,para) {
-	    var match = line.match(/^(\S*)(.*)/);
-	    if (match) {
-        var verb = match[1];
-        var rest = match[2];
-        if (verb == "created") {
-          var m = rest.match(/ outer=([0-9a-f]*)$/);
-          if (!m)
-            throw "outer expected";
-          this.windows[addr] = { outer: m[1], paras: [], uris: [] };
-          ++this.count;
-          ++this.leaked;
+    handle_line: function(addr,verb,rest,para) {
+	    if (verb == "created") {
+	    	if (rest.substring(1,6)!="outer")
+	        throw "outer expected";
+	      var out = rest.substring(7);
+	      this.windows[addr] = { outer: out, paras: [], uris: [] };
+	      ++this.count;
+	      ++this.leaked;
 			    this.windows[addr].paras.push(para);
-        } else if (verb == "destroyed") {
-        	para.className=para.className.replace(/ leaked/,"");
-          for (var i=0; i<this.windows[addr].paras.length; i++) {
-          	var para = this.windows[addr].paras[i];
-          	para.className=para.className.replace(/ leaked/,"");
-          }
-          delete this.windows[addr];
-          --this.leaked;
-        } else if (verb == "SetNewDocument") {
-          var m = rest.match(/^ (.*)$/);
-          if (!m)
-            throw "URI expected";
-          this.windows[addr].uris[m[1]] = true;
-			    this.windows[addr].paras.push(para);
-        }
+	    } else if (verb == "destroyed") {
+	      delete this.windows[addr];
+	      --this.leaked;
+	    } else if (verb == "SetNewDocument") {
+	    	var uri = rest.substring(1);
+	      this.windows[addr].uris[uri] = true;
+			  this.windows[addr].paras.push(para);
 	    }
 		},
+	  mark_leaks: function(addr)
+	  {
+      for (var i=0; i<this.windows[addr].paras.length; i++) {
+      	this.windows[addr].paras[i].className+=" leaked";
+      }
+	  },
 		clear: function()
 		{
 			this.count=0;
@@ -88,33 +82,27 @@ var handlers = {
 	  count: 0,
 	  leaked: 0,
 	  docs: {},
-	  handle_line: function(addr,line,para) {
-	    var match = line.match(/^(\S*)(.*)/);
-	    if (match) {
-        var verb = match[1];
-        var rest = match[2];
-        if (verb == "created") {
-          this.docs[addr] = { paras: [], uris: [] };
-          ++this.count;
-          ++this.leaked;
+	  handle_line: function(addr,verb,rest,para) {
+	    if (verb == "created") {
+	      this.docs[addr] = { paras: [], uris: [] };
+	      ++this.count;
+	      ++this.leaked;
 			    this.docs[addr].paras.push(para);
-        } else if (verb == "destroyed") {
-        	para.className=para.className.replace(/ leaked/,"");
-          for (var i=0; i<this.docs[addr].paras.length; i++) {
-          	var para = this.docs[addr].paras[i];
-          	para.className=para.className.replace(/ leaked/,"");
-          }
-          delete this.docs[addr];
-          --this.leaked;
-        } else if (verb == "ResetToURI" ||
-                   verb == "StartDocumentLoad") {
-          var m = rest.match(/^ (.*)$/);
-          if (!m)
-            throw "URI expected";
-          this.docs[addr].uris[m[1]] = true;
-			    this.docs[addr].paras.push(para);
-        }
+	    } else if (verb == "destroyed") {
+	      delete this.docs[addr];
+	      --this.leaked;
+	    } else if (verb == "ResetToURI" ||
+	               verb == "StartDocumentLoad") {
+	      var uri = rest.substring(1);
+	      this.docs[addr].uris[uri] = true;
+			  this.docs[addr].paras.push(para);
 	    }
+	  },
+	  mark_leaks: function(addr)
+	  {
+      for (var i=0; i<this.docs[addr].paras.length; i++) {
+      	var para = this.docs[addr].paras[i].className+=" leaked";
+      }
 	  },
 		clear: function()
 		{
@@ -127,33 +115,27 @@ var handlers = {
     count: 0,
     leaked: 0,
     shells: {},
-    handle_line: function(addr,line,para) {
-	    var match = line.match(/^(\S*)(.*)/);
-	    if (match) {
-		    var verb = match[1];
-		    var rest = match[2];
-		    if (verb == "created") {
-			    this.shells[addr] = { paras: [], uris: [] };
-			    ++this.count;
-			    ++this.leaked;
-			    this.shells[addr].paras.push(para);
-    		} else if (verb == "destroyed") {
-        	para.className=para.className.replace(/ leaked/,"");
-          for (var i=0; i<this.shells[addr].paras.length; i++) {
-          	var para = this.shells[addr].paras[i];
-          	para.className=para.className.replace(/ leaked/,"");
-          }
-    			delete this.shells[addr];
-    			--this.leaked;
-    		} else if (verb == "InternalLoad" ||
-                   verb == "SetCurrentURI") {
-    			var m = rest.match(/^ (.*)$/);
-    			if (!m)
-        		throw "URI expected";
-    			this.shells[addr].uris[m[1]] = true;
-			    this.shells[addr].paras.push(para);
-    		}
-    	}
+    handle_line: function(addr,verb,rest,para) {
+		  if (verb == "created") {
+				this.shells[addr] = { paras: [], uris: [] };
+			  ++this.count;
+			  ++this.leaked;
+			  this.shells[addr].paras.push(para);
+			} else if (verb == "destroyed") {
+				delete this.shells[addr];
+				--this.leaked;
+			} else if (verb == "InternalLoad" ||
+	               verb == "SetCurrentURI") {
+	      var uri = rest.substring(1);
+				this.shells[addr].uris[uri] = true;
+			  this.shells[addr].paras.push(para);
+			}
+	  },
+	  mark_leaks: function(addr)
+	  {
+      for (var i=0; i<this.shells[addr].paras.length; i++) {
+      	var para = this.shells[addr].paras[i].className+=" leaked";
+      }
 	  },
 		clear: function()
 		{
@@ -170,8 +152,9 @@ var handlers = {
 	}
 };
 
-function parseLog()
+function doParse()
 {
+	var start = Date.now();
 	handlers.clear();
 	
 	var fulllog = document.getElementById("logframe").contentDocument.body;
@@ -179,11 +162,6 @@ function parseLog()
 	var date = new Date(nsprlog.lastModifiedTime);
 	datelbl.value=date.toLocaleString();
 
-	while (fulllog.firstChild)
-	{
-		fulllog.removeChild(fulllog.firstChild);
-	}
-	
 	var is = Components.classes["@mozilla.org/network/file-input-stream;1"]
 	                   .createInstance(Components.interfaces.nsIFileInputStream);
 	const PR_RDONLY = 0x01;
@@ -191,25 +169,32 @@ function parseLog()
 	if (!(is instanceof Components.interfaces.nsILineInputStream))
 	  return;
 	var line = { value: "" };
+	var lines=0;
+	var start = Date.now();
+	var paratimes = 0;
 	do
 	{
+		lines++;
     var more = is.readLine(line); // yuck, returns false for last valid line
 
+		var time = Date.now();
     var para = fulllog.ownerDocument.createElementNS("http://www.w3.org/1999/xhtml","p");
     fulllog.appendChild(para);
     para.appendChild(document.createTextNode(line.value));
     para.className+="logline";
-
+		paratimes+=Date.now()-time;
+		
     // strip off initial "-", thread id, and thread pointer; separate
     // first word and rest
-    var matches = line.value.match(/^\-?[0-9]*\[[0-9a-f]*\]: (\S*) ([0-9a-f]*) (.*)$/);
+    var matches = line.value.match(/^\-?[0-9]*\[[0-9a-f]*\]: (\S*) ([0-9a-f]*) (\S*)(.*)$/);
     if (matches) {
 	    var handler = matches[1];
 	    var address = matches[2];
-	    para.className+=" "+handler+" "+address+" leaked";
-	    var data = matches[3];
+	    var verb = matches[3];
+	    para.className+=" "+handler+" "+address;
+	    var data = matches[4];
 	    if (typeof(handlers[handler]) != "undefined") {
-	      handlers[handler].handle_line(address,data,para);
+	      handlers[handler].handle_line(address,verb,data,para);
 	    }
 	    else
 	    {
@@ -221,12 +206,11 @@ function parseLog()
     	para.className+=" ignored";
     }
 	} while (more);
+	var time = Date.now()-start;
+	dump(time+" "+(time/lines)+"\n");
+	dump("Document: "+paratimes+"\n");
 	
 	var details = document.getElementById("details");
-	while (details.firstChild)
-	{
-		details.removeChild(details.firstChild);
-	}
 	var leaked=false;
 	
 	var lbl = document.getElementById("windowLeaks");
@@ -237,8 +221,13 @@ function parseLog()
 		lbl.className="leaked";
 		leaked=true;
 	}
+	else
+	{
+		lbl.className="";
+	}
 	for (var addr in handler.windows)
 	{
+		handler.mark_leaks(addr);
 		var winobj = handler.windows[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
@@ -254,6 +243,7 @@ function parseLog()
 	  	lbl.className="uri";
 	  }
 	}
+	dump(Date.now()-start+"\n");
 
 	lbl = document.getElementById("documentLeaks");
 	handler = handlers["DOCUMENT"];
@@ -263,8 +253,13 @@ function parseLog()
 		lbl.className="leaked";
 		leaked=true;
 	}
+	else
+	{
+		lbl.className="";
+	}
 	for (var addr in handler.docs)
 	{
+		handler.mark_leaks(addr);
 		var doc = handler.docs[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
@@ -277,6 +272,7 @@ function parseLog()
 	  	lbl.className="uri";
 	  }
 	}
+	dump(Date.now()-start+"\n");
 
 	lbl = document.getElementById("docshellLeaks");
 	handler = handlers["DOCSHELL"];
@@ -286,8 +282,13 @@ function parseLog()
 		lbl.className="leaked";
 		leaked=true;
 	}
+	else
+	{
+		lbl.className="";
+	}
 	for (var addr in handler.shells)
 	{
+		handler.mark_leaks(addr);
 		var doc = handler.shells[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
@@ -300,6 +301,7 @@ function parseLog()
 	  	lbl.className="uri";
 	  }
 	}
+	dump(Date.now()-start+"\n");
 	
 	document.getElementById("detailsbox").collapsed=!leaked;
 }
@@ -311,25 +313,34 @@ var preferences = null;
 var summaryText = "";
 var detailsText = "";
 
-function finalinit(event)
+function frameLoaded(event)
 {
 	var frame = document.getElementById("logframe");
-	frame.removeEventListener("load", finalinit, true);
+	if (frame.getAttribute("src")=="")
+		return;
 
 	changeFilter();
 	
-	try
+	var details = document.getElementById("details");
+	while (details.firstChild)
 	{
-		nsprlog = preferences.getComplexValue("nsprlog", Components.interfaces.nsILocalFile);
+		details.removeChild(details.firstChild);
 	}
-	catch (e) { }
 
-	if (nsprlog && nsprlog.exists())
-	{
-		var logtext = document.getElementById("nsprlog");
-		logtext.value=nsprlog.path;
-		parseLog();
-	}
+	doParse();
+	document.getElementById("nsprlog").disabled=false;
+	document.getElementById("filebrowse").disabled=false;
+	document.getElementById("tabbox").collapsed=false;
+}
+
+function parseLog()
+{
+	document.getElementById("nsprlog").disabled=true;
+	document.getElementById("filebrowse").disabled=true;
+	document.getElementById("tabbox").collapsed=true;
+	var frame = document.getElementById("logframe");
+	frame.setAttribute("src", "")
+	setTimeout(function() { frame.setAttribute("src", "leaks.html") }, 100);
 }
 
 function init(event)
@@ -345,8 +356,20 @@ function init(event)
 	buildid.value=navigator.userAgent+" ID:"+appinfo.appBuildID+nightlyplatform.eol+nightlyplatform.eol;
 
 	var frame = document.getElementById("logframe");
-	frame.addEventListener("load", finalinit, true);
-	frame.setAttribute("src","leaks.html");
+	frame.addEventListener("load", frameLoaded, true);
+
+	try
+	{
+		nsprlog = preferences.getComplexValue("nsprlog", Components.interfaces.nsILocalFile);
+	}
+	catch (e) { }
+
+	if (nsprlog && nsprlog.exists())
+	{
+		var logtext = document.getElementById("nsprlog");
+		logtext.value=nsprlog.path;
+		parseLog();
+	}
 }
 
 function changeFilter()

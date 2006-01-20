@@ -65,50 +65,55 @@
   <hbox align="center" style="padding-bottom: 1em">
     <label value="Log file:"/>
     <textbox id="nsprlog" flex="1"/>
-    <button oncommand="selectLog()" label="Browse..."/>
+    <button id="filebrowse" oncommand="selectLog()" label="Browse..."/>
   </hbox>
   
-  <tabbox flex="1">
-    <tabs>
-      <tab label="Overview"/>
-      <tab label="Complete Log"/>
-    </tabs>
-    <tabpanels flex="1">
-      <tabpanel orient="vertical">
-        <hbox pack="start">
-          <button oncommand="clipboardCopy()" label="Copy to Clipboard"/>
-          <button oncommand="save()" label="Save As..."/>
-        </hbox>
-        <vbox id="summary">
-          <label style="font-size: 200%;" value="Summary"/>
+  <stack flex="1">
+    <vbox align="center" pack="center">
+      <label style="font-size: 200%;" value="Loading..."/>
+    </vbox>
+    <tabbox id="tabbox" flex="1">
+      <tabs>
+        <tab label="Overview"/>
+        <tab label="Complete Log"/>
+      </tabs>
+      <tabpanels flex="1">
+        <tabpanel orient="vertical">
+          <hbox pack="start">
+            <button oncommand="clipboardCopy()" label="Copy to Clipboard"/>
+            <button oncommand="save()" label="Save As..."/>
+          </hbox>
+          <vbox id="summary">
+            <label style="font-size: 200%;" value="Summary"/>
+            <separator/>
+            <label id="buildid"/>
+            <hbox><label value="Session ended"/><label id="date"/></hbox>
+            <separator/>
+            <label id="windowLeaks"/>
+            <label id="documentLeaks"/>
+            <label id="docshellLeaks"/>
+          </vbox>
           <separator/>
-          <label id="buildid"/>
-          <hbox><label value="Session ended"/><label id="date"/></hbox>
-          <separator/>
-          <label id="windowLeaks"/>
-          <label id="documentLeaks"/>
-          <label id="docshellLeaks"/>
-        </vbox>
-        <separator/>
-        <vbox id="detailsbox" flex="1" style="overflow: auto">
-          <label style="font-size: 200%;" value="Details"/>
-          <separator/>
-          <vbox id="details"/>
-        </vbox>
-      </tabpanel>
-      <tabpanel orient="vertical">
-        <hbox pack="start" align="center">
-          <label value="Display:"/>
-          <checkbox checked="true" oncommand="changeFilter()" id="filterDocshell" label="Docshells"/>
-          <checkbox checked="true" oncommand="changeFilter()" id="filterWindow" label="Windows"/>
-          <checkbox checked="true" oncommand="changeFilter()" id="filterDocument" label="Documents"/>
-          <checkbox checked="true" oncommand="changeFilter()" id="filterLeaked" label="Leaked"/>
-          <checkbox checked="true" oncommand="changeFilter()" id="filterCollected" label="Collected"/>
-          <checkbox checked="true" oncommand="changeFilter()" id="filterIgnored" label="Unknown"/>
-        </hbox>
-        <iframe id="logframe" style="border: 1px solid threedshadow" flex="1"/>
-      </tabpanel>
-    </tabpanels>
-  </tabbox>
+          <vbox id="detailsbox" flex="1" style="overflow: auto">
+            <label style="font-size: 200%;" value="Details"/>
+            <separator/>
+            <vbox id="details"/>
+          </vbox>
+        </tabpanel>
+        <tabpanel orient="vertical">
+          <hbox pack="start" align="center">
+            <label value="Display:"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterDocshell" label="Docshells"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterWindow" label="Windows"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterDocument" label="Documents"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterLeaked" label="Leaked"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterCollected" label="Collected"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterIgnored" label="Unknown"/>
+          </hbox>
+          <iframe id="logframe" style="border: 1px solid threedshadow" flex="1"/>
+        </tabpanel>
+      </tabpanels>
+    </tabbox>
+  </stack>
 
 </window>
