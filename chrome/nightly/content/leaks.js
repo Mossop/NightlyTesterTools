@@ -174,7 +174,7 @@ function parseLog()
 {
 	handlers.clear();
 	
-	var fulllog = document.getElementById("fulllog");
+	var fulllog = document.getElementById("logframe").contentDocument.body;
 	var datelbl = document.getElementById("date");
 	var date = new Date(nsprlog.lastModifiedTime);
 	datelbl.value=date.toLocaleString();
@@ -195,7 +195,7 @@ function parseLog()
 	{
     var more = is.readLine(line); // yuck, returns false for last valid line
 
-    var para = document.createElementNS("http://www.w3.org/1999/xhtml","p");
+    var para = fulllog.ownerDocument.createElementNS("http://www.w3.org/1999/xhtml","p");
     fulllog.appendChild(para);
     para.appendChild(document.createTextNode(line.value));
     para.className+="logline";
@@ -311,15 +311,10 @@ var preferences = null;
 var summaryText = "";
 var detailsText = "";
 
-function init(event)
+function finalinit(event)
 {
-	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-							.getService(Components.interfaces.nsIPrefService);
-	preferences = prefservice.getBranch("nightly.");
-	
-	var buildid = document.getElementById("buildid");
-	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
-	buildid.value=navigator.userAgent+" ID:"+appinfo.appBuildID+nightlyplatform.eol+nightlyplatform.eol;
+	var frame = document.getElementById("logframe");
+	frame.removeEventListener("load", finalinit, true);
 
 	changeFilter();
 	
@@ -337,9 +332,26 @@ function init(event)
 	}
 }
 
+function init(event)
+{
+	window.removeEventListener("load", init, false);
+	
+	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+							.getService(Components.interfaces.nsIPrefService);
+	preferences = prefservice.getBranch("nightly.");
+	
+	var buildid = document.getElementById("buildid");
+	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+	buildid.value=navigator.userAgent+" ID:"+appinfo.appBuildID+nightlyplatform.eol+nightlyplatform.eol;
+
+	var frame = document.getElementById("logframe");
+	frame.addEventListener("load", finalinit, true);
+	frame.setAttribute("src","leaks.html");
+}
+
 function changeFilter()
 {
-	var style = document.getElementById("filters");
+	var style = document.getElementById("logframe").contentDocument.getElementById("filters");
 	var filter = "";
 
 	var chk = document.getElementById("filterDocshell");

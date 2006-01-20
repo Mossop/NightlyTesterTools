@@ -45,37 +45,20 @@
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 <?xml-stylesheet href="chrome://nightly/skin/leaks.css" type="text/css"?>
 
-<!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
-
-<window id="NightlyTesterOptions" windowtype="NightlyTester:Options"
-            title="&nightly.options.title;" style="padding: 10px"
+<window id="LeakReporter"
+            title="Leak Reporter" style="padding: 10px"
             xmlns:xhtml="http://www.w3.org/1999/xhtml"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
 <xhtml:style>
-#fulllog {
-  padding: 5px;
-}
-
-#fulllog p {
-  font-family: monospace;
-  margin: 0;
-}
-
 .leaked {
   color: red;
-}
-
-.ignored {
-  color: grey;
 }
 
 .uri {
   padding-left: 2em;
 }
 </xhtml:style>
-
-<xhtml:style id="filters"/>
 
   <script type="application/x-javascript" src="leaks.js"/>
   
@@ -123,9 +106,7 @@
           <checkbox checked="true" oncommand="changeFilter()" id="filterCollected" label="Collected"/>
           <checkbox checked="true" oncommand="changeFilter()" id="filterIgnored" label="Unknown"/>
         </hbox>
-        <vbox style="overflow: auto; border: 1px solid threedshadow" flex="1">
-          <xhtml:div id="fulllog"/>
-        </vbox>
+        <iframe id="logframe" style="border: 1px solid threedshadow" flex="1"/>
       </tabpanel>
     </tabpanels>
   </tabbox>
