@@ -98,10 +98,10 @@
             <label id="docshellLeaks"/>
           </vbox>
           <separator/>
-          <vbox id="detailsbox" flex="1" style="overflow: auto">
+          <vbox id="detailsbox" flex="1">
             <label style="font-size: 200%;" value="Details"/>
             <separator/>
-            <vbox id="details"/>
+            <vbox flex="1" id="details" style="overflow: auto"/>
           </vbox>
         </tabpanel>
         <tabpanel orient="vertical">
