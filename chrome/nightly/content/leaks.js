@@ -47,7 +47,7 @@ var handlers = {
 		count: 0,
 		leaked: 0,
     windows: {},
-    handle_line: function(addr,line) {
+    handle_line: function(addr,line,para) {
 	    var match = line.match(/^(\S*)(.*)/);
 	    if (match) {
         var verb = match[1];
@@ -56,17 +56,24 @@ var handlers = {
           var m = rest.match(/ outer=([0-9a-f]*)$/);
           if (!m)
             throw "outer expected";
-          this.windows[addr] = { outer: m[1] };
+          this.windows[addr] = { outer: m[1], paras: [], uris: [] };
           ++this.count;
           ++this.leaked;
+			    this.windows[addr].paras.push(para);
         } else if (verb == "destroyed") {
+        	para.className=para.className.replace(/ leaked/,"");
+          for (var i=0; i<this.windows[addr].paras.length; i++) {
+          	var para = this.windows[addr].paras[i];
+          	para.className=para.className.replace(/ leaked/,"");
+          }
           delete this.windows[addr];
           --this.leaked;
         } else if (verb == "SetNewDocument") {
           var m = rest.match(/^ (.*)$/);
           if (!m)
             throw "URI expected";
-          this.windows[addr][m[1]] = true;
+          this.windows[addr].uris[m[1]] = true;
+			    this.windows[addr].paras.push(para);
         }
 	    }
 		},
@@ -81,25 +88,32 @@ var handlers = {
 	  count: 0,
 	  leaked: 0,
 	  docs: {},
-	  handle_line: function(addr,line) {
+	  handle_line: function(addr,line,para) {
 	    var match = line.match(/^(\S*)(.*)/);
 	    if (match) {
-	        var verb = match[1];
-	        var rest = match[2];
-	        if (verb == "created") {
-	          this.docs[addr] = {};
-	          ++this.count;
-	          ++this.leaked;
-	        } else if (verb == "destroyed") {
-	          delete this.docs[addr];
-	          --this.leaked;
-	        } else if (verb == "ResetToURI" ||
-	                   verb == "StartDocumentLoad") {
-	          var m = rest.match(/^ (.*)$/);
-	          if (!m)
-	            throw "URI expected";
-	          this.docs[addr][m[1]] = true;
-	        }
+        var verb = match[1];
+        var rest = match[2];
+        if (verb == "created") {
+          this.docs[addr] = { paras: [], uris: [] };
+          ++this.count;
+          ++this.leaked;
+			    this.docs[addr].paras.push(para);
+        } else if (verb == "destroyed") {
+        	para.className=para.className.replace(/ leaked/,"");
+          for (var i=0; i<this.docs[addr].paras.length; i++) {
+          	var para = this.docs[addr].paras[i];
+          	para.className=para.className.replace(/ leaked/,"");
+          }
+          delete this.docs[addr];
+          --this.leaked;
+        } else if (verb == "ResetToURI" ||
+                   verb == "StartDocumentLoad") {
+          var m = rest.match(/^ (.*)$/);
+          if (!m)
+            throw "URI expected";
+          this.docs[addr].uris[m[1]] = true;
+			    this.docs[addr].paras.push(para);
+        }
 	    }
 	  },
 		clear: function()
@@ -113,16 +127,22 @@ var handlers = {
     count: 0,
     leaked: 0,
     shells: {},
-    handle_line: function(addr,line) {
+    handle_line: function(addr,line,para) {
 	    var match = line.match(/^(\S*)(.*)/);
 	    if (match) {
 		    var verb = match[1];
 		    var rest = match[2];
 		    if (verb == "created") {
-			    this.shells[addr] = {};
+			    this.shells[addr] = { paras: [], uris: [] };
 			    ++this.count;
 			    ++this.leaked;
+			    this.shells[addr].paras.push(para);
     		} else if (verb == "destroyed") {
+        	para.className=para.className.replace(/ leaked/,"");
+          for (var i=0; i<this.shells[addr].paras.length; i++) {
+          	var para = this.shells[addr].paras[i];
+          	para.className=para.className.replace(/ leaked/,"");
+          }
     			delete this.shells[addr];
     			--this.leaked;
     		} else if (verb == "InternalLoad" ||
@@ -130,7 +150,8 @@ var handlers = {
     			var m = rest.match(/^ (.*)$/);
     			if (!m)
         		throw "URI expected";
-    			this.shells[addr][m[1]] = true;
+    			this.shells[addr].uris[m[1]] = true;
+			    this.shells[addr].paras.push(para);
     		}
     	}
 	  },
@@ -148,20 +169,6 @@ var handlers = {
 		this["DOCSHELL"].clear();
 	}
 };
-
-function markLeaked(addr)
-{
-	var fulllog = document.getElementById("fulllog");
-	var node = fulllog.firstChild;
-	while (node)
-	{
-		if (node.className.indexOf(addr)>=0)
-		{
-			node.className+=" leaked";
-		}
-		node=node.nextSibling;
-	}
-}
 
 function parseLog()
 {
@@ -199,10 +206,10 @@ function parseLog()
     if (matches) {
 	    var handler = matches[1];
 	    var address = matches[2];
-	    para.className+=" "+handler+" "+address;
+	    para.className+=" "+handler+" "+address+" leaked";
 	    var data = matches[3];
 	    if (typeof(handlers[handler]) != "undefined") {
-	      handlers[handler].handle_line(address,data);
+	      handlers[handler].handle_line(address,data,para);
 	    }
 	    else
 	    {
@@ -232,7 +239,6 @@ function parseLog()
 	}
 	for (var addr in handler.windows)
 	{
-		markLeaked(addr);
 		var winobj = handler.windows[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
@@ -240,9 +246,8 @@ function parseLog()
 					    " window "+addr+" "+
 					    (winobj.outer=="0" ? "" : "(outer " + winobj.outer + ") ") +
         	    "at address " + addr + ".";
-	  for (var uri in winobj)
+	  for (var uri in winobj.uris)
 	  {
-	  	if (uri=="outer") continue;
 			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 			details.appendChild(lbl);
 	  	lbl.value="with URI \"" + uri + "\".";
@@ -260,12 +265,11 @@ function parseLog()
 	}
 	for (var addr in handler.docs)
 	{
-		markLeaked(addr);
 		var doc = handler.docs[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
 	  lbl.value="Leaked document at address " + addr + ".";
-	  for (var uri in doc)
+	  for (var uri in doc.uris)
 	  {
 			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 			details.appendChild(lbl);
@@ -284,12 +288,11 @@ function parseLog()
 	}
 	for (var addr in handler.shells)
 	{
-		markLeaked(addr);
 		var doc = handler.shells[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
 	  lbl.value="Leaked docshell at address " + addr + ".";
-	  for (var uri in doc)
+	  for (var uri in doc.uris)
 	  {
 			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 			details.appendChild(lbl);
@@ -406,9 +409,8 @@ function getTextOverview()
 						" window "+addr+" "+
 						(winobj.outer=="0" ? "" : "(outer " + winobj.outer + ") ") +
             "at address " + addr + "."+nightlyplatform.eol;
-      for (var uri in winobj)
+      for (var uri in winobj.uris)
       {
-		  	if (uri=="outer") continue;
       	text+=" ... with URI \"" + uri + "\"."+nightlyplatform.eol;
       }
 		}
@@ -418,7 +420,7 @@ function getTextOverview()
     {
     	var doc = handler.docs[addr];
       text += "Leaked document at address " + addr + "."+nightlyplatform.eol;
-      for (var uri in doc)
+      for (var uri in doc.uris)
       {
         text += " ... with URI \"" + uri + "\"."+nightlyplatform.eol;
       }
@@ -429,7 +431,7 @@ function getTextOverview()
     {
     	var doc = handler.shells[addr];
       text += "Leaked docshell at address " + addr + "."+nightlyplatform.eol;
-      for (var uri in doc)
+      for (var uri in doc.uris)
       {
         text += " ... with URI \"" + uri + "\"."+nightlyplatform.eol;
       }
