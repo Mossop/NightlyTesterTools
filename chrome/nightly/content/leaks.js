@@ -378,7 +378,7 @@ function init(event)
 	
 	var buildid = document.getElementById("buildid");
 	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
-	buildid.value=navigator.userAgent+" ID:"+appinfo.appBuildID+nightlyplatform.eol+nightlyplatform.eol;
+	buildid.value=navigator.userAgent+" ID:"+appinfo.appBuildID;
 
 	var frame = document.getElementById("logframe");
 	frame.addEventListener("load", frameLoaded, true);
