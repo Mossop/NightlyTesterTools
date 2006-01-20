@@ -42,191 +42,267 @@
  *
  */
 
-function run(summary, leaklog, fulllog) {
-		var result = "";
-		
-		// A hash of objects (keyed by the first word of the line in the log)
-		// that have two public methods, handle_line and dump (to be called using
-		// call, above), along with any private data they need.
-		var handlers = {
-		    "DOMWINDOW": {
-		        count: 0,
-		        windows: {},
-		        handle_line: function(line) {
-		            var match = line.match(/^([0-9a-f]*) (\S*)(.*)/);
-		            if (match) {
-		                var addr = match[1];
-		                var verb = match[2];
-		                var rest = match[3];
-		                if (verb == "created") {
-		                    var m = rest.match(/ outer=([0-9a-f]*)$/);
-		                    if (!m)
-		                        throw "outer expected";
-		                    this.windows[addr] = { outer: m[1] };
-		                    ++this.count;
-		                } else if (verb == "destroyed") {
-		                    delete this.windows[addr];
-		                } else if (verb == "SetNewDocument") {
-		                    var m = rest.match(/^ (.*)$/);
-		                    if (!m)
-		                        throw "URI expected";
-		                    this.windows[addr][m[1]] = true;
-		                }
-		            }
-		        },
-		        dump: function() {
-		            for (var addr in this.windows) {
-		                var winobj = this.windows[addr];
-		                var outer = winobj.outer;
-		                delete winobj.outer;
-		                result += "Leaked " + (outer == "0" ? "outer" : "inner") +
-		                          " window " + addr + " " +
-		                          (outer == "0" ? "" : "(outer " + outer + ") ") +
-		                          "at address " + addr + ".\n";
-		                for (var uri in winobj) {
-		                    result += " ... with URI \"" + uri + "\".\n";
-		                }
-		            }
-		        },
-		        summary: function() {
-		            var len = 0;
-		            for (var w in this.windows)
-		                ++len;
-		            result += 'Leaked ' + len + ' out of ' +
-		                      this.count + " DOM Windows\n";
-		        }
-		    },
-		    "DOCUMENT": {
-		        count: 0,
-		        docs: {},
-		        handle_line: function(line) {
-		            var match = line.match(/^([0-9a-f]*) (\S*)(.*)/);
-		            if (match) {
-		                var addr = match[1];
-		                var verb = match[2];
-		                var rest = match[3];
-		                if (verb == "created") {
-		                    this.docs[addr] = {};
-		                    ++this.count;
-		                } else if (verb == "destroyed") {
-		                    delete this.docs[addr];
-		                } else if (verb == "ResetToURI" ||
-		                           verb == "StartDocumentLoad") {
-		                    var m = rest.match(/^ (.*)$/);
-		                    if (!m)
-		                        throw "URI expected";
-		                    this.docs[addr][m[1]] = true;
-		                }
-		            }
-		        },
-		        dump: function() {
-		            for (var addr in this.docs) {
-		                var doc = this.docs[addr];
-		                result += "Leaked document at address " + addr + ".\n";
-		                for (var uri in doc) {
-		                    result += " ... with URI \"" + uri + "\".\n";
-		                }
-		            }
-		        },
-		        summary: function() {
-		            var len = 0;
-		            for (var w in this.docs)
-		                ++len;
-		            result += 'Leaked ' + len + ' out of ' +
-		                      this.count + " documents\n";
-		        }
-		    },
-		    "DOCSHELL": {
-		        count: 0,
-		        shells: {},
-		        handle_line: function(line) {
-		            var match = line.match(/^([0-9a-f]*) (\S*)(.*)/);
-		            if (match) {
-		                var addr = match[1];
-		                var verb = match[2];
-		                var rest = match[3];
-		                if (verb == "created") {
-		                    this.shells[addr] = {};
-		                    ++this.count;
-		                } else if (verb == "destroyed") {
-		                    delete this.shells[addr];
-		                } else if (verb == "InternalLoad" ||
-		                           verb == "SetCurrentURI") {
-		                    var m = rest.match(/^ (.*)$/);
-		                    if (!m)
-		                        throw "URI expected";
-		                    this.shells[addr][m[1]] = true;
-		                }
-		            }
-		        },
-		        dump: function() {
-		            for (var addr in this.shells) {
-		                var doc = this.shells[addr];
-		                result += "Leaked docshell at address " + addr + ".\n";
-		                for (var uri in doc) {
-		                    result += " ... which loaded URI \"" + uri + "\".\n";
-		                }
-		            }
-		        },
-		        summary: function() {
-		            var len = 0;
-		            for (var w in this.shells)
-		                ++len;
-		            result += 'Leaked ' + len + ' out of ' +
-		                      this.count + " docshells\n";
-		        }
-		    }
-		};
-		
-		const cs = Components.classes;
-		const ifs = Components.interfaces;
-		
-		var is = cs["@mozilla.org/network/file-input-stream;1"].
-		             createInstance(ifs.nsIFileInputStream);
-		const PR_RDONLY = 0x01;
-		is.init(nsprlog, PR_RDONLY, 0, 0);
-		if (!(is instanceof ifs.nsILineInputStream))
-		    return;
-		var line = { value: "" };
-		do {
-		    var more = is.readLine(line);// yuck, returns false for last valid line
-				
-				fulllog.appendChild(fulllog.ownerDocument.createTextNode(line.value+"\n"));
-		
-		    // strip off initial "-", thread id, and thread pointer; separate
-		    // first word and rest
-		    var matches = line.value.match(/^\-?[0-9]*\[[0-9a-f]*\]: (\S*) (.*)$/);
-		    if (matches) {
-		        var handler = matches[1];
-		        var data = matches[2];
-		        if (typeof(handlers[handler]) != "undefined") {
-		            handlers[handler].handle_line(data);
-		        }
-		    }
-		} while (more);
-		
-		for (var handler in handlers)
-		    handlers[handler].dump();
-		
-		detailsText=result.replace(/\n/g,nightlyplatform.eol);
-		result=result.replace(/\n/g,"<br>");
-		result=result.replace(/URI \"(.*?)\"/g,"URI \"<a href=\"$1\">$1</a>\"");
-		leaklog.innerHTML=result;
+var handlers = {
+  "DOMWINDOW": {
+		count: 0,
+		leaked: 0,
+    windows: {},
+    handle_line: function(addr,line) {
+	    var match = line.match(/^(\S*)(.*)/);
+	    if (match) {
+        var verb = match[1];
+        var rest = match[2];
+        if (verb == "created") {
+          var m = rest.match(/ outer=([0-9a-f]*)$/);
+          if (!m)
+            throw "outer expected";
+          this.windows[addr] = { outer: m[1] };
+          ++this.count;
+          ++this.leaked;
+        } else if (verb == "destroyed") {
+          delete this.windows[addr];
+          --this.leaked;
+        } else if (verb == "SetNewDocument") {
+          var m = rest.match(/^ (.*)$/);
+          if (!m)
+            throw "URI expected";
+          this.windows[addr][m[1]] = true;
+        }
+	    }
+		},
+		clear: function()
+		{
+			this.count=0;
+			this.leaked=0;
+			this.windows={};
+		}
+	},
+	"DOCUMENT": {
+	  count: 0,
+	  leaked: 0,
+	  docs: {},
+	  handle_line: function(addr,line) {
+	    var match = line.match(/^(\S*)(.*)/);
+	    if (match) {
+	        var verb = match[1];
+	        var rest = match[2];
+	        if (verb == "created") {
+	          this.docs[addr] = {};
+	          ++this.count;
+	          ++this.leaked;
+	        } else if (verb == "destroyed") {
+	          delete this.docs[addr];
+	          --this.leaked;
+	        } else if (verb == "ResetToURI" ||
+	                   verb == "StartDocumentLoad") {
+	          var m = rest.match(/^ (.*)$/);
+	          if (!m)
+	            throw "URI expected";
+	          this.docs[addr][m[1]] = true;
+	        }
+	    }
+	  },
+		clear: function()
+		{
+			this.count=0;
+			this.leaked=0;
+			this.docs={};
+		}
+	},
+	"DOCSHELL": {
+    count: 0,
+    leaked: 0,
+    shells: {},
+    handle_line: function(addr,line) {
+	    var match = line.match(/^(\S*)(.*)/);
+	    if (match) {
+		    var verb = match[1];
+		    var rest = match[2];
+		    if (verb == "created") {
+			    this.shells[addr] = {};
+			    ++this.count;
+			    ++this.leaked;
+    		} else if (verb == "destroyed") {
+    			delete this.shells[addr];
+    			--this.leaked;
+    		} else if (verb == "InternalLoad" ||
+                   verb == "SetCurrentURI") {
+    			var m = rest.match(/^ (.*)$/);
+    			if (!m)
+        		throw "URI expected";
+    			this.shells[addr][m[1]] = true;
+    		}
+    	}
+	  },
+		clear: function()
+		{
+			this.count=0;
+			this.leaked=0;
+			this.shells={};
+		}
+	},
+	clear: function()
+	{
+		this["DOMWINDOW"].clear();
+		this["DOCUMENT"].clear();
+		this["DOCSHELL"].clear();
+	}
+};
 
-		result = "";
-		for (var handler in handlers)
-		    handlers[handler].summary();
-		
-		summaryText=result.replace(/\n/g,nightlyplatform.eol);
-		result=result.replace(/\n/g,"<br>");
-		result=result.replace(/URI \"(.*?)\"/g,"URI \"<a href=\"$1\">$1</a>\"");
-		
-		summary.innerHTML=result;
+function markLeaked(addr)
+{
+	var fulllog = document.getElementById("fulllog");
+	var node = fulllog.firstChild;
+	while (node)
+	{
+		if (node.className.indexOf(addr)>=0)
+		{
+			node.className+=" leaked";
+		}
+		node=node.nextSibling;
+	}
+}
+
+function parseLog()
+{
+	handlers.clear();
+	
+	var fulllog = document.getElementById("fulllog");
+	var datelbl = document.getElementById("date");
+	var date = new Date(nsprlog.lastModifiedTime);
+	datelbl.value=date.toLocaleString();
+
+	while (fulllog.firstChild)
+	{
+		fulllog.removeChild(fulllog.firstChild);
+	}
+	
+	var is = Components.classes["@mozilla.org/network/file-input-stream;1"]
+	                   .createInstance(Components.interfaces.nsIFileInputStream);
+	const PR_RDONLY = 0x01;
+	is.init(nsprlog, PR_RDONLY, 0, 0);
+	if (!(is instanceof Components.interfaces.nsILineInputStream))
+	  return;
+	var line = { value: "" };
+	do
+	{
+    var more = is.readLine(line); // yuck, returns false for last valid line
+
+    var para = document.createElementNS("http://www.w3.org/1999/xhtml","p");
+    fulllog.appendChild(para);
+    para.appendChild(document.createTextNode(line.value));
+    para.className+="logline";
+
+    // strip off initial "-", thread id, and thread pointer; separate
+    // first word and rest
+    var matches = line.value.match(/^\-?[0-9]*\[[0-9a-f]*\]: (\S*) ([0-9a-f]*) (.*)$/);
+    if (matches) {
+	    var handler = matches[1];
+	    var address = matches[2];
+	    para.className+=" "+handler+" "+address;
+	    var data = matches[3];
+	    if (typeof(handlers[handler]) != "undefined") {
+	      handlers[handler].handle_line(address,data);
+	    }
+	    else
+	    {
+	    	para.className+=" ignored";
+	    }
+    }
+    else
+    {
+    	para.className+=" ignored";
+    }
+	} while (more);
+	
+	var details = document.getElementById("details");
+	while (details.firstChild)
+	{
+		details.removeChild(details.firstChild);
+	}
+	var leaked=false;
+	
+	var lbl = document.getElementById("windowLeaks");
+	var handler = handlers["DOMWINDOW"];
+	lbl.value="Leaked "+handler.leaked+" out of "+handler.count+" DOM Windows";
+	if (handler.leaked>0)
+	{
+		lbl.className="leaked";
+		leaked=true;
+	}
+	for (var addr in handler.windows)
+	{
+		markLeaked(addr);
+		var winobj = handler.windows[addr];
+		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
+		details.appendChild(lbl);
+		lbl.value="Leaked " + (winobj.outer=="0" ? "outer" : "inner") +
+					    " window "+addr+" "+
+					    (winobj.outer=="0" ? "" : "(outer " + winobj.outer + ") ") +
+        	    "at address " + addr + ".";
+	  for (var uri in winobj)
+	  {
+	  	if (uri=="outer") continue;
+			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
+			details.appendChild(lbl);
+	  	lbl.value="with URI \"" + uri + "\".";
+	  	lbl.className="uri";
+	  }
+	}
+
+	lbl = document.getElementById("documentLeaks");
+	handler = handlers["DOCUMENT"];
+	lbl.value="Leaked "+handler.leaked+" out of "+handler.count+" documents";
+	if (handler.leaked>0)
+	{
+		lbl.className="leaked";
+		leaked=true;
+	}
+	for (var addr in handler.docs)
+	{
+		markLeaked(addr);
+		var doc = handler.docs[addr];
+		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
+		details.appendChild(lbl);
+	  lbl.value="Leaked document at address " + addr + ".";
+	  for (var uri in doc)
+	  {
+			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
+			details.appendChild(lbl);
+	    lbl.value="with URI \"" + uri + "\".";
+	  	lbl.className="uri";
+	  }
+	}
+
+	lbl = document.getElementById("docshellLeaks");
+	handler = handlers["DOCSHELL"];
+	lbl.value="Leaked "+handler.leaked+" out of "+handler.count+" docshells";
+	if (handler.leaked>0)
+	{
+		lbl.className="leaked";
+		leaked=true;
+	}
+	for (var addr in handler.shells)
+	{
+		markLeaked(addr);
+		var doc = handler.shells[addr];
+		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
+		details.appendChild(lbl);
+	  lbl.value="Leaked docshell at address " + addr + ".";
+	  for (var uri in doc)
+	  {
+			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
+			details.appendChild(lbl);
+	    lbl.value="with URI \"" + uri + "\".";
+	  	lbl.className="uri";
+	  }
+	}
+	
+	document.getElementById("detailsbox").collapsed=!leaked;
 }
 // --------------------------------------------------------------------
 
 var nsprlog = null;
-var browser = null;
 var preferences = null;
 
 var summaryText = "";
@@ -234,14 +310,15 @@ var detailsText = "";
 
 function init(event)
 {
-	window.removeEventListener("load", init, false);
-	
-	browser = document.getElementById("leakbrowser");
-	browser.addEventListener("load", browserLoad, true);
-	
 	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
 							.getService(Components.interfaces.nsIPrefService);
 	preferences = prefservice.getBranch("nightly.");
+	
+	var buildid = document.getElementById("buildid");
+	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+	buildid.value=navigator.userAgent+" ID:"+appinfo.appBuildID+nightlyplatform.eol+nightlyplatform.eol;
+
+	changeFilter();
 	
 	try
 	{
@@ -255,6 +332,38 @@ function init(event)
 		logtext.value=nsprlog.path;
 		parseLog();
 	}
+}
+
+function changeFilter()
+{
+	var style = document.getElementById("filters");
+	var filter = "";
+
+	var chk = document.getElementById("filterDocshell");
+	if (!chk.checked)
+		filter+=".logline.DOCSHELL { display: none }\n";
+
+	chk = document.getElementById("filterWindow");
+	if (!chk.checked)
+		filter+=".logline.DOMWINDOW { display: none }\n";
+
+	chk = document.getElementById("filterDocument");
+	if (!chk.checked)
+		filter+=".logline.DOCUMENT { display: none }\n";
+		
+	chk = document.getElementById("filterLeaked");
+	if (!chk.checked)
+		filter+=".leaked { display: none }\n";
+		
+	chk = document.getElementById("filterCollected");
+	if (!chk.checked)
+		filter+=".logline:not(.leaked) { display: none }\n";
+		
+	chk = document.getElementById("filterIgnored");
+	if (!chk.checked)
+		filter+=".logline.ignored { display: none }\n";
+		
+	style.innerHTML=filter;
 }
 
 function pad(value)
@@ -271,11 +380,60 @@ function getTextOverview()
 	text+=navigator.userAgent+" ID:"+appinfo.appBuildID+nightlyplatform.eol+nightlyplatform.eol;
 	var date = new Date(nsprlog.lastModifiedTime);
 	text+="Session ended "+date.toLocaleString()+nightlyplatform.eol+nightlyplatform.eol;
-	text+=summaryText;
-	if (detailsText.length>0)
+	
+	var leaked = false;
+	var handler = handlers["DOMWINDOW"];
+	if (handler.leaked>0)
+		leaked=true;
+	text+="Leaked "+handler.leaked+" out of "+handler.count+" DOM Windows"+nightlyplatform.eol;
+	handler = handlers["DOCUMENT"];
+	if (handler.leaked>0)
+		leaked=true;
+	text+="Leaked "+handler.leaked+" out of "+handler.count+" documents"+nightlyplatform.eol;
+	handler = handlers["DOCSHELL"];
+	if (handler.leaked>0)
+		leaked=true;
+	text+="Leaked "+handler.leaked+" out of "+handler.count+" docshells"+nightlyplatform.eol;
+	
+	if (leaked)
 	{
 		text+=nightlyplatform.eol+"Details"+nightlyplatform.eol+nightlyplatform.eol;
-		text+=detailsText;
+		handler = handlers["DOMWINDOW"];
+		for (var addr in handler.windows)
+		{
+			var winobj = handler.windows[addr];
+			text+="Leaked " + (winobj.outer=="0" ? "outer" : "inner") +
+						" window "+addr+" "+
+						(winobj.outer=="0" ? "" : "(outer " + winobj.outer + ") ") +
+            "at address " + addr + "."+nightlyplatform.eol;
+      for (var uri in winobj)
+      {
+		  	if (uri=="outer") continue;
+      	text+=" ... with URI \"" + uri + "\"."+nightlyplatform.eol;
+      }
+		}
+
+		handler = handlers["DOCUMENT"];
+    for (var addr in handler.docs)
+    {
+    	var doc = handler.docs[addr];
+      text += "Leaked document at address " + addr + "."+nightlyplatform.eol;
+      for (var uri in doc)
+      {
+        text += " ... with URI \"" + uri + "\"."+nightlyplatform.eol;
+      }
+    }
+
+		handler = handlers["DOCSHELL"];
+    for (var addr in handler.shells)
+    {
+    	var doc = handler.shells[addr];
+      text += "Leaked docshell at address " + addr + "."+nightlyplatform.eol;
+      for (var uri in doc)
+      {
+        text += " ... with URI \"" + uri + "\"."+nightlyplatform.eol;
+      }
+    }
 	}
 	return text;
 }
@@ -343,11 +501,6 @@ function browserLoad(event)
 	var date = new Date(nsprlog.lastModifiedTime);
 	p.innerHTML="Session ended "+date.toLocaleString();
 	run(summary,leaklog,fulllog);
-}
-
-function parseLog()
-{
-	browser.loadURI("chrome://nightly/content/leaks.html");
 }
 
 function selectLog()

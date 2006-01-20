@@ -49,8 +49,34 @@
 
 <window id="NightlyTesterOptions" windowtype="NightlyTester:Options"
             title="&nightly.options.title;" style="padding: 10px"
+            xmlns:xhtml="http://www.w3.org/1999/xhtml"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  
+
+<xhtml:style>
+#fulllog {
+  padding: 5px;
+}
+
+#fulllog p {
+  font-family: monospace;
+  margin: 0;
+}
+
+.leaked {
+  color: red;
+}
+
+.ignored {
+  color: grey;
+}
+
+.uri {
+  padding-left: 2em;
+}
+</xhtml:style>
+
+<xhtml:style id="filters"/>
+
   <script type="application/x-javascript" src="leaks.js"/>
   
   <hbox align="center" style="padding-bottom: 1em">
@@ -59,12 +85,49 @@
     <button oncommand="selectLog()" label="Browse..."/>
   </hbox>
   
-  <hbox flex="1" align="stretch">
-    <browser id="leakbrowser" flex="1"/>
-    <vbox>
-      <button oncommand="clipboardCopy()" label="Copy to Clipboard"/>
-      <button oncommand="save()" label="Save As..."/>
-    </vbox>
-  </hbox>
+  <tabbox flex="1">
+    <tabs>
+      <tab label="Overview"/>
+      <tab label="Complete Log"/>
+    </tabs>
+    <tabpanels flex="1">
+      <tabpanel orient="vertical">
+        <hbox pack="start">
+          <button oncommand="clipboardCopy()" label="Copy to Clipboard"/>
+          <button oncommand="save()" label="Save As..."/>
+        </hbox>
+        <vbox id="summary">
+          <label style="font-size: 200%;" value="Summary"/>
+          <separator/>
+          <label id="buildid"/>
+          <hbox><label value="Session ended"/><label id="date"/></hbox>
+          <separator/>
+          <label id="windowLeaks"/>
+          <label id="documentLeaks"/>
+          <label id="docshellLeaks"/>
+        </vbox>
+        <separator/>
+        <vbox id="detailsbox" flex="1" style="overflow: auto">
+          <label style="font-size: 200%;" value="Details"/>
+          <separator/>
+          <vbox id="details"/>
+        </vbox>
+      </tabpanel>
+      <tabpanel orient="vertical">
+        <hbox pack="start" align="center">
+          <label value="Display:"/>
+          <checkbox checked="true" oncommand="changeFilter()" id="filterDocshell" label="Docshells"/>
+          <checkbox checked="true" oncommand="changeFilter()" id="filterWindow" label="Windows"/>
+          <checkbox checked="true" oncommand="changeFilter()" id="filterDocument" label="Documents"/>
+          <checkbox checked="true" oncommand="changeFilter()" id="filterLeaked" label="Leaked"/>
+          <checkbox checked="true" oncommand="changeFilter()" id="filterCollected" label="Collected"/>
+          <checkbox checked="true" oncommand="changeFilter()" id="filterIgnored" label="Unknown"/>
+        </hbox>
+        <vbox style="overflow: auto; border: 1px solid threedshadow" flex="1">
+          <xhtml:div id="fulllog"/>
+        </vbox>
+      </tabpanel>
+    </tabpanels>
+  </tabbox>
 
 </window>
