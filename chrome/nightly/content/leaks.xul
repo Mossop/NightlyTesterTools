@@ -62,12 +62,16 @@
 
   <script type="application/x-javascript" src="leaks.js"/>
   
-  <hbox align="center" style="padding-bottom: 1em">
-    <label value="Log file:"/>
-    <textbox id="nsprlog" flex="1"/>
-    <button id="filebrowse" oncommand="selectLog()" label="Browse..."/>
-  </hbox>
-  
+  <vbox style="padding-bottom: 1em">
+    <hbox align="center">
+      <label value="Log file:"/>
+      <textbox id="nsprlog" flex="1"/>
+      <button id="filebrowse" oncommand="selectLog()" label="Browse..."/>
+    </hbox>
+    
+    <checkbox id="showlog" oncommand="flipLog()" label="Display full log"/>
+  </vbox>
+
   <stack flex="1">
     <vbox align="center" pack="center">
       <label style="font-size: 200%;" value="Loading..."/>

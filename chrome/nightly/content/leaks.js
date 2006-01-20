@@ -55,6 +55,7 @@ var handlers = {
 	      this.windows[addr] = { outer: out, paras: [], uris: [] };
 	      ++this.count;
 	      ++this.leaked;
+	      if (para)
 			    this.windows[addr].paras.push(para);
 	    } else if (verb == "destroyed") {
 	      delete this.windows[addr];
@@ -62,7 +63,8 @@ var handlers = {
 	    } else if (verb == "SetNewDocument") {
 	    	var uri = rest.substring(1);
 	      this.windows[addr].uris[uri] = true;
-			  this.windows[addr].paras.push(para);
+	      if (para)
+				  this.windows[addr].paras.push(para);
 	    }
 		},
 	  mark_leaks: function(addr)
@@ -87,6 +89,7 @@ var handlers = {
 	      this.docs[addr] = { paras: [], uris: [] };
 	      ++this.count;
 	      ++this.leaked;
+	      if (para)
 			    this.docs[addr].paras.push(para);
 	    } else if (verb == "destroyed") {
 	      delete this.docs[addr];
@@ -95,7 +98,8 @@ var handlers = {
 	               verb == "StartDocumentLoad") {
 	      var uri = rest.substring(1);
 	      this.docs[addr].uris[uri] = true;
-			  this.docs[addr].paras.push(para);
+	      if (para)
+				  this.docs[addr].paras.push(para);
 	    }
 	  },
 	  mark_leaks: function(addr)
@@ -120,7 +124,8 @@ var handlers = {
 				this.shells[addr] = { paras: [], uris: [] };
 			  ++this.count;
 			  ++this.leaked;
-			  this.shells[addr].paras.push(para);
+			  if (para)
+				  this.shells[addr].paras.push(para);
 			} else if (verb == "destroyed") {
 				delete this.shells[addr];
 				--this.leaked;
@@ -128,7 +133,8 @@ var handlers = {
 	               verb == "SetCurrentURI") {
 	      var uri = rest.substring(1);
 				this.shells[addr].uris[uri] = true;
-			  this.shells[addr].paras.push(para);
+				if (para)
+			  	this.shells[addr].paras.push(para);
 			}
 	  },
 	  mark_leaks: function(addr)
@@ -152,7 +158,7 @@ var handlers = {
 	}
 };
 
-function doParse()
+function doParse(storelog)
 {
 	var start = Date.now();
 	handlers.clear();
@@ -172,16 +178,21 @@ function doParse()
 	var lines=0;
 	var start = Date.now();
 	var paratimes = 0;
+	var para = null;
 	do
 	{
 		lines++;
     var more = is.readLine(line); // yuck, returns false for last valid line
 
 		var time = Date.now();
-    var para = fulllog.ownerDocument.createElementNS("http://www.w3.org/1999/xhtml","p");
-    fulllog.appendChild(para);
-    para.appendChild(document.createTextNode(line.value));
-    para.className+="logline";
+		var className="";
+    if (storelog)
+    {
+	    para = fulllog.ownerDocument.createElementNS("http://www.w3.org/1999/xhtml","p");
+	    fulllog.appendChild(para);
+	    para.appendChild(document.createTextNode(line.value));
+	    className="logline";
+	  }
 		paratimes+=Date.now()-time;
 		
     // strip off initial "-", thread id, and thread pointer; separate
@@ -191,20 +202,23 @@ function doParse()
 	    var handler = matches[1];
 	    var address = matches[2];
 	    var verb = matches[3];
-	    para.className+=" "+handler+" "+address;
+	    className+=" "+handler+" "+address;
 	    var data = matches[4];
 	    if (typeof(handlers[handler]) != "undefined") {
 	      handlers[handler].handle_line(address,verb,data,para);
 	    }
 	    else
 	    {
-	    	para.className+=" ignored";
+	    	
+	    	className+=" ignored";
 	    }
     }
     else
     {
-    	para.className+=" ignored";
+    	className+=" ignored";
     }
+    if (storelog)
+    	para.className=className;
 	} while (more);
 	var time = Date.now()-start;
 	dump(time+" "+(time/lines)+"\n");
@@ -312,9 +326,12 @@ var preferences = null;
 
 var summaryText = "";
 var detailsText = "";
+var logValid = false;
 
 function frameLoaded(event)
 {
+	var chk = document.getElementById("showlog");
+
 	var frame = document.getElementById("logframe");
 	if (frame.getAttribute("src")=="")
 		return;
@@ -327,9 +344,13 @@ function frameLoaded(event)
 		details.removeChild(details.firstChild);
 	}
 
-	doParse();
+	doParse(chk.checked);
+	
+	logValid=chk.checked;
+	
 	document.getElementById("nsprlog").disabled=false;
 	document.getElementById("filebrowse").disabled=false;
+	document.getElementById("showlog").disabled=false;
 	document.getElementById("tabbox").collapsed=false;
 }
 
@@ -337,6 +358,7 @@ function parseLog()
 {
 	document.getElementById("nsprlog").disabled=true;
 	document.getElementById("filebrowse").disabled=true;
+	document.getElementById("showlog").disabled=false;
 	document.getElementById("tabbox").collapsed=true;
 	var frame = document.getElementById("logframe");
 	frame.setAttribute("src", "")
@@ -358,6 +380,10 @@ function init(event)
 	var frame = document.getElementById("logframe");
 	frame.addEventListener("load", frameLoaded, true);
 
+	var chk = document.getElementById("showlog");
+	chk.checked = preferences.getBoolPref("showleaklog");
+	document.getElementById("tabbox").firstChild.style.display=(chk.checked ? null : 'none');
+	
 	try
 	{
 		nsprlog = preferences.getComplexValue("nsprlog", Components.interfaces.nsILocalFile);
@@ -368,6 +394,23 @@ function init(event)
 	{
 		var logtext = document.getElementById("nsprlog");
 		logtext.value=nsprlog.path;
+		parseLog();
+	}
+}
+
+function flipLog()
+{
+	var chk = document.getElementById("showlog");
+	preferences.setBoolPref("showleaklog", chk.checked);
+	document.getElementById("tabbox").firstChild.style.display=(chk.checked ? null : 'none');
+	
+	if (!chk.checked)
+	{
+		document.getElementById("tabbox").selectedIndex=0;
+	}
+
+	if (chk.checked && !logValid && nsprlog && nsprlog.exists())
+	{
 		parseLog();
 	}
 }
