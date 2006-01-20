@@ -348,6 +348,9 @@ function frameLoaded(event)
 	
 	logValid=chk.checked;
 	
+	document.getElementById("summary").collapsed=false;
+	document.getElementById("btnSave").disabled=false;
+	document.getElementById("btnCopy").disabled=false;
 	document.getElementById("nsprlog").disabled=false;
 	document.getElementById("filebrowse").disabled=false;
 	document.getElementById("showlog").disabled=false;
@@ -520,19 +523,11 @@ function getTextOverview()
 
 function save()
 {
-	var target = null;
-	try
-	{
-		target = preferences.getComplexValue("leaksave", Components.interfaces.nsILocalFile);
-	}
-	catch (e) { }
-
 	var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(Components.interfaces.nsIFilePicker);
 	fp.init(window, "Select Log File", fp.modeSave);
 	fp.appendFilter("Log Files (*.log)", "*.log");
 	fp.appendFilter("All Files (*.*)", "*.*");
-	if (target)
-		fp.displayDirectory=target.parent;
+	fp.displayDirectory=nsprlog.parent;
 
 	var date = new Date(nsprlog.lastModifiedTime);
 	fp.defaultString=date.getFullYear()+pad(date.getMonth()+1)+pad(date.getDate())+"-"+pad(date.getHours())+pad(date.getMinutes())+"_leaklog.log";
@@ -540,7 +535,7 @@ function save()
 	var result = fp.show();
 	if (result==fp.returnOK || result==fp.returnReplace)
 	{
-		target=fp.file;
+		var target=fp.file;
 		preferences.setComplexValue("leaksave", Components.interfaces.nsILocalFile, target);
 
 		var text = getTextOverview();
@@ -581,6 +576,26 @@ function browserLoad(event)
 	var date = new Date(nsprlog.lastModifiedTime);
 	p.innerHTML="Session ended "+date.toLocaleString();
 	run(summary,leaklog,fulllog);
+}
+
+function textEnter()
+{
+	var logtext = document.getElementById("nsprlog");
+	var target = Components.classes["@mozilla.org/file/local;1"]
+                         .createInstance(Components.interfaces.nsILocalFile);
+  target.initWithPath(logtext.value);
+  if (target.exists())
+  {
+  	nsprlog=target;
+		preferences.setComplexValue("nsprlog", Components.interfaces.nsILocalFile, nsprlog);
+		parseLog();
+  }
+  else
+  {
+  	var prompt = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+  	                       .getService(Components.interfaces.nsIPromptService);
+  	prompt.alert(window, "File Not Found", logtext.value+" does not exist.");
+  }
 }
 
 function selectLog()

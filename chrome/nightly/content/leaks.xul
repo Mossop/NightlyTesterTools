@@ -65,7 +65,7 @@
   <vbox style="padding-bottom: 1em">
     <hbox align="center">
       <label value="Log file:"/>
-      <textbox id="nsprlog" flex="1"/>
+      <textbox id="nsprlog" onchange="textEnter()" flex="1"/>
       <button id="filebrowse" oncommand="selectLog()" label="Browse..."/>
     </hbox>
     
@@ -84,10 +84,10 @@
       <tabpanels flex="1">
         <tabpanel orient="vertical">
           <hbox pack="start">
-            <button oncommand="clipboardCopy()" label="Copy to Clipboard"/>
-            <button oncommand="save()" label="Save As..."/>
+            <button id="btnCopy" disabled="true" oncommand="clipboardCopy()" label="Copy to Clipboard"/>
+            <button id="btnSave" disabled="true" oncommand="save()" label="Save As..."/>
           </hbox>
-          <vbox id="summary">
+          <vbox id="summary" collapsed="true">
             <label style="font-size: 200%;" value="Summary"/>
             <separator/>
             <label id="buildid"/>
@@ -98,7 +98,7 @@
             <label id="docshellLeaks"/>
           </vbox>
           <separator/>
-          <vbox id="detailsbox" flex="1">
+          <vbox id="detailsbox" flex="1" collapsed="true">
             <label style="font-size: 200%;" value="Details"/>
             <separator/>
             <vbox flex="1" id="details" style="overflow: auto"/>
