@@ -11,15 +11,15 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Nightly Tester Tools.
+ * The Original Code is leak-gauge.pl
  *
- * The Initial Developer of the Original Code is
- *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
- *
- * Portions created by the Initial Developer are Copyright (C) 2004
+ * The Initial Developer of the Original Code is the Mozilla Foundation.
+ * Portions created by the Initial Developer are Copyright (C) 2005
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *   L. David Baron <dbaron@dbaron.org>, Mozilla Corporation (original author)
+ *   Dave Townsend <dave.townsend@blueprintit.co.uk>.
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or

@@ -18,10 +18,6 @@ overlay			chrome://browser/content/browser.xul								chrome://nightly/content/b
 overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly/content/messengerOverlay.xul
 overlay			chrome://mozapps/content/xpinstall/xpinstallConfirm.xul	chrome://nightly/content/xpinstall.xul
 
-overlay			chrome://browser/content/browser.xul								chrome://nightly-platform/content/platform.xul
-overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly-platform/content/platform.xul
-overlay 		chrome://nightly/content/leaks.xul 									chrome://nightly-platform/content/platform.xul
-
 style 			chrome://browser/content/browser.xul 								chrome://nightly/skin/browser.css
 style 			chrome://messenger/content/messenger.xul 						chrome://nightly/skin/browser.css
 style 			chrome://global/content/customizeToolbar.xul 				chrome://nightly/skin/browser.css

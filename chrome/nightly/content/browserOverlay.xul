@@ -17,7 +17,7 @@
    -
    - The Initial Developer of the Original Code is
    -     Dave Townsend <dave.townsend@blueprintit.co.uk>.
-   - Portions created by the Initial Developer are Copyright (C) 2005
+   - Portions created by the Initial Developer are Copyright (C) 2006
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -49,6 +49,7 @@
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
+  <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
