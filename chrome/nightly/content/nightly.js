@@ -111,31 +111,10 @@ loadBuildIDFromFile: function()
 	return null;
 },
 
-versionCheck: function(version)
-{
-	var oldversion = null;
-	try
-	{
-	  oldversion = nightly.preferences.getCharPref('lastversion');
-	}
-	catch (e)
-	{
-	}
-	
-	var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
-                           .getService(Components.interfaces.nsIVersionComparator);
-                           
-	if (oldversion && vc.compare(version,oldversion)>0)
-	{
-	}
-	
-	nightly.preferences.setCharPref('lastversion',version);
-},
-
 init: function()
 {	
 	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-							.getService(Components.interfaces.nsIPrefService);
+							                .getService(Components.interfaces.nsIPrefService);
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
 	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
 	
@@ -198,12 +177,20 @@ init: function()
 		nightly.variables.platformversion=nightly.variables.geckoversion;
 	}
 
+	if (nightly.preferences.getBoolPref("disablecompatibility"))
+	{
+		if (prefservice.prefHasUserValue("extensions.lastAppVersion"))
+			prefservice.clearUserPref("extensions.lastAppVersion");
+	}
+	else
+	{
+		prefservice.setCharPref("extensions.lastAppVersion", nightly.variables.version);
+	}
+
 	nightlyApp.init();
 	
 	nightly.preferences.addObserver("",nightly,false);
 	nightly.prefChange("idtitle");
-
-	nightly.versionCheck('${extension.fullversion}');	
 },
 
 prefChange: function(pref)
@@ -221,6 +208,21 @@ prefChange: function(pref)
 		else
 		{
 			nightlyApp.setStandardTitle();
+		}
+	}
+	else if (pref=="disablecompatibility")
+	{
+		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+								                .getService(Components.interfaces.nsIPrefBranch);
+
+		if (nightly.preferences.getBoolPref(pref))
+		{
+			if (prefservice.prefHasUserValue("extensions.lastAppVersion"))
+				prefservice.clearUserPref("extensions.lastAppVersion");
+		}
+		else
+		{
+			prefservice.setCharPref("extensions.lastAppVersion", nightly.variables.version);
 		}
 	}
 },

@@ -1,8 +1,17 @@
+.content-box {
+	-moz-box-flex: 1;
+}
+
 #NightlyTesterOptions {
 	padding: 0;
 	width: 40em;
+	height: 35em;
 }
 
 #NightlyTesterOptions radio[pane=paneTitle] {
   	list-style-image: url("chrome://nightly/skin/icon.png");
+}
+
+#NightlyTesterOptions radio[pane=paneExtensions] {
+  	list-style-image: url("chrome://nightly/skin/extension.png");
 }

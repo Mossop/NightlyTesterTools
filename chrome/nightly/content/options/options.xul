@@ -47,28 +47,35 @@
 
 <!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
 
-<window id="NightlyTesterOptions" windowtype="NightlyTester:Options"
-            title="&nightly.options.title;" style="padding: 10px"
+<prefwindow id="NightlyTesterOptions" windowtype="NightlyTester:Options"
+            title="&nightly.options.title;"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
-	<script type="application/x-javascript" src="prefs.js"/>
-	<script type="application/x-javascript" src="title.js"/>
+  <script type="application/x-javascript" src="prefs.js"/>
 
-	<stringbundle id="variablesBundle" src="chrome://nightly/locale/variables.properties"/>
+  <prefpane id="paneTitle" label="Titlebar">
   
-	<vbox style="padding-bottom: 5px; height: &nightly.options.height;" flex="1">
+    <preferences>
+      <preference id="idtitle" type="bool" name="nightly.idtitle" onchange="paneTitle.toggled();"/>
+      <preference id="title" type="string" name="nightly.templates.title"/>
+    </preferences>
+    
+  	<script type="application/x-javascript" src="title.js"/>
+  
+  	<stringbundle id="variablesBundle" src="chrome://nightly/locale/variables.properties"/>
+    
 		<description style="padding-bottom: 5px">&nightly.options.description;</description>
 	    
-		<checkbox style="padding-bottom: 5px" id="enableTitleBar" label="&nightly.customtitle.label;"/>
+		<checkbox preference="idtitle" style="padding-bottom: 5px" id="enableTitleBar" label="&nightly.customtitle.label;"/>
 	                
-		<hbox style="padding-bottom: 5px" align="center" flex="1">
+		<hbox style="padding-bottom: 5px" align="center">
 			<label value="&nightly.customtemplate.label;" control="customTitle"/>
-			<textbox id="customTitle" flex="1"/>
+			<textbox preference="title" id="customTitle" flex="1"/>
 		</hbox>
 	
 		<description style="padding-bottom: 5px">&nightly.variables.description;</description>
 	
-		<listbox id="varList" rows="8">
+		<listbox id="varList" flex="1">
 			<listhead>
 				<listheader label="&nightly.variable.label;"/>
 				<listheader label="&nightly.variabledesc.label;"/>
@@ -80,12 +87,17 @@
 				<listcol style="width: 15em"/>
 			</listcols>
 		</listbox>
-	</vbox>
 
-	<hbox pack="end">
-		<button id="btnOK" label="&nightly.ok.label;" onclick="prefs.apply()"/>
-		<button id="btnCancel" label="&nightly.cancel.label;" onclick="prefs.cancel()"/>
-		<button id="btnClose" hidden="true" label="&nightly.close.label;" onclick="prefs.close()"/>
-	</hbox>
+  </prefpane>
   
-</window>
+  <prefpane id="paneExtensions" label="Extensions">
+
+    <preferences>
+      <preference id="compatibility" type="bool" name="nightly.disablecompatibility"/>
+    </preferences>
+
+    <checkbox preference="compatibility" label="Disable Firefox's compatibility check"/>
+    
+  </prefpane>
+  
+</prefwindow>

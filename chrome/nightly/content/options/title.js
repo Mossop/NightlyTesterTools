@@ -48,16 +48,8 @@ bundle: null,
 
 init: function()
 {
-	var checkbox = document.getElementById("enableTitleBar");
-    checkbox.addEventListener("CheckboxStateChange",paneTitle.toggled,false);
-    checkbox.checked=prefs.getBoolPref('idtitle');
-    
-	var text = document.getElementById("customTitle");
-	text.addEventListener("change",paneTitle.textEntered,false);
-	text.addEventListener("input",paneTitle.textEntered,false);
-	text.disabled=!checkbox.checked;
-	text.value=prefs.getCharPref('templates.title');
-	
+	paneTitle.toggled();
+
 	paneTitle.bundle=document.getElementById("variablesBundle");
 	
 	paneTitle.addVariable("DefaultTitle");
@@ -101,20 +93,12 @@ addVariable: function(name)
 	list.appendChild(item);
 },
 
-textEntered: function()
-{
-	var text = document.getElementById("customTitle");
-	prefs.setCharPref('templates.title',text.value);
-},
-
 toggled: function()
 {
 	var checkbox = document.getElementById("enableTitleBar");
 	var text = document.getElementById("customTitle");
 	text.disabled=!checkbox.checked;
-	prefs.setBoolPref('idtitle',checkbox.checked);
 }
-
 }
 
 window.addEventListener("load",paneTitle.init,false);

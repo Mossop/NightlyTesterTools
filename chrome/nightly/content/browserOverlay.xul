@@ -64,10 +64,10 @@
       <menupopup onpopupshowing="nightly.menuPopup(event,this);">
         <menuitem id="build-copy" label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
         <menuitem id="build-insert" label="&nightly.insert-id.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
-        <menuitem id="list-copy" label="Copy list of extensions to clipboard" oncommand="nightly.copyExtensions();"/>
-        <menuitem id="list-insert" label="Insert list of extensions" oncommand="nightly.insertExtensions();"/>
+        <menuitem id="list-copy" label="&nightly.copy-extensions.label;" oncommand="nightly.copyExtensions();"/>
+        <menuitem id="list-insert" label="&nightly.insert-extensions.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
-        <menuitem label="Leak Reporter" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
+        <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>
     </menu>
   </menupopup>
