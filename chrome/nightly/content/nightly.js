@@ -313,6 +313,29 @@ copyTemplate: function(template)
 	nightly.copyText(nightly.generateText(nightly.getTemplate(template)));
 },
 
+menuPopup: function(event, menupopup)
+{
+	var attext = false;
+	
+	var element = document.commandDispatcher.focusedElement;
+	dump("Element: "+element+"\n");
+	if (element)
+	{
+		var type = element.localName.toLowerCase();
+		attext= ((type=="input")||(type=="textarea"))
+	}
+		
+	var node=menupopup.firstChild;
+	while (node && node.localName!='menuseparator')
+	{
+		if (node.id.substring(node.id.length-7)=="-insert")
+			node.hidden=!attext;
+		if (node.id.substring(node.id.length-5)=="-copy")
+			node.hidden=attext;
+		node=node.nextSibling;
+	}
+},
+
 insertTemplate: function(template)
 {
 	var element = document.commandDispatcher.focusedElement;
@@ -335,10 +358,10 @@ insertTemplate: function(template)
 
 detectLeaks: function(event)
 {
-	openUILink("chrome://nightly/content/leaks.xul", event, false, true);
+	openUILink("chrome://nightly/content/leaks/leaks.xul", event, false, true);
 },
 
-copyExtensions: function()
+getExtensionList: function()
 {
 	var em = Components.classes["@mozilla.org/extensions/manager;1"]
 										 .getService(Components.interfaces.nsIExtensionManager);
@@ -348,6 +371,7 @@ copyExtensions: function()
 	if (items.length==0)
 	{
 		alert("No extensions were found.");
+		return null;
 	}
 	else
 	{
@@ -371,8 +395,35 @@ copyExtensions: function()
 			catch (e) { }
 			text+="\n";
 		}
-		nightly.copyText(text);
+		return text;
 	}
+},
+
+insertExtensions: function()
+{
+	var element = document.commandDispatcher.focusedElement;
+	if (element)
+	{
+		var type = element.localName.toLowerCase();
+		if ((type=="input")||(type=="textarea"))
+		{
+			var text = nightly.getExtensionList();
+			var newpos = element.selectionStart+text.length;
+			var value = element.value;
+			element.value=value.substring(0,element.selectionStart)+text+value.substring(element.selectionEnd);
+			element.selectionStart=newpos;
+			element.selectionEnd=newpos;
+			return;
+		}
+	}
+	nightly.showAlert("nightly.notextbox.message",[]);
+},
+
+copyExtensions: function()
+{
+	var text = nightly.getExtensionList();
+	if (text)
+		nightly.copyText(text);
 },
 
 launch: function(file, args)

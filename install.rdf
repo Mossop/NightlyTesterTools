@@ -16,15 +16,6 @@
       </Description>
     </em:targetApplication>
     
-    <!-- Seamonkey version -->
-    <em:targetApplication>
-      <Description>
-        <em:id>{86c18b42-e466-45a9-ae7a-9b95ba6f5640}</em:id>
-        <em:minVersion>1.7</em:minVersion>
-        <em:maxVersion>1.8</em:maxVersion>
-      </Description>
-    </em:targetApplication>
-    
     <!-- Thunderbird version -->
     <em:targetApplication>
       <Description>
@@ -52,28 +43,9 @@
     <em:contributor>Henriett Peller (Limited Hungarian localisation)</em:contributor>
     <em:contributor>Proyecto Nave (Limited Spanish localisation)</em:contributor>
     <em:iconURL>chrome://nightly/skin/icon.png</em:iconURL>
-    <em:optionsURL>chrome://nightly/content/options.xul</em:optionsURL>
+    <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>
     <em:homepageURL>http://users.blueprintit.co.uk/~dave/web/firefox/buildid/nightly.html</em:homepageURL>
     <em:updateURL>http://users.blueprintit.co.uk/~dave/web/firefox/update.rdf?guid=%ITEM_ID%&amp;version=%ITEM_VERSION%&amp;app=%APP_ID%&amp;appver=%APP_VERSION%</em:updateURL>
     
-    <!-- Chrome registration for pre-1.1 apps -->
-		<em:file>
-			<Description about="urn:mozilla:extension:file:nightly">
-				<em:package>content/</em:package>
-				<em:skin>skin/</em:skin>
-				<em:locale>locale/en-US/</em:locale>
-				<em:locale>locale/it-IT/</em:locale>
-				<em:locale>locale/de-DE/</em:locale>
-				<em:locale>locale/es-ES/</em:locale>
-				<em:locale>locale/fr-FR/</em:locale>
-				<em:locale>locale/hu-HU/</em:locale>
-				<em:locale>locale/pt-BR/</em:locale>
-				<em:locale>locale/ru-RU/</em:locale>
-				<em:locale>locale/ja/</em:locale>
-				<em:locale>locale/tr-TR/</em:locale>
-				<em:locale>locale/zh-TW/</em:locale>
-			</Description>
-		</em:file>
-
   </Description>      
 </RDF>

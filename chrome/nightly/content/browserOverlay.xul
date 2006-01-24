@@ -61,17 +61,19 @@
 
   <menupopup id="menu_ToolsPopup">
     <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">
-      <menupopup>
+      <menupopup onpopupshowing="nightly.menuPopup(event,this);">
+        <menuitem id="build-copy" label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
+        <menuitem id="build-insert" label="&nightly.insert-id.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
+        <menuitem id="list-copy" label="Copy list of extensions to clipboard" oncommand="nightly.copyExtensions();"/>
+        <menuitem id="list-insert" label="Insert list of extensions" oncommand="nightly.insertExtensions();"/>
+        <menuseparator/>
         <menuitem label="Leak Reporter" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
-        <menuitem label="Copy extensions to clipboard" oncommand="nightly.copyExtensions();"/>
       </menupopup>
     </menu>
   </menupopup>
   
 	<menupopup id="menu_HelpPopup">
 		<menuseparator insertbefore="aboutSeparator"/>
-		<menuitem label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
-		<menuitem label="&nightly.insert-id.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
 		<menuitem label="&nightly.talkback.label;" oncommand="nightly.launchTalkback();" insertbefore="aboutSeparator"/>
 	</menupopup>
 
