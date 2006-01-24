@@ -203,7 +203,7 @@ init: function()
 	nightly.preferences.addObserver("",nightly,false);
 	nightly.prefChange("idtitle");
 
-	nightly.versionCheck('@version@');	
+	nightly.versionCheck('${extension.fullversion}');	
 },
 
 prefChange: function(pref)

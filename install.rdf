@@ -4,8 +4,8 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>@id@</em:id>
-    <em:version>@version@</em:version>
+    <em:id>${extension.guid}</em:id>
+    <em:version>${extension.fullversion}</em:version>
     
     <!-- Firefox version --> 
     <em:targetApplication>
