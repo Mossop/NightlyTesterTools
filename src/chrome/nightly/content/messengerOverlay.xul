@@ -61,17 +61,21 @@
 
   <menupopup id="taskPopup">
     <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">
-      <menupopup>
-        <menuitem label="Copy extensions to clipboard" oncommand="nightly.copyExtensions();" insertbefore="aboutSeparator"/>
+      <menupopup onpopupshowing="nightly.menuPopup(event,this);">
+        <menuitem id="build-copy" label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
+        <menuitem id="build-insert" label="&nightly.insert-id.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
+        <menuitem id="list-copy" label="&nightly.copy-extensions.label;" oncommand="nightly.copyExtensions();"/>
+        <menuitem id="list-insert" label="&nightly.insert-extensions.label;" oncommand="nightly.insertExtensions();"/>
+        <menuseparator/>
+        <menu label="Talkback" id="nightly-talkback-menu" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+          <menupopup>
+            <menuseparator id="nightly-talkback-separator" hidden="true"/>
+            <menuitem label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
+          </menupopup>
+        </menu>
+        <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>
     </menu>
   </menupopup>
   
-	<menupopup id="menu_HelpPopup">
-		<menuseparator insertbefore="menu_HelpAboutSeparator"/>
-		<menuitem label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
-		<menuitem label="&nightly.insert-id.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="menu_HelpAboutSeparator"/>
-		<menuitem label="&nightly.talkback.label;" oncommand="nightly.launchTalkback();" insertbefore="menu_HelpAboutSeparator"/>
-	</menupopup>
-
 </overlay>

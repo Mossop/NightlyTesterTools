@@ -49,6 +49,7 @@
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
+  <script type="application/x-javascript" src="talkback/talkback.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 
   <toolbarpalette id="BrowserToolbarPalette">
@@ -67,14 +68,15 @@
         <menuitem id="list-copy" label="&nightly.copy-extensions.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.insert-extensions.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
+        <menu label="Talkback" id="nightly-talkback-menu" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+          <menupopup>
+            <menuseparator id="nightly-talkback-separator" hidden="true"/>
+            <menuitem label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
+          </menupopup>
+        </menu>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>
     </menu>
   </menupopup>
   
-	<menupopup id="menu_HelpPopup">
-		<menuseparator insertbefore="aboutSeparator"/>
-		<menuitem label="&nightly.talkback.label;" oncommand="nightly.launchTalkback();" insertbefore="aboutSeparator"/>
-	</menupopup>
-
 </overlay>

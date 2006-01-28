@@ -71,20 +71,20 @@ preferences: null,
 showAlert: function(id,args)
 {
  	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-									.getService(Components.interfaces.nsIStringBundleService);
+									    .getService(Components.interfaces.nsIStringBundleService);
 	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
 	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                    .getService(Components.interfaces.nsIPromptService);
+                                .getService(Components.interfaces.nsIPromptService);
   var text=bundle.formatStringFromName(id,args,args.length);
   promptService.alert(null,"Nightly Tester Tools",text);
 },
 
 loadBuildIDFromFile: function()
 {
-	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].
-										getService(Components.interfaces.nsIFileInputStream);
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
-										getService(Components.interfaces.nsIProperties);
+	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+										     .createInstance(Components.interfaces.nsIFileInputStream);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
 
 	var datafile = directoryService.get("ProfD",Components.interfaces.nsIFile);
 	datafile.append("compatibility.ini");
@@ -450,102 +450,6 @@ alertType: function(type)
 
 	var dir = directoryService.get(type,Components.interfaces.nsIFile);
 	alert(dir.path);
-},
-
-findTalkbackInDir: function(dir)
-{
-	dir.append("components");
-	
-	if (dir.exists())
-	{
-		var winCheck = dir.clone();
-		winCheck.append("talkback.exe");
-		
-		if ((winCheck.exists()) && (winCheck.isExecutable()))
-		{
-			return winCheck;
-		}
-		else
-		{
-			dir.append("talkback");
-			
-			if (dir.exists())
-			{
-				var macCheck = dir.clone();
-				macCheck.append("Talkback.app");
-
-				// nsProcess.init() doesn't know what to do with Mac OS X
-				// application bundles, so dig down to the executable.
-				// https://bugzilla.mozilla.org/show_bug.cgi?id=307463
-				macCheck.append("Contents");
-				macCheck.append("MacOS");
-				macCheck.append("Talkback");
-				
-				// Don't check isExecutable() for Mac.
-				// For some reason, it's false, but running it works anyway.
-				if ((macCheck.exists()))
-				{
-					return macCheck;
-				}
-
-				dir.append("talkback");
-				if ((dir.exists()) && (dir.isExecutable()))
-				{
-					return dir;
-				}
-			}
-		}
-	}
-	return null;
-},
-
-findTalkback: function()
-{	
-	var dir = null;
-	
-	// Firefox 1.5 location
-	if (Components.classes["@mozilla.org/extensions/manager;1"])
-	{
-		var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"].
-											getService(Components.interfaces.nsIExtensionManager);
-	
-		if (extensionManager.getInstallLocation)
-		{
-			var installloc = extensionManager.getInstallLocation("talkback@mozilla.org");
-			if (installloc)
-			{
-				dir = installloc.getItemLocation("talkback@mozilla.org");
-				if (dir)
-				{
-					var talkback=nightly.findTalkbackInDir(dir);
-					if (talkback)
-					{
-						return talkback;
-					}
-				}
-			}
-		}
-	}
-
-	// Firefox 1.0 location
-	// (before the fix for https://bugzilla.mozilla.org/show_bug.cgi?id=299040)
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
-										getService(Components.interfaces.nsIProperties);
-	dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
-	return nightly.findTalkbackInDir(dir);
-},
-
-launchTalkback: function()
-{
-	var talkback = nightly.findTalkback();
-	if (talkback)
-	{
-		nightly.launch(talkback,null);
-	}
-	else
-	{
-  	nightly.showAlert("nightly.notalkback.message",[]);
-	}
 },
 
 launchOptions: function()
