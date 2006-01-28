@@ -49,6 +49,7 @@
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
+  <script type="application/x-javascript" src="talkback/talkbackdb.js" />
   <script type="application/x-javascript" src="talkback/talkback.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 

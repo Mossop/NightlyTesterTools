@@ -44,135 +44,40 @@
 
 var talkback = {
 
-talkbackdb: null,
-talkbackdir: null,
-vendor: null,
-product: null,
-platform: null,
-build: null,
+db: null,
 
 init: function(event)
 {
-	// Firefox 1.5 location
-	if (Components.classes["@mozilla.org/extensions/manager;1"])
-	{
-		var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
-											               .getService(Components.interfaces.nsIExtensionManager);
+	talkback.db = new TalkbackDatabase();
 	
-		if (extensionManager.getInstallLocation)
-		{
-			var installloc = extensionManager.getInstallLocation("talkback@mozilla.org");
-			if (installloc)
-			{
-				var dir = installloc.getItemLocation("talkback@mozilla.org");
-				if (dir)
-				{
-					talkback.findTalkbackInDir(dir)
-				}
-			}
-		}
-	}
-
-	if (!talkback.talkbackdir)
-	{
-		// Firefox 1.0 location
-		// (before the fix for https://bugzilla.mozilla.org/show_bug.cgi?id=299040)
-		var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-											               .getService(Components.interfaces.nsIProperties);
-		var dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
-		talkback.findTalkbackInDir(dir);
-	}
-	
-	if (talkback.talkbackdir)
-	{
-		var ini = talkback.talkbackdir.clone();
-		ini.append("master.ini");
-		if (ini.exists())
-		{
-			var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-											       .createInstance(Components.interfaces.nsIFileInputStream);
-			
-			stream.init(ini,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
-			stream.QueryInterface(Components.interfaces.nsILineInputStream);
-		
-			var line = { value: null };
-			while (stream.readLine(line))
-			{
-				var bits = line.value.split(" = ");
-				if (bits[0]=="VendorID")
-				{
-					talkback.vendor=bits[1].substring(1,bits[1].length-1);
-				}
-				else if (bits[0]=="ProductID")
-				{
-					talkback.product=bits[1].substring(1,bits[1].length-1);
-				}
-				else if (bits[0]=="PlatformID")
-				{
-					talkback.platform=bits[1].substring(1,bits[1].length-1);
-				}
-				else if (bits[0]=="BuildID")
-				{
-					talkback.build=bits[1].substring(1,bits[1].length-1);
-				}
-			}
-
-			var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-												               .getService(Components.interfaces.nsIProperties);
-			var dir = directoryService.get("AppData",Components.interfaces.nsIFile);
-			dir.append("Talkback");
-			dir.append(talkback.vendor);
-			dir.append(talkback.product);
-			dir.append(talkback.platform);
-			dir.append(talkback.build);
-
-			if (dir.exists())
-			{
-				var db = new TalkbackDatabase(dir);
-				if (db.incidents.length>0)
-				{
-					var sep = document.getElementById("nightly-talkback-separator");
-					sep.hidden=false;
-					var parent = sep.parentNode;
-					for (var i=0; i<db.incidents.length; i++)
-					{
-						var menuitem = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","menuitem");
-						menuitem.setAttribute("id", "talkback-id-"+db.incidents[i].id);
-						menuitem.setAttribute("label", db.incidents[i].id);
-						parent.insertBefore(menuitem,sep);
-					}
-				}
-			}
-		}
-	}
-	else
+	if (!talkback.db.talkbackdir)
 	{
 		document.getElementById("nightly-talkback-menu").disabled=true;
 	}
-},
-
-findTalkbackInDir: function(dir)
-{
-	dir.append("components");
 	
-	if (dir.exists())
+	var db = talkback.db.getCurrentBuildDatabase();
+	if (db)
 	{
-		talkback.talkbackdir=dir.clone();
+		var sep = document.getElementById("nightly-talkback-separator");
+		var parent = sep.parentNode;
 		
-		dir.append("talkback");
-		if (dir.exists())
+		for (var i=0; i<db.incidents.length; i++)
 		{
-			talkback.talkbackdir=dir.clone();
+			var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
+			item.setAttribute("id", "talkback-id-"+db.incidents[i].id);
+			item.setAttribute("label", db.incidents[i].id);
+			parent.insertBefore(item, sep);
 		}
+		sep.hidden=false;
 	}
 },
 
 launchTalkback: function()
 {
-	if (talkback.talkbackdir)
+	if (talkback.db.talkbackdir)
 	{
 		// Test for windows
-		var exe = talkback.talkbackdir.clone();
+		var exe = talkback.db.talkbackdir.clone();
 		exe.append("talkback.exe");
 		if ((exe.exists()) && (exe.isExecutable()))
 		{
@@ -181,7 +86,7 @@ launchTalkback: function()
 		}
 
 		// Test for Mac
-		exe = talkback.talkbackdir.clone();
+		exe = talkback.db.talkbackdir.clone();
 		exe.append("Talkback.app");
 		exe.append("Contents");
 		exe.append("MacOS");
@@ -194,7 +99,7 @@ launchTalkback: function()
 		}
 
 		// Test for *nix
-		exe = talkback.talkbackdir.clone();
+		exe = talkback.db.talkbackdir.clone();
 		exe.append("talkback");
 
 		if ((exe.exists()) && (exe.isExecutable()))
@@ -215,77 +120,6 @@ viewIncident: function(event)
 	}
 }
 
-}
-
-function TalkbackDatabase(dir)
-{
-	var db = dir.clone();
-	db.append("info.db");
-	if (db.exists())
-	{
-		var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-										       .createInstance(Components.interfaces.nsIFileInputStream);
-		
-		stream.init(db, 1, 384, Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
-		
-		var bstream = Components.classes["@mozilla.org/binaryinputstream;1"]
-		                        .createInstance(Components.interfaces.nsIBinaryInputStream);
-		bstream.setInputStream(stream);
-		
-		bstream.read32();                        // INFO
-		bstream.read32();                        // File size
-		bstream.read32();                        // Manifest version
-		var count = bstream.read32();            // Incident count
-		
-		var pos=0;
-		for (var i=0; i<count; i++)
-		{
-			var incident = new TalkbackIncident(bstream);
-			if (incident.type==2)
-			{
-				this.incidents[pos]=incident;
-				pos++;
-			}
-		}
-		bstream.close();
-	}
-}
-
-TalkbackDatabase.prototype = {
-	incidents: []
-}
-
-function TalkbackIncident(bstream)
-{
-	this.type = bstream.read32();			         // 1 = cached incident, 2 = sent incident
-	this.date = bstream.read32();              // Epoch time
-	bstream.read32();                          // ?
-	bstream.read32();                          // 1
-	bstream.read32();                          // ?
-	bstream.read8();                           // ?
-	this.id = readCString(bstream);            // ID
-	this.comment = readCString(bstream);       // Comment
-	this.filename = readCString(bstream);      // Cache filename
-	readCString(bstream);                      // Repeat ID
-}
-
-TalkbackIncident.prototype = {
-	type: null,
-	date: 0,
-	id: "",
-	comment: ""
-}
-
-function readCString(bstream)
-{
-	var result = "";
-	var b = bstream.read8();
-	while (b!=0)
-	{
-		result+=String.fromCharCode(b);
-		b = bstream.read8();
-	}
-	return result;
 }
 
 window.addEventListener("load", talkback.init, false);
