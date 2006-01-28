@@ -173,6 +173,7 @@ addBuilds: function(children, source)
 
 addIncidents: function(children, source)
 {
+	source.loadIncidents();
 	for (var i=0; i<source.incidents.length; i++)
 	{
 		var item = document.createElementNS(xulns, "treeitem");

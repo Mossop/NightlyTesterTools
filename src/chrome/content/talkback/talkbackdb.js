@@ -173,7 +173,7 @@ TalkbackDatabase.prototype = {
 		}
 		
 		var db = new TalkbackBuildDatabase(dir);
-		if (db.incidents.length>0)
+		if (!db.incidents)
 		{
 			if (!this.incidents[db.vendor])
 				this.incidents[db.vendor]=[];
@@ -221,7 +221,6 @@ TalkbackDatabase.prototype = {
 
 function TalkbackBuildDatabase(dir)
 {
-	this.incidents = [];
 	this.basedir = dir.clone();
 	var db = dir.clone();
 	db.append("info.db");
@@ -229,6 +228,58 @@ function TalkbackBuildDatabase(dir)
 	ini.append("manifest.ini");
 	if ((db.exists())&&(ini.exists()))
 	{
+		stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+										       .createInstance(Components.interfaces.nsIFileInputStream);
+		
+		stream.init(ini,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
+		stream.QueryInterface(Components.interfaces.nsILineInputStream);
+	
+		var line = { value: null };
+		while (stream.readLine(line))
+		{
+			var bits = line.value.split(" = ");
+			if (bits[0]=="VendorID")
+			{
+				this.vendor=bits[1].substring(1,bits[1].length-1);
+			}
+			else if (bits[0]=="ProductID")
+			{
+				this.product=bits[1].substring(1,bits[1].length-1);
+			}
+			else if (bits[0]=="PlatformID")
+			{
+				this.platform=bits[1].substring(1,bits[1].length-1);
+			}
+			else if (bits[0]=="BuildID")
+			{
+				this.build=bits[1].substring(1,bits[1].length-1);
+			}
+		}
+		stream.close();
+	}
+	else
+	{
+		this.incidents = [];
+	}
+}
+
+TalkbackBuildDatabase.prototype = {
+	vendor: null,
+	product: null,
+	platform: null,
+	build: null,
+	basedir: null,
+	incidents: null,
+	
+	loadIncidents: function()
+	{
+		if (this.incidents!=null)
+			return;
+			
+		this.incidents = [];
+		var db = this.basedir.clone();
+		db.append("info.db");
+
 		var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
 										       .createInstance(Components.interfaces.nsIFileInputStream);
 		
@@ -254,48 +305,7 @@ function TalkbackBuildDatabase(dir)
 			}
 		}
 		bstream.close();
-
-		if (this.incidents.length>0)
-		{
-			stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-											       .createInstance(Components.interfaces.nsIFileInputStream);
-			
-			stream.init(ini,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
-			stream.QueryInterface(Components.interfaces.nsILineInputStream);
-		
-			var line = { value: null };
-			while (stream.readLine(line))
-			{
-				var bits = line.value.split(" = ");
-				if (bits[0]=="VendorID")
-				{
-					this.vendor=bits[1].substring(1,bits[1].length-1);
-				}
-				else if (bits[0]=="ProductID")
-				{
-					this.product=bits[1].substring(1,bits[1].length-1);
-				}
-				else if (bits[0]=="PlatformID")
-				{
-					this.platform=bits[1].substring(1,bits[1].length-1);
-				}
-				else if (bits[0]=="BuildID")
-				{
-					this.build=bits[1].substring(1,bits[1].length-1);
-				}
-			}
-			stream.close();
-		}
 	}
-}
-
-TalkbackBuildDatabase.prototype = {
-	vendor: null,
-	product: null,
-	platform: null,
-	build: null,
-	basedir: null,
-	incidents: null
 }
 
 function TalkbackIncident(bstream)

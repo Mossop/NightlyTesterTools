@@ -80,13 +80,13 @@
         <menuitem id="list-copy" label="&nightly.copy-extensions.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.insert-extensions.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
-        <menu label="Talkback" id="nightly-talkback-menu" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
-          <menupopup>
-            <menuseparator id="nightly-talkback-separator" hidden="true"/>
-            <menuitem observes="viewTalkbackSidebar"/>
-            <menuitem label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
+        <menu label="Incidents" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+          <menupopup id="nightly-incidents">
           </menupopup>
         </menu>
+        <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar"/>
+        <menuitem id="nightly-talkback-launch" label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
+        <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>
     </menu>

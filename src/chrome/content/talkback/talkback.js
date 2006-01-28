@@ -52,23 +52,27 @@ init: function(event)
 	
 	if (!talkback.db.talkbackdir)
 	{
-		document.getElementById("nightly-talkback-menu").disabled=true;
+		document.getElementById("nightly-talkback-sidebar").disabled=true;
+		document.getElementById("nightly-talkback-launch").disabled=true;
 	}
 	
 	var db = talkback.db.getCurrentBuildDatabase();
 	if (db)
 	{
-		var sep = document.getElementById("nightly-talkback-separator");
-		var parent = sep.parentNode;
+		db.loadIncidents();
+		var parent = document.getElementById("nightly-incidents");
 		
 		for (var i=0; i<db.incidents.length; i++)
 		{
 			var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
 			item.setAttribute("id", "talkback-id-"+db.incidents[i].id);
 			item.setAttribute("label", db.incidents[i].id);
-			parent.insertBefore(item, sep);
+			parent.appendChild(item);
 		}
-		sep.hidden=false;
+	}
+	else
+	{
+		document.getElementById("nightly-incidents").parentNode.hidden=true;
 	}
 },
 
