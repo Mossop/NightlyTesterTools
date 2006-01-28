@@ -57,6 +57,19 @@ init: function()
 	sidebar.addProducts(root, this.db.incidents[this.db.vendor]);
 },
 
+copy: function(event)
+{
+	var tree = document.getElementById("tree");
+	var node = tree.contentView.getItemAtIndex(tree.currentIndex);
+	if (node.id.substring(0,12)=="talkback-id-")
+	{
+		var id = node.id.substring(12);
+	  var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].
+	                                         getService(Components.interfaces.nsIClipboardHelper);
+	  clipboard.copyString(id);
+	}
+},
+
 command: function(event)
 {
 	var tree = document.getElementById("tree");
@@ -72,6 +85,13 @@ click: function(event)
 {
 	if (event.button<2)
 		sidebar.command(event);
+},
+
+checkPopup: function(event)
+{
+	var tree = document.getElementById("tree");
+	var node = tree.contentView.getItemAtIndex(tree.currentIndex);
+	return (node.id.substring(0,12)=="talkback-id-");
 },
 
 addProducts: function(children, source)
@@ -147,7 +167,8 @@ addIncidents: function(children, source)
 		cell.setAttribute("label", source.incidents[i].id);
 		row.appendChild(cell);
 		cell = document.createElementNS(xulns, "treecell");
-		cell.setAttribute("label", source.incidents[i].date);
+		var date = new Date(source.incidents[i].date*1000);
+		cell.setAttribute("label", date.toLocaleString());
 		row.appendChild(cell);
 		cell = document.createElementNS(xulns, "treecell");
 		cell.setAttribute("label", source.incidents[i].comment);

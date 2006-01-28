@@ -47,8 +47,13 @@
 <page id="TalkbackSidebar" title="Talkback" onload="sidebar.init();"
       xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
-  <script src="talkbackdb.js"/>
   <script src="sidebar.js"/>
+  
+  <popupset>
+    <popup id="talkbackContext" onpopupshowing="return sidebar.checkPopup(event)">
+      <menuitem oncommand="sidebar.copy(event)" label="Copy"/>
+    </popup>
+  </popupset>
   
   <tree id="tree" flex="1" seltype="single">
     <treecols>
@@ -59,7 +64,8 @@
       <treecol id="colComment" label="Comment" flex="10" hidden="true" persist="width hidden ordinal"/>
     </treecols>
     
-    <treechildren id="treeroot" onkeypress="if (event.keyCode==13) sidebar.command(event);" onclick="sidebar.click(event);"/>
+    <treechildren id="treeroot" context="talkbackContext"
+                  onkeypress="if (event.keyCode==13) sidebar.command(event);" onclick="sidebar.click(event);"/>
   </tree>
 
 </page>
