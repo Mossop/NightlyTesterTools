@@ -80,7 +80,7 @@
         <menuitem id="list-copy" label="&nightly.copy-extensions.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.insert-extensions.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
-        <menu label="Incidents" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+        <menu label="Incidents" hidden="true" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
           <menupopup id="nightly-incidents">
           </menupopup>
         </menu>

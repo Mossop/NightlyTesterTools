@@ -69,10 +69,7 @@ init: function(event)
 			item.setAttribute("label", db.incidents[i].id);
 			parent.appendChild(item);
 		}
-	}
-	else
-	{
-		document.getElementById("nightly-incidents").parentNode.hidden=true;
+		document.getElementById("nightly-incidents").parentNode.hidden=false;
 	}
 },
 

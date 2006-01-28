@@ -148,8 +148,11 @@ function TalkbackDatabase()
 		}
 	}			
 
+	var start = Date.now();
 	if (this.talkbackdbdir)
 		this.scanDir(this.talkbackdbdir);
+	var time = Date.now()-start;
+	dump("Startup time - "+time+"\n");
 }
 
 TalkbackDatabase.prototype = {
@@ -234,25 +237,30 @@ function TalkbackBuildDatabase(dir)
 		stream.init(ini,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
 		stream.QueryInterface(Components.interfaces.nsILineInputStream);
 	
+		var fieldcount=0;
 		var line = { value: null };
-		while (stream.readLine(line))
+		while ((stream.readLine(line))&&(fieldcount<4))
 		{
 			var bits = line.value.split(" = ");
 			if (bits[0]=="VendorID")
 			{
 				this.vendor=bits[1].substring(1,bits[1].length-1);
+				fieldcount++;
 			}
 			else if (bits[0]=="ProductID")
 			{
 				this.product=bits[1].substring(1,bits[1].length-1);
+				fieldcount++;
 			}
 			else if (bits[0]=="PlatformID")
 			{
 				this.platform=bits[1].substring(1,bits[1].length-1);
+				fieldcount++;
 			}
 			else if (bits[0]=="BuildID")
 			{
 				this.build=bits[1].substring(1,bits[1].length-1);
+				fieldcount++;
 			}
 		}
 		stream.close();
