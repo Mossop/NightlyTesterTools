@@ -108,6 +108,8 @@ addProducts: function(children, source)
 	{
 		var item = document.createElementNS(xulns, "treeitem");
 		item.setAttribute("container", "true");
+		if (key==this.db.product)
+			item.setAttribute("open", "true");
 		children.appendChild(item);
 		var row = document.createElementNS(xulns, "treerow");
 		item.appendChild(row);
@@ -128,6 +130,8 @@ addPlatforms: function(children, source)
 	{
 		var item = document.createElementNS(xulns, "treeitem");
 		item.setAttribute("container", "true");
+		if (key==this.db.platform)
+			item.setAttribute("open", "true");
 		children.appendChild(item);
 		var row = document.createElementNS(xulns, "treerow");
 		item.appendChild(row);
@@ -148,6 +152,8 @@ addBuilds: function(children, source)
 	{
 		var item = document.createElementNS(xulns, "treeitem");
 		item.setAttribute("container", "true");
+		if (key==this.db.build)
+			item.setAttribute("open", "true");
 		children.appendChild(item);
 		var row = document.createElementNS(xulns, "treerow");
 		item.appendChild(row);

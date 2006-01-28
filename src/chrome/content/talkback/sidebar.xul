@@ -55,13 +55,13 @@
     </popup>
   </popupset>
   
-  <tree id="tree" flex="1" seltype="single">
+  <tree id="tree" flex="1" seltype="single" onkeypress="if (event.keyCode==13) sidebar.selectedCommand(event);">
     <treecols>
       <treecol id="colID" label="ID" primary="true" flex="1" persist="width"/>
       <splitter class="tree-splitter"/>
-      <treecol id="colDate" label="Date" flex="2" hidden="true" persist="width hidden ordinal"/>
+      <treecol id="colDate" label="Date" flex="2" hidden="true" persist="width hidden"/>
       <splitter class="tree-splitter"/>
-      <treecol id="colComment" label="Comment" flex="10" hidden="true" persist="width hidden ordinal"/>
+      <treecol id="colComment" label="Comment" flex="10" hidden="true" persist="width hidden"/>
     </treecols>
     
     <treechildren id="treeroot" context="talkbackContext"
