@@ -221,6 +221,8 @@ TalkbackDatabase.prototype = {
 
 function TalkbackBuildDatabase(dir)
 {
+	this.incidents = [];
+	this.basedir = dir.clone();
 	var db = dir.clone();
 	db.append("info.db");
 	var ini = dir.clone();
@@ -292,7 +294,8 @@ TalkbackBuildDatabase.prototype = {
 	product: null,
 	platform: null,
 	build: null,
-	incidents: []
+	basedir: null,
+	incidents: null
 }
 
 function TalkbackIncident(bstream)

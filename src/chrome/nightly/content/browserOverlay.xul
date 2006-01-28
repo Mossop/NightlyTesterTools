@@ -53,6 +53,17 @@
   <script type="application/x-javascript" src="talkback/talkback.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 
+  <!-- Sidebar -->
+  <broadcasterset id="mainBroadcasterSet">
+    <broadcaster id="viewTalkbackSidebar"
+          autoCheck="false" 
+          label="View in Sidebar"
+          type="checkbox"
+          group="sidebar"
+          sidebarurl="chrome://nightly/content/talkback/sidebar.xul"
+          oncommand="toggleSidebar('viewTalkbackSidebar');"/>
+  </broadcasterset>
+
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
             class="toolbarbutton-1"
@@ -72,6 +83,7 @@
         <menu label="Talkback" id="nightly-talkback-menu" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
           <menupopup>
             <menuseparator id="nightly-talkback-separator" hidden="true"/>
+            <menuitem observes="viewTalkbackSidebar"/>
             <menuitem label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
           </menupopup>
         </menu>
