@@ -115,6 +115,7 @@ addProducts: function(children, source)
 		item.appendChild(row);
 		var cell = document.createElementNS(xulns, "treecell");
 		cell.setAttribute("label", key);
+		cell.setAttribute("properties", "Name");
 		row.appendChild(cell);
 		
 		var nchildren = document.createElementNS(xulns, "treechildren");
@@ -137,6 +138,7 @@ addPlatforms: function(children, source)
 		item.appendChild(row);
 		var cell = document.createElementNS(xulns, "treecell");
 		cell.setAttribute("label", key);
+		cell.setAttribute("properties", "Name");
 		row.appendChild(cell);
 		
 		var nchildren = document.createElementNS(xulns, "treechildren");
@@ -159,6 +161,7 @@ addBuilds: function(children, source)
 		item.appendChild(row);
 		var cell = document.createElementNS(xulns, "treecell");
 		cell.setAttribute("label", key);
+		cell.setAttribute("properties", "Name");
 		row.appendChild(cell);
 		
 		var nchildren = document.createElementNS(xulns, "treechildren");
@@ -179,6 +182,7 @@ addIncidents: function(children, source)
 		item.appendChild(row);
 		var cell = document.createElementNS(xulns, "treecell");
 		cell.setAttribute("label", source.incidents[i].id);
+		cell.setAttribute("properties", "Name");
 		row.appendChild(cell);
 		cell = document.createElementNS(xulns, "treecell");
 		var date = new Date(source.incidents[i].date*1000);
