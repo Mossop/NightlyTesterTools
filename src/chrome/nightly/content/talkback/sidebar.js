@@ -70,21 +70,29 @@ copy: function(event)
 	}
 },
 
-command: function(event)
+command: function(event,item)
 {
-	var tree = document.getElementById("tree");
-	var node = tree.contentView.getItemAtIndex(tree.currentIndex);
-	if (node.id.substring(0,12)=="talkback-id-")
+	if (item.id.substring(0,12)=="talkback-id-")
 	{
-		var id = node.id.substring(12);
+		var id = item.id.substring(12);
 		window.parent.openUILink("http://talkback-public.mozilla.org/talkback/fastfind.jsp?search=2&type=iid&id="+id, event, false, true);
 	}
 },
 
-click: function(event)
+selectedCommand: function(event)
 {
-	if (event.button<2)
-		sidebar.command(event);
+	dump("command\n");
+	var tree = document.getElementById("tree");
+	var node = tree.contentView.getItemAtIndex(tree.currentIndex);
+	sidebar.command(event,node);
+},
+
+clickCommand: function(event)
+{
+	var tree = document.getElementById("tree");
+	var row = {}, col = {};
+	tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, {});
+	sidebar.command(event, tree.contentView.getItemAtIndex(row.value));
 },
 
 checkPopup: function(event)

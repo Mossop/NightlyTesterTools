@@ -1,18 +1,18 @@
-content			nightly																							file:chrome/nightly/content/
-content			nightly-platform																		file:chrome/nightly/content/platform/              platform
-skin				nightly					classic/1.0													file:chrome/nightly/skin/
+content			nightly																							file:chrome/content/
+content			nightly-platform																		file:chrome/content/platform/              platform
+skin				nightly					classic/1.0													file:chrome/skin/
 
-locale			nightly					en-US																file:chrome/nightly/locale/en-US/
-locale			nightly					it-IT																file:chrome/nightly/locale/it-IT/
-locale			nightly					ru-RU																file:chrome/nightly/locale/ru-RU/
-locale			nightly					de-DE																file:chrome/nightly/locale/de-DE/
-locale			nightly					es-ES																file:chrome/nightly/locale/es-ES/
-locale			nightly					fr-FR																file:chrome/nightly/locale/fr-FR/
-locale			nightly					hu-HU																file:chrome/nightly/locale/hu-HU/
-locale			nightly					pt-BR																file:chrome/nightly/locale/pt-BR/
-locale			nightly					ja																	file:chrome/nightly/locale/ja/
-locale			nightly					tr-TR																file:chrome/nightly/locale/tr-TR/
-locale			nightly					zh-TW																file:chrome/nightly/locale/zh-TW/
+locale			nightly					en-US																file:chrome/locale/en-US/
+locale			nightly					it-IT																file:chrome/locale/it-IT/
+locale			nightly					ru-RU																file:chrome/locale/ru-RU/
+locale			nightly					de-DE																file:chrome/locale/de-DE/
+locale			nightly					es-ES																file:chrome/locale/es-ES/
+locale			nightly					fr-FR																file:chrome/locale/fr-FR/
+locale			nightly					hu-HU																file:chrome/locale/hu-HU/
+locale			nightly					pt-BR																file:chrome/locale/pt-BR/
+locale			nightly					ja																	file:chrome/locale/ja/
+locale			nightly					tr-TR																file:chrome/locale/tr-TR/
+locale			nightly					zh-TW																file:chrome/locale/zh-TW/
 
 overlay			chrome://browser/content/browser.xul								chrome://nightly/content/browserOverlay.xul		     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
 overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly/content/messengerOverlay.xul      application={3550f703-e582-4d05-9a08-453d09bdfdc6}

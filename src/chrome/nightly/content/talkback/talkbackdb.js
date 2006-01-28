@@ -126,7 +126,7 @@ function TalkbackDatabase()
 	{
 	}
 	
-	if (!this.talkbackdir)
+	if (!this.talkbackdbdir)
 	{
 		var dir = directoryService.get("Home",Components.interfaces.nsIFile);
 		var check = dir.clone();
@@ -143,7 +143,7 @@ function TalkbackDatabase()
 			dir.append("Talkback");
 			if (dir.exists())
 			{
-				this.talkbackdir=dir;
+				this.talkbackdbdir=dir;
 			}
 		}
 	}			
