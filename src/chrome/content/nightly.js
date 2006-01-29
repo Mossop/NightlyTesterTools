@@ -317,24 +317,26 @@ copyTemplate: function(template)
 
 menuPopup: function(event, menupopup)
 {
-	var attext = false;
-	
-	var element = document.commandDispatcher.focusedElement;
-	dump("Element: "+element+"\n");
-	if (element)
+	if (menupopup==event.target)
 	{
-		var type = element.localName.toLowerCase();
-		attext= ((type=="input")||(type=="textarea"))
-	}
+		var attext = false;
 		
-	var node=menupopup.firstChild;
-	while (node && node.localName!='menuseparator')
-	{
-		if (node.id.substring(node.id.length-7)=="-insert")
-			node.hidden=!attext;
-		if (node.id.substring(node.id.length-5)=="-copy")
-			node.hidden=attext;
-		node=node.nextSibling;
+		var element = document.commandDispatcher.focusedElement;
+		if (element)
+		{
+			var type = element.localName.toLowerCase();
+			attext= ((type=="input")||(type=="textarea"))
+		}
+			
+		var node=menupopup.firstChild;
+		while (node && node.localName!='menuseparator')
+		{
+			if (node.id.substring(node.id.length-7)=="-insert")
+				node.hidden=!attext;
+			if (node.id.substring(node.id.length-5)=="-copy")
+				node.hidden=attext;
+			node=node.nextSibling;
+		}
 	}
 },
 

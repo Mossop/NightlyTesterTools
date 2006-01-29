@@ -50,11 +50,22 @@ db: null,
 
 init: function()
 {
+	setTimeout(function() { sidebar.buildTree() }, 100);
+},
+
+buildTree: function()
+{
 	this.db = window.parent.talkback.db;
+	this.db.loadDatabases();
 	
 	var root = document.getElementById("treeroot");
 	
+	var start = Date.now();
 	sidebar.addProducts(root, this.db.incidents[this.db.vendor]);
+	start=Date.now()-start;
+	dump("Sidebar setup time "+start+"\n");
+	
+	document.getElementById("loadbox").hidden=true;
 },
 
 copy: function(event)

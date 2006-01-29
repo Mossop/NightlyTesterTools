@@ -55,18 +55,23 @@
     </popup>
   </popupset>
   
-  <tree id="tree" flex="1" seltype="single" onkeypress="if (event.keyCode==13) sidebar.selectedCommand(event);">
-    <treecols>
-      <treecol id="colID" label="ID" primary="true" flex="1" persist="width"/>
-      <splitter class="tree-splitter"/>
-      <treecol id="colDate" label="Date" flex="2" hidden="true" persist="width hidden"/>
-      <splitter class="tree-splitter"/>
-      <treecol id="colComment" label="Comment" flex="10" hidden="true" persist="width hidden"/>
-    </treecols>
-    
-    <treechildren id="treeroot" context="talkbackContext"
-                  onclick="if (event.button==1) sidebar.clickCommand(event);"
-                  ondblclick="if (event.button==0) sidebar.clickCommand(event);"/>
-  </tree>
+  <stack flex="1">
+    <tree id="tree" seltype="single" onkeypress="if (event.keyCode==13) sidebar.selectedCommand(event);">
+      <treecols>
+        <treecol id="colID" label="ID" primary="true" flex="1" persist="width"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="colDate" label="Date" flex="2" hidden="true" persist="width hidden"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="colComment" label="Comment" flex="10" hidden="true" persist="width hidden"/>
+      </treecols>
+      
+      <treechildren id="treeroot" context="talkbackContext"
+                    onclick="if (event.button==1) sidebar.clickCommand(event);"
+                    ondblclick="if (event.button==0) sidebar.clickCommand(event);"/>
+    </tree>
+    <vbox style="background-color: -moz-dialog" pack="center" align="center" id="loadbox">
+      <label style="font-size: 200%" value="Loading..."/>
+    </vbox>
+  </stack>
 
 </page>

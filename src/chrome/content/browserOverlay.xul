@@ -57,7 +57,7 @@
   <broadcasterset id="mainBroadcasterSet">
     <broadcaster id="viewTalkbackSidebar"
           autoCheck="false" 
-          label="View in Sidebar"
+          label="Talkback Sidebar"
           type="checkbox"
           group="sidebar"
           sidebarurl="chrome://nightly/content/talkback/sidebar.xul"
@@ -84,8 +84,8 @@
           <menupopup id="nightly-incidents">
           </menupopup>
         </menu>
-        <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar"/>
-        <menuitem id="nightly-talkback-launch" label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
+        <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar" label="View Incidents in Sidebar"/>
+        <menuitem id="nightly-talkback-launch" hidden="true" label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>

@@ -140,23 +140,17 @@ function TalkbackDatabase()
 		{
 			dir.append("Library");
 			dir.append("Application Support");
-			dir.append("Talkback");
+			dir.append("FullCircle");
 			if (dir.exists())
 			{
 				this.talkbackdbdir=dir;
 			}
 		}
 	}			
-
-	var start = Date.now();
-	if (this.talkbackdbdir)
-		this.scanDir(this.talkbackdbdir);
-	var time = Date.now()-start;
-	dump("Startup time - "+time+"\n");
 }
 
 TalkbackDatabase.prototype = {
-	incidents: [],
+	incidents: null,
 	talkbackdbdir: null,
 	talkbackdir: null,
 	
@@ -164,6 +158,19 @@ TalkbackDatabase.prototype = {
 	product: null,
 	platform: null,
 	build: null,
+	
+	loadDatabases: function()
+	{
+		if (!this.incidents)
+		{
+			this.incidents=[];
+			var start = Date.now();
+			if (this.talkbackdbdir)
+				this.scanDir(this.talkbackdbdir);
+			var time = Date.now()-start;
+			dump("Startup time - "+time+"\n");
+		}
+	},
 	
 	scanDir: function(dir)
 	{
@@ -198,11 +205,34 @@ TalkbackDatabase.prototype = {
 	
 	getBuildDatabase: function(vendor, product, platform, build)
 	{
-		if (this.incidents[vendor])
-			if (this.incidents[vendor][product])
-				if (this.incidents[vendor][product][platform])
-					return this.incidents[vendor][product][platform][build];
-		return null;
+		if (this.incidents)
+		{
+			if (this.incidents[vendor])
+				if (this.incidents[vendor][product])
+					if (this.incidents[vendor][product][platform])
+						return this.incidents[vendor][product][platform][build];
+
+			return null;
+		}
+		else
+		{
+			var test = this.talkbackdbdir.clone();
+			test.append(vendor+product+platform+build);
+			if (test.exists())
+			{
+				return new TalkbackBuildDatabase(test);
+			}
+			test = this.talkbackdbdir.clone();
+			test.append(vendor);
+			test.append(product);
+			test.append(platform);
+			test.append(build);
+			if (test.exists())
+			{
+				return new TalkbackBuildDatabase(test);
+			}
+			return null;
+		}
 	},
 
 	findTalkbackInDir: function(dir)
