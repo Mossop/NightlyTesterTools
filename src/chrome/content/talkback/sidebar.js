@@ -54,5 +54,47 @@ init: function()
 	                        .getService(Components.interfaces.nsITalkbackService);
 
 	document.getElementById("tree").view = service.getTreeView();
+},
+
+copy: function(event)
+{
+	var tree = document.getElementById("tree");
+	var id = tree.view.getCellText(tree.currentIndex, tree.columns.getNamedColumn("incidentID"));
+	var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+	                          .getService(Components.interfaces.nsIClipboardHelper);
+	clipboard.copyString(id);
+},
+
+command: function(tree, event, row)
+{
+	var type = tree.view.getCellText(row, tree.columns.getNamedColumn("type"));
+	dump(type+"\n");
+	if (type=="incident")
+	{
+		var id = tree.view.getCellText(row, tree.columns.getNamedColumn("incidentID"));
+		window.parent.openUILink("http://talkback-public.mozilla.org/talkback/fastfind.jsp?search=2&type=iid&id="+id, event, false, true);
+	}
+},
+
+selectedCommand: function(event)
+{
+	var tree = document.getElementById("tree");
+	sidebar.command(tree, event, tree.currentIndex);
+},
+
+clickCommand: function(event)
+{
+	var tree = document.getElementById("tree");
+	var row = {}, col = {};
+	tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, {});
+	sidebar.command(tree, event, row.value);
+},
+
+checkPopup: function(event)
+{
+	var tree = document.getElementById("tree");
+	var type = tree.view.getCellText(tree.currentIndex, tree.columns.getNamedColumn("type"));
+	dump(type+"\n");
+	return type=="incident";
 }
 }

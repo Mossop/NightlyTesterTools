@@ -62,6 +62,7 @@
       <treecol id="incidentDate" label="Date" flex="2" hidden="true" persist="width hidden"/>
       <splitter class="tree-splitter"/>
       <treecol id="incidentComment" label="Comment" flex="10" hidden="true" persist="width hidden"/>
+      <treecol id="type" hidden="true" ignoreincolumnpicker="true"/>
     </treecols>
     
     <treechildren id="treeroot" context="talkbackContext"

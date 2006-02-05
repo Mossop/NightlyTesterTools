@@ -706,7 +706,9 @@ getTreeView: function()
 		{
 			var record = new XULTreeViewRecord(share);
 			record.setColumnPropertyName("incidentID", "id");
+			record.setColumnPropertyName("type", "type");
 			record.id=vkey;
+			record.type="vendor";
 			record.reserveChildren(true);
 			vparent.appendChild(record);
 			pparent = record;
@@ -721,7 +723,9 @@ getTreeView: function()
 			var product = vendor.products[pkey];
 			record = new XULTreeViewRecord(share);
 			record.setColumnPropertyName("incidentID", "id");
+			record.setColumnPropertyName("type", "type");
 			record.id=pkey;
+			record.type="product";
 			record.reserveChildren(true);
 			pparent.appendChild(record);
 			var lparent=record;
@@ -735,7 +739,9 @@ getTreeView: function()
 				{
 					record = new XULTreeViewRecord(share);
 					record.setColumnPropertyName("incidentID", "id");
+					record.setColumnPropertyName("type", "type");
 					record.id=lkey;
+					record.type="platform";
 					record.reserveChildren(true);
 					lparent.appendChild(record);
 					bparent=record;
@@ -750,7 +756,9 @@ getTreeView: function()
 					var build = platform.builds[bkey];
 					record = new XULTreeViewRecord(share);
 					record.setColumnPropertyName("incidentID", "id");
+					record.setColumnPropertyName("type", "type");
 					record.id=bkey;
+					record.type="build";
 					record.reserveChildren(true);
 					bparent.appendChild(record);
 					var iparent=record;
@@ -762,7 +770,9 @@ getTreeView: function()
 						record.setColumnPropertyName("incidentID", "id");
 						record.setColumnPropertyName("incidentDate", "date");
 						record.setColumnPropertyName("incidentComment", "comment");
+						record.setColumnPropertyName("type", "type");
 						record.id=ikey;
+						record.type="incident";
 						record.date=(new Date(incident.date)).toLocaleString();
 						record.comment=incident.comment;
 						iparent.appendChild(record);
