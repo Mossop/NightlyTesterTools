@@ -22,6 +22,7 @@
  *
  * Contributor(s):
  *   Robert Ginda, <rginda@netscape.com>, original author
+ *   Dave Townsend, <mossop@blueprintit.co.uk>, Added cell and row property support
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -440,6 +441,8 @@ function XULTreeViewRecord(share)
                            * inserted into a live tree */
 }
 
+XULTreeViewRecord.prototype.properties = "";
+
 XULTreeViewRecord.prototype.isContainerOpen = false;
 
 /*
@@ -549,6 +552,8 @@ function xtvr_setcol (colID, propertyName)
 
     if (!("_colValues" in this))
         this._colValues = new Object();
+    if (!("_colProperties" in this))
+        this._colProperties = new Object();
     
     if (typeof propertyName == "function")
     {
@@ -565,6 +570,12 @@ XULTreeViewRecord.prototype.setColumnPropertyValue =
 function xtvr_setcolv (colID, value)
 {
     this._colValues[colID] = value;
+}
+
+XULTreeViewRecord.prototype.setColumnProperties =
+function xtvr_setcolp (colID, value)
+{
+    this._colProperties[colID] = value;
 }
 
 /*
@@ -1438,7 +1449,19 @@ function xtv_getcelltxt (index, col)
 
 XULTreeView.prototype.getCellProperties =
 function xtv_cellprops (row, col, properties)
-{}
+{
+    var row = this.childData.locateChildByVisualRow (row);
+
+    if (typeof col == "object")
+        col = col.id;
+
+    var ary = col.match (/:(.*)/);
+    if (ary)
+        col = ary[1];
+
+    if (row && row._colProperties && col in row._colProperties)
+        xtv_atomizeText(row._colProperties[col], properties);
+}
 
 XULTreeView.prototype.getColumnProperties =
 function xtv_colprops (col, properties)
@@ -1446,7 +1469,11 @@ function xtv_colprops (col, properties)
 
 XULTreeView.prototype.getRowProperties =
 function xtv_rowprops (index, properties)
-{}
+{
+    var row = this.childData.locateChildByVisualRow (index);
+    
+    xtv_atomizeText(row.properties, properties);
+}
 
 XULTreeView.prototype.isSorted =
 function xtv_issorted (index)
@@ -1601,6 +1628,19 @@ function xtv_rkeypress (event)
 }
 
 /******************************************************************************/
+
+function xtv_atomizeText (text, array)
+{
+	var atomservice = Components.classes["@mozilla.org/atom-service;1"]
+                              .getService(Components.interfaces.nsIAtomService);
+                              
+  var parts = text.split(" ");
+  for (var i = 0; i<parts.length; i++)
+  {
+  	var atom = atomservice.getAtom(parts[i]);
+  	array.AppendElement(atom);
+  }
+}
 
 function xtv_formatRecord (rec, indent)
 {
