@@ -452,7 +452,7 @@ QueryInterface: function(iid)
 	{
 		return this;
 	}
-	else (iid.equals(Components.interfaces.nsIRDFRemoteDataSource))
+	else
 	{
 		throw Components.results.NS_ERROR_NO_INTERFACE;
 	}

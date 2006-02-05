@@ -49,7 +49,6 @@
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
-  <script type="application/x-javascript" src="talkback/talkbackdb.js" />
   <script type="application/x-javascript" src="talkback/talkback.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 
@@ -72,6 +71,15 @@
             oncommand="nightly.insertTemplate('buildid');"/>
   </toolbarpalette>
 
+  <popupset>
+    <tooltip id="talkback-tooltip">
+      <label id="tb-tooltip-product" value="Product"/>
+      <label id="tb-tooltip-platform" value="Platform"/>
+      <label id="tb-tooltip-date" value="Date"/>
+      <description id="tb-tooltip-comment" value="Comment"/>
+    </tooltip>
+  </popupset>
+  
   <menupopup id="menu_ToolsPopup">
     <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">
       <menupopup onpopupshowing="nightly.menuPopup(event,this);">
@@ -80,12 +88,11 @@
         <menuitem id="list-copy" label="&nightly.copy-extensions.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.insert-extensions.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
-        <menu label="Incidents" hidden="true" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+        <menu label="Recent Incidents" hidden="true" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
           <menupopup id="nightly-incidents">
           </menupopup>
         </menu>
         <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar" label="View Incidents in Sidebar"/>
-        <menuitem id="nightly-talkback-launch" hidden="true" label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>

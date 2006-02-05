@@ -44,71 +44,29 @@
 
 var talkback = {
 
-db: null,
-
 init: function(event)
 {
-	talkback.db = new TalkbackDatabase();
+	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
+	                        .getService(Components.interfaces.nsITalkbackService);
 	
-	if (!talkback.db.talkbackdir)
-	{
-		document.getElementById("nightly-talkback-sidebar").disabled=true;
-		document.getElementById("nightly-talkback-launch").disabled=true;
-	}
-	
-	var db = talkback.db.getCurrentBuildDatabase();
-	if (db)
+	var incidents = service.getPreviousIncidents(10);
+	if ((incidents)&&(incidents.length>0))
 	{
 		var parent = document.getElementById("nightly-incidents");
 		
-		for (var i=0; i<db.incidents.length; i++)
+		var en = incidents.enumerate();
+		while (en.hasMoreElements())
 		{
+			var incident = en.getNext().QueryInterface(Components.interfaces.nsITalkbackIncident);
+			
 			var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
-			item.setAttribute("id", "talkback-id-"+db.incidents[i].id);
-			item.setAttribute("label", db.incidents[i].id);
+			item.setAttribute("id", "talkback-id-"+incident.id);
+			item.setAttribute("label", incident.id);
+			item.setAttribute("tooltip", "talkback-tooltip");
 			parent.appendChild(item);
 		}
 		document.getElementById("nightly-incidents").parentNode.hidden=false;
 	}
-},
-
-launchTalkback: function()
-{
-	if (talkback.db.talkbackdir)
-	{
-		// Test for windows
-		var exe = talkback.db.talkbackdir.clone();
-		exe.append("talkback.exe");
-		if ((exe.exists()) && (exe.isExecutable()))
-		{
-			nightly.launch(exe, null);
-			return;
-		}
-
-		// Test for Mac
-		exe = talkback.db.talkbackdir.clone();
-		exe.append("Talkback.app");
-		exe.append("Contents");
-		exe.append("MacOS");
-		exe.append("Talkback");
-
-		if (exe.exists())
-		{
-			nightly.launch(exe, null);
-			return;
-		}
-
-		// Test for *nix
-		exe = talkback.db.talkbackdir.clone();
-		exe.append("talkback");
-
-		if ((exe.exists()) && (exe.isExecutable()))
-		{
-			nightly.launch(exe, null);
-			return;
-		}
-	}
-	nightly.showAlert("nightly.notalkback.message",[]);
 },
 
 viewIncident: function(event)
