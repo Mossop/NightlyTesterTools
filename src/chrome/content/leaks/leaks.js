@@ -176,11 +176,6 @@ function doParse(storelog)
 	var line = { value: "" };
 	var lines=0;
 	var para = null;
-	var shellpath = "M 0 0";
-	var docpath = "M 0 0";
-	var winpath = "M 0 0";
-	var maxleaks = 0;
-	var x = 0;
 	do
 	{
 		lines++;
@@ -205,14 +200,7 @@ function doParse(storelog)
 	    className+=" "+handler+" "+address;
 	    var data = matches[4];
 	    if (typeof(handlers[handler]) != "undefined") {
-	    	x++;
 	      handlers[handler].handle_line(address,verb,data,para);
-	      shellpath+=" L "+x+" -"+handlers["DOCSHELL"].leaked;
-	      docpath+=" L "+x+" -"+handlers["DOCUMENT"].leaked;
-	      winpath+=" L "+x+" -"+handlers["DOMWINDOW"].leaked;
-	      maxleaks=Math.max(maxleaks, handlers["DOCSHELL"].leaked);
-	      maxleaks=Math.max(maxleaks, handlers["DOMWINDOW"].leaked);
-	      maxleaks=Math.max(maxleaks, handlers["DOCUMENT"].leaked);
 	    }
 	    else
 	    {
@@ -228,13 +216,6 @@ function doParse(storelog)
     	para.className=className;
 	} while (more);
 	
-	docpath+=" V 0";
-	winpath+=" V 0";
-	shellpath+=" V 0";
-	document.getElementById("documents").setAttribute("d", docpath);
-	document.getElementById("windows").setAttribute("d", winpath);
-	document.getElementById("docshells").setAttribute("d", shellpath);
-	document.getElementById("svg").setAttribute("viewBox", "0 -"+maxleaks+" "+x+" "+maxleaks);
 	var details = document.getElementById("details");
 	var leaked=false;
 	
