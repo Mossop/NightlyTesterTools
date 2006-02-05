@@ -61,12 +61,40 @@ init: function(event)
 			
 			var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
 			item.setAttribute("id", "talkback-id-"+incident.id);
+			item.setAttribute("tooltip", "tb-incident-tooltip");
 			item.setAttribute("label", incident.id);
-			item.setAttribute("tooltip", "talkback-tooltip");
 			parent.appendChild(item);
 		}
 		document.getElementById("nightly-incidents").parentNode.hidden=false;
 	}
+},
+
+popupTooltip: function(event)
+{
+	var node = document.tooltipNode;
+	if (node.id.substring(0,12)=="talkback-id-")
+	{
+		var id = node.id.substring(12);
+		var service = Components.classes["@blueprintit.co.uk/talkback;1"]
+		                        .getService(Components.interfaces.nsITalkbackService);
+		var incident = service.getIncident(id);
+		document.getElementById("tb-tooltip-product").value=incident.build.platform.product.name+" ("+incident.build.name+")";
+		document.getElementById("tb-tooltip-date").value=(new Date(incident.date)).toLocaleString();
+		var comment = document.getElementById("tb-tooltip-comment");
+		if (incident.comment && incident.comment!="")
+		{
+			comment.value=incident.comment;
+			comment.hidden=false;
+		}
+		else
+		{
+			comment.value="";
+			comment.hidden=true;
+		}
+		
+		return true;
+	}
+	return false;
 },
 
 viewIncident: function(event)

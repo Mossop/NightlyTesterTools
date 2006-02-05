@@ -157,7 +157,7 @@ _loadIncidents: function(db)
 	var pos=0;
 	for (var i=0; i<count; i++)
 	{
-		var incident = new nsTalkbackIncident(bstream, build);
+		var incident = new nsTalkbackIncident(bstream, this);
 		if (service._isValidIncident(incident))
 		{
 			this._addIncident(incident);

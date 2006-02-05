@@ -70,13 +70,12 @@
             tooltiptext="&nightly.insert-id.tooltip;"
             oncommand="nightly.insertTemplate('buildid');"/>
   </toolbarpalette>
-
-  <popupset>
-    <tooltip id="talkback-tooltip">
-      <label id="tb-tooltip-product" value="Product"/>
-      <label id="tb-tooltip-platform" value="Platform"/>
-      <label id="tb-tooltip-date" value="Date"/>
-      <description id="tb-tooltip-comment" value="Comment"/>
+  
+  <popupset id="mainPopupSet">
+    <tooltip orient="vertical" id="tb-incident-tooltip" onpopupshowing="return talkback.popupTooltip(event)">
+      <label id="tb-tooltip-product"/>
+      <label id="tb-tooltip-date"/>
+      <description id="tb-tooltip-comment"/>
     </tooltip>
   </popupset>
   
