@@ -160,7 +160,6 @@ var handlers = {
 
 function doParse(storelog)
 {
-	var start = Date.now();
 	handlers.clear();
 	
 	var fulllog = document.getElementById("logframe").contentDocument.body;
@@ -176,15 +175,17 @@ function doParse(storelog)
 	  return;
 	var line = { value: "" };
 	var lines=0;
-	var start = Date.now();
-	var paratimes = 0;
 	var para = null;
+	var shellpath = "M 0 0";
+	var docpath = "M 0 0";
+	var winpath = "M 0 0";
+	var maxleaks = 0;
+	var x = 0;
 	do
 	{
 		lines++;
     var more = is.readLine(line); // yuck, returns false for last valid line
 
-		var time = Date.now();
 		var className="";
     if (storelog)
     {
@@ -193,7 +194,6 @@ function doParse(storelog)
 	    para.appendChild(document.createTextNode(line.value));
 	    className="logline";
 	  }
-		paratimes+=Date.now()-time;
 		
     // strip off initial "-", thread id, and thread pointer; separate
     // first word and rest
@@ -205,7 +205,14 @@ function doParse(storelog)
 	    className+=" "+handler+" "+address;
 	    var data = matches[4];
 	    if (typeof(handlers[handler]) != "undefined") {
+	    	x++;
 	      handlers[handler].handle_line(address,verb,data,para);
+	      shellpath+=" L "+x+" -"+handlers["DOCSHELL"].leaked;
+	      docpath+=" L "+x+" -"+handlers["DOCUMENT"].leaked;
+	      winpath+=" L "+x+" -"+handlers["DOMWINDOW"].leaked;
+	      maxleaks=Math.max(maxleaks, handlers["DOCSHELL"].leaked);
+	      maxleaks=Math.max(maxleaks, handlers["DOMWINDOW"].leaked);
+	      maxleaks=Math.max(maxleaks, handlers["DOCUMENT"].leaked);
 	    }
 	    else
 	    {
@@ -220,10 +227,14 @@ function doParse(storelog)
     if (storelog)
     	para.className=className;
 	} while (more);
-	var time = Date.now()-start;
-	dump(time+" "+(time/lines)+"\n");
-	dump("Document: "+paratimes+"\n");
 	
+	docpath+=" V 0";
+	winpath+=" V 0";
+	shellpath+=" V 0";
+	document.getElementById("documents").setAttribute("d", docpath);
+	document.getElementById("windows").setAttribute("d", winpath);
+	document.getElementById("docshells").setAttribute("d", shellpath);
+	document.getElementById("svg").setAttribute("viewBox", "0 -"+maxleaks+" "+x+" "+maxleaks);
 	var details = document.getElementById("details");
 	var leaked=false;
 	
@@ -257,7 +268,6 @@ function doParse(storelog)
 	  	lbl.className="uri";
 	  }
 	}
-	dump(Date.now()-start+"\n");
 
 	lbl = document.getElementById("documentLeaks");
 	handler = handlers["DOCUMENT"];
@@ -286,7 +296,6 @@ function doParse(storelog)
 	  	lbl.className="uri";
 	  }
 	}
-	dump(Date.now()-start+"\n");
 
 	lbl = document.getElementById("docshellLeaks");
 	handler = handlers["DOCSHELL"];
@@ -315,7 +324,6 @@ function doParse(storelog)
 	  	lbl.className="uri";
 	  }
 	}
-	dump(Date.now()-start+"\n");
 	
 	document.getElementById("detailsbox").collapsed=!leaked;
 }

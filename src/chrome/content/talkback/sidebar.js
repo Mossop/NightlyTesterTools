@@ -61,7 +61,7 @@ buildTree: function()
 	var root = document.getElementById("treeroot");
 	
 	var start = Date.now();
-	sidebar.addProducts(root, this.db.incidents[this.db.vendor]);
+	sidebar.addProducts(root, this.db.vendors[this.db.vendor]);
 	start=Date.now()-start;
 	dump("Sidebar setup time "+start+"\n");
 	
@@ -140,7 +140,7 @@ addPlatforms: function(children, source)
 {
 	for (var key in source)
 	{
-		var item = document.createElementNS(xulns, "treeitem");
+		/*var item = document.createElementNS(xulns, "treeitem");
 		item.setAttribute("container", "true");
 		if (key==this.db.platform)
 			item.setAttribute("open", "true");
@@ -153,9 +153,9 @@ addPlatforms: function(children, source)
 		row.appendChild(cell);
 		
 		var nchildren = document.createElementNS(xulns, "treechildren");
-		item.appendChild(nchildren);
+		item.appendChild(nchildren);*/
 		
-		sidebar.addBuilds(nchildren, source[key]);
+		sidebar.addBuilds(children, source[key]);
 	}
 },
 
@@ -184,7 +184,6 @@ addBuilds: function(children, source)
 
 addIncidents: function(children, source)
 {
-	source.loadIncidents();
 	for (var i=0; i<source.incidents.length; i++)
 	{
 		var item = document.createElementNS(xulns, "treeitem");

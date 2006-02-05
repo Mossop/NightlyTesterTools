@@ -27,23 +27,23 @@ class NS_NO_VTABLE nsILogModule : public nsISupports {
 
   NS_DEFINE_STATIC_IID_ACCESSOR(NS_ILOGMODULE_IID)
 
-  enum { PR_LOG_NONE = 0 };
+  enum { LOG_NONE = 0 };
 
-  enum { PR_LOG_ALWAYS = 1 };
+  enum { LOG_ALWAYS = 1 };
 
-  enum { PR_LOG_ERROR = 2 };
+  enum { LOG_ERROR = 2 };
 
-  enum { PR_LOG_WARNING = 3 };
+  enum { LOG_WARNING = 3 };
 
-  enum { PR_LOG_DEBUG = 4 };
+  enum { LOG_DEBUG = 4 };
 
-  enum { PR_LOG_NOTICE = 4 };
+  enum { LOG_NOTICE = 4 };
 
-  enum { PR_LOG_WARN = 3 };
+  enum { LOG_WARN = 3 };
 
-  enum { PR_LOG_MIN = 4 };
+  enum { LOG_MIN = 4 };
 
-  enum { PR_LOG_MAX = 4 };
+  enum { LOG_MAX = 4 };
 
   /* readonly attribute long level; */
   NS_IMETHOD GetLevel(PRInt32 *aLevel) = 0;

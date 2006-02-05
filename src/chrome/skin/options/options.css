@@ -9,9 +9,9 @@
 }
 
 #NightlyTesterOptions radio[pane=paneTitle] {
-  	list-style-image: url("chrome://nightly/skin/icon.png");
+  	list-style-image: url("chrome://nightly/content/brand/icon.png");
 }
 
 #NightlyTesterOptions radio[pane=paneExtensions] {
-  	list-style-image: url("chrome://nightly/skin/extension.png");
+  	list-style-image: url("chrome://nightly/skin/options/extension.png");
 }

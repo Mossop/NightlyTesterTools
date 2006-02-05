@@ -59,7 +59,6 @@ init: function(event)
 	var db = talkback.db.getCurrentBuildDatabase();
 	if (db)
 	{
-		db.loadIncidents();
 		var parent = document.getElementById("nightly-incidents");
 		
 		for (var i=0; i<db.incidents.length; i++)

@@ -92,7 +92,7 @@ function TalkbackDatabase()
 				var bits = line.value.split(" = ");
 				if (bits[0]=="VendorID")
 				{
-					this.vendor=bits[1].substring(1,bits[1].length-1);
+					//this.vendor=bits[1].substring(1,bits[1].length-1);
 				}
 				else if (bits[0]=="ProductID")
 				{
@@ -150,20 +150,20 @@ function TalkbackDatabase()
 }
 
 TalkbackDatabase.prototype = {
-	incidents: null,
+	vendors: null,
 	talkbackdbdir: null,
 	talkbackdir: null,
 	
-	vendor: null,
+	vendor: "MozillaOrg",
 	product: null,
 	platform: null,
 	build: null,
 	
 	loadDatabases: function()
 	{
-		if (!this.incidents)
+		if (!this.vendors)
 		{
-			this.incidents=[];
+			this.vendors=[];
 			var start = Date.now();
 			if (this.talkbackdbdir)
 				this.scanDir(this.talkbackdbdir);
@@ -183,34 +183,37 @@ TalkbackDatabase.prototype = {
 		}
 		
 		var db = new TalkbackBuildDatabase(dir);
-		if (!db.incidents)
+		if (db.incidents.length>0)
 		{
-			if (!this.incidents[db.vendor])
-				this.incidents[db.vendor]=[];
+			if (!this.vendors[db.vendor])
+				this.vendors[db.vendor]=[];
 
-			if (!this.incidents[db.vendor][db.product])
-				this.incidents[db.vendor][db.product]=[];
+			if (!this.vendors[db.vendor][db.product])
+				this.vendors[db.vendor][db.product]=[];
 
-			if (!this.incidents[db.vendor][db.product][db.platform])
-				this.incidents[db.vendor][db.product][db.platform]=[];
+			if (!this.vendors[db.vendor][db.product][db.platform])
+				this.vendors[db.vendor][db.product][db.platform]=[];
 
-			this.incidents[db.vendor][db.product][db.platform][db.build]=db;
+			this.vendors[db.vendor][db.product][db.platform][db.build]=db;
 		}
 	},
 	
 	getCurrentBuildDatabase: function()
 	{
-		return this.getBuildDatabase(this.vendor, this.product, this.platform, this.build);
+		if (this.product)
+			return this.getBuildDatabase(this.vendor, this.product, this.platform, this.build);
+		else
+			return null;
 	},
 	
 	getBuildDatabase: function(vendor, product, platform, build)
 	{
-		if (this.incidents)
+		if (this.vendors)
 		{
-			if (this.incidents[vendor])
-				if (this.incidents[vendor][product])
-					if (this.incidents[vendor][product][platform])
-						return this.incidents[vendor][product][platform][build];
+			if (this.vendors[vendor])
+				if (this.vendors[vendor][product])
+					if (this.vendors[vendor][product][platform])
+						return this.vendors[vendor][product][platform][build];
 
 			return null;
 		}
@@ -261,6 +264,25 @@ function TalkbackBuildDatabase(dir)
 	ini.append("manifest.ini");
 	if ((db.exists())&&(ini.exists()))
 	{
+		this._loadDetails(ini);
+		this._loadIncidents(db);
+	}
+	else
+	{
+		this.incidents = [];
+	}
+}
+
+TalkbackBuildDatabase.prototype = {
+	vendor: null,
+	product: null,
+	platform: null,
+	build: null,
+	basedir: null,
+	incidents: null,
+	
+	_loadDetails: function(ini)
+	{
 		stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
 										       .createInstance(Components.interfaces.nsIFileInputStream);
 		
@@ -294,29 +316,14 @@ function TalkbackBuildDatabase(dir)
 			}
 		}
 		stream.close();
-	}
-	else
-	{
-		this.incidents = [];
-	}
-}
-
-TalkbackBuildDatabase.prototype = {
-	vendor: null,
-	product: null,
-	platform: null,
-	build: null,
-	basedir: null,
-	incidents: null,
+	},
 	
-	loadIncidents: function()
+	_loadIncidents: function(db)
 	{
 		if (this.incidents!=null)
 			return;
 			
 		this.incidents = [];
-		var db = this.basedir.clone();
-		db.append("info.db");
 
 		var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
 										       .createInstance(Components.interfaces.nsIFileInputStream);

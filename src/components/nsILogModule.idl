@@ -47,16 +47,16 @@
 [scriptable, uuid(cb84fdb3-b3c8-457b-99c9-514f8353fcc5)]
 interface nsILogModule : nsISupports
 {
-	const long PR_LOG_NONE        = 0;
-	const long PR_LOG_ALWAYS      = 1;             /* always printed */
-	const long PR_LOG_ERROR       = 2;             /* error messages */
-	const long PR_LOG_WARNING     = 3;             /* warning messages */
-	const long PR_LOG_DEBUG       = 4;             /* debug messages */
+	const long LOG_NONE        = 0;
+	const long LOG_ALWAYS      = 1;             /* always printed */
+	const long LOG_ERROR       = 2;             /* error messages */
+	const long LOG_WARNING     = 3;             /* warning messages */
+	const long LOG_DEBUG       = 4;             /* debug messages */
 
-	const long PR_LOG_NOTICE      = 4;             /* notice messages */
-	const long PR_LOG_WARN        = 3;             /* warning messages */
-	const long PR_LOG_MIN         = 4;             /* minimal debugging messages */
-	const long PR_LOG_MAX         = 4;             /* maximal debugging messages */
+	const long LOG_NOTICE      = 4;             /* notice messages */
+	const long LOG_WARN        = 3;             /* warning messages */
+	const long LOG_MIN         = 4;             /* minimal debugging messages */
+	const long LOG_MAX         = 4;             /* maximal debugging messages */
 	
 	readonly attribute long level;
 	

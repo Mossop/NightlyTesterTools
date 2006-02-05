@@ -60,8 +60,8 @@ nsLogModule::~nsLogModule()
 /* readonly attribute long level; */
 NS_IMETHODIMP nsLogModule::GetLevel(PRInt32 *aLevel)
 {
-	if (!mLogModuleInfo)
-		return NS_ERROR_NOT_INITIALIZED;
+	//if (!mLogModuleInfo)
+	//	return NS_ERROR_NOT_INITIALIZED;
 		
   *aLevel = 0;
   return NS_OK;
@@ -70,8 +70,8 @@ NS_IMETHODIMP nsLogModule::GetLevel(PRInt32 *aLevel)
 /* void init (in AString name); */
 NS_IMETHODIMP nsLogModule::Init(const nsAString & name)
 {
-	if (mLogModuleInfo)
-		return NS_ERROR_ALREADY_INITIALIZED;
+	//if (mLogModuleInfo)
+	//	return NS_ERROR_ALREADY_INITIALIZED;
 		
   mLogModuleInfo = PR_NewLogModule(NS_LossyConvertUTF16toASCII(name).get());
   return NS_OK;
@@ -80,8 +80,8 @@ NS_IMETHODIMP nsLogModule::Init(const nsAString & name)
 /* void log (in long level, in AString message); */
 NS_IMETHODIMP nsLogModule::Log(PRInt32 level, const nsAString & message)
 {
-	if (!mLogModuleInfo)
-		return NS_ERROR_NOT_INITIALIZED;
+	//if (!mLogModuleInfo)
+	//	return NS_ERROR_NOT_INITIALIZED;
 		
   PR_LOG( mLogModuleInfo, PR_LOG_ALWAYS, (NS_LossyConvertUTF16toASCII(message).get()));
   return NS_OK;

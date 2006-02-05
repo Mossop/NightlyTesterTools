@@ -44,7 +44,7 @@
 
 <!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
 
-<?xml-stylesheet href="chrome://nightly/skin/extensions.css" type="text/css"?>
+<?xml-stylesheet href="chrome://nightly/skin/extensions/extensions.css" type="text/css"?>
 
 <overlay id="NightlyExtensionsOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
