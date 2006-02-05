@@ -43,6 +43,7 @@
    -->
 
 <?xml-stylesheet href="chrome://global/skin/global.css"?>
+<?xml-stylesheet href="chrome://nightly/skin/talkback/sidebar.css"?>
 
 <page id="TalkbackSidebar" title="Talkback" onload="sidebar.init();"
       xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">

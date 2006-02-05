@@ -1,0 +1,77 @@
+treechildren#treeroot::-moz-tree-image(name) {
+  padding-right: 2px;
+  margin: 0px 2px;
+  list-style-image: url("chrome://nightly/skin/talkback/icons.png") !important;
+}
+
+treechildren#treeroot::-moz-tree-image(name, vendor, closed) {
+  -moz-image-region: rect(0px, 16px, 16px, 0px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, vendor, open) {
+  -moz-image-region: rect(0px, 32px, 16px, 16px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, vendor, closed, selected) {
+  -moz-image-region: rect(0px, 48px, 16px, 32px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, vendor, open, selected) {
+  -moz-image-region: rect(0px, 64px, 16px, 48px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, product, closed) {
+  -moz-image-region: rect(16px, 16px, 32px, 0px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, product, open) {
+  -moz-image-region: rect(16px, 32px, 32px, 16px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, product, closed, selected) {
+  -moz-image-region: rect(16px, 48px, 32px, 32px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, product, open, selected) {
+  -moz-image-region: rect(16px, 64px, 32px, 48px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, platform, closed) {
+  -moz-image-region: rect(32px, 16px, 48px, 0px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, platform, open) {
+  -moz-image-region: rect(32px, 32px, 48px, 16px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, platform, closed, selected) {
+  -moz-image-region: rect(32px, 48px, 48px, 32px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, platform, open, selected) {
+  -moz-image-region: rect(32px, 64px, 48px, 48px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, build, closed) {
+  -moz-image-region: rect(48px, 16px, 64px, 0px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, build, open) {
+  -moz-image-region: rect(48px, 32px, 64px, 16px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, build, closed, selected) {
+  -moz-image-region: rect(48px, 48px, 64px, 32px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, build, open, selected) {
+  -moz-image-region: rect(48px, 64px, 64px, 48px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, incident) {
+  -moz-image-region: rect(64px, 16px, 80px, 0px);
+}
+
+treechildren#treeroot::-moz-tree-image(name, incident, selected) {
+  -moz-image-region: rect(64px, 48px, 80px, 32px);
+}
