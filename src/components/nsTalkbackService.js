@@ -374,26 +374,75 @@ var nsTalkbackService = {
 currentBuild: null,
 
 loaded: false,
+loading: false,
 vendors: [],
 incidents: [],
 orderedIncidents: [],
 talkbackdir: null,
 talkbackdbdir: null,
+callbackproxy: null,
+listeners: [],
 
-_load: function()
+addProgressListener: function(listener)
 {
 	if (!this.loaded)
 	{
-		this.incidents = [];
-		this.orderedIncidents = [];
-		this.vendors = [];
-	
-		this._findTalkback();
-		
-		this._scanDir(this.talkbackdbdir);
-		
-		this.loaded=true;
+		this.listeners.push(listener);
 	}
+	else
+	{
+		listener.onDatabaseLoaded();
+	}
+},
+
+_load: function()
+{
+	if (!this.loading)
+	{
+		this.loading=true;
+		var eqs = Components.classes["@mozilla.org/event-queue-service;1"]
+                        .getService(Components.interfaces.nsIEventQueueService);
+    var queue = eqs.getSpecialEventQueue(Components.interfaces.nsIEventQueueService.CURRENT_THREAD_EVENT_QUEUE);
+    
+    var pom = Components.classes["@mozilla.org/xpcomproxy;1"]
+                        .getService(Components.interfaces.nsIProxyObjectManager);
+    this.callbackproxy = pom.getProxyForObject(queue, Components.interfaces.nsITalkbackCallback, this, Components.interfaces.nsIProxyObjectManager.INVOKE_SYNC+Components.interfaces.nsIProxyObjectManager.FORCE_PROXY_CREATION);
+
+		var nsIThread = Components.interfaces.nsIThread;
+		var thread = Components.classes["@mozilla.org/thread;1"]
+		                       .createInstance(nsIThread);
+		thread.init(this, 0, nsIThread.PRIORITY_NORMAL, nsIThread.SCOPE_GLOBAL, nsIThread.STATE_JOINABLE);
+	}
+},
+
+loadComplete: function()
+{
+	this.loaded=true;
+	
+	for (var i=0; i<this.listeners.length; i++)
+	{
+		try
+		{
+			this.listeners[i].onDatabaseLoaded();
+		}
+		catch (e)
+		{
+			dump(e+"\n");
+		}
+	}
+	this.listeners = [];
+},
+
+run: function()
+{
+	this.incidents = [];
+	this.orderedIncidents = [];
+	this.vendors = [];
+
+	this._findTalkback();
+	this._scanDir(this.talkbackdbdir);
+	
+	this.callbackproxy.loadComplete();
 },
 
 _scanDir: function(dir)
@@ -793,6 +842,8 @@ getTreeView: function()
 QueryInterface: function(iid)
 {
 	if (iid.equals(Components.interfaces.nsITalkbackService)
+		|| iid.equals(Components.interfaces.nsIRunnable)
+		|| iid.equals(Components.interfaces.nsITalkbackCallback)
 		|| iid.equals(Components.interfaces.nsISupports))
 	{
 		return this;

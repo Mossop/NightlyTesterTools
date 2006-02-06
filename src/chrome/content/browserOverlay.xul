@@ -87,8 +87,9 @@
         <menuitem id="list-copy" label="&nightly.copy-extensions.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.insert-extensions.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
-        <menu label="Recent Incidents" hidden="true" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+        <menu label="Recent Incidents" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
           <menupopup id="nightly-incidents">
+            <menuitem disabled="true" label="Loading..."/>
           </menupopup>
         </menu>
         <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar" label="View Incidents in Sidebar"/>

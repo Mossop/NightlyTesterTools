@@ -52,6 +52,14 @@ init: function()
 {
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
 	                        .getService(Components.interfaces.nsITalkbackService);
+	
+	service.addProgressListener(sidebar);
+},
+
+onDatabaseLoaded: function()
+{
+	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
+	                        .getService(Components.interfaces.nsITalkbackService);
 
 	document.getElementById("tree").view = service.getTreeView();
 },
@@ -96,5 +104,18 @@ checkPopup: function(event)
 	var type = tree.view.getCellText(tree.currentIndex, tree.columns.getNamedColumn("type"));
 	dump(type+"\n");
 	return type=="incident";
+},
+
+QueryInterface: function(iid)
+{
+	if (iid.equals(Components.interfaces.nsITalkbackProgressListener)
+		|| iid.equals(Components.interfaces.nsISupports))
+	{
+		return this;
+	}
+	else
+	{
+		throw Components.results.NS_ERROR_NO_INTERFACE;
+	}
 }
 }

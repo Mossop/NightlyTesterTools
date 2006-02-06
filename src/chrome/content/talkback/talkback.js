@@ -49,10 +49,20 @@ init: function(event)
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
 	                        .getService(Components.interfaces.nsITalkbackService);
 	
+	service.addProgressListener(talkback);
+},
+
+onDatabaseLoaded: function()
+{
+	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
+	                        .getService(Components.interfaces.nsITalkbackService);
+	
 	var incidents = service.getPreviousIncidents(10);
 	if ((incidents)&&(incidents.length>0))
 	{
 		var parent = document.getElementById("nightly-incidents");
+		while (parent.firstChild)
+			parent.removeChild(parent.firstChild);
 		
 		var en = incidents.enumerate();
 		while (en.hasMoreElements())
@@ -66,6 +76,10 @@ init: function(event)
 			parent.appendChild(item);
 		}
 		document.getElementById("nightly-incidents").parentNode.hidden=false;
+	}
+	else
+	{
+		document.getElementById("nightly-incidents").parentNode.hidden=true;
 	}
 },
 
@@ -104,8 +118,20 @@ viewIncident: function(event)
 		var id = event.target.id.substring(12);
 		openUILink("http://talkback-public.mozilla.org/talkback/fastfind.jsp?search=2&type=iid&id="+id, event, false, true);
 	}
-}
+},
 
+QueryInterface: function(iid)
+{
+	if (iid.equals(Components.interfaces.nsITalkbackProgressListener)
+		|| iid.equals(Components.interfaces.nsISupports))
+	{
+		return this;
+	}
+	else
+	{
+		throw Components.results.NS_ERROR_NO_INTERFACE;
+	}
+}
 }
 
 window.addEventListener("load", talkback.init, false);
