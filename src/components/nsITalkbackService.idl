@@ -58,7 +58,7 @@ interface nsITalkbackIncident : nsISupports
 {
 	readonly attribute nsITalkbackBuild build;
 
-	readonly attribute long date;
+	readonly attribute unsigned long long date;
 	readonly attribute AString id;
 	readonly attribute AString comment;
 };
@@ -121,7 +121,7 @@ interface nsITalkbackService : nsISupports
 {
 	readonly attribute nsITalkbackBuild currentBuild;
 
-	nsIArray getRecentIncidents(in long date);
+	nsIArray getRecentIncidents(in unsigned long long date);
 	nsIArray getPreviousIncidents(in long count);
 
 	nsITalkbackIncident getIncident(in AString id);
