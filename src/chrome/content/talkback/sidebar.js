@@ -79,8 +79,11 @@ command: function(tree, event, row)
 	dump(type+"\n");
 	if (type=="incident")
 	{
+		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+								                .getService(Components.interfaces.nsIPrefBranch);
+		var url = prefservice.getCharPref("nightly.talkback.searchurl");
 		var id = tree.view.getCellText(row, tree.columns.getNamedColumn("incidentID"));
-		window.parent.openUILink("http://talkback-public.mozilla.org/talkback/fastfind.jsp?search=2&type=iid&id="+id, event, false, true);
+		window.parent.openUILink(url+id, event, false, true);
 	}
 },
 

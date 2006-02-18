@@ -115,8 +115,11 @@ viewIncident: function(event)
 {
 	if (event.target.id.substring(0,12)=="talkback-id-")
 	{
+		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+								                .getService(Components.interfaces.nsIPrefBranch);
+		var url = prefservice.getCharPref("nightly.talkback.searchurl");
 		var id = event.target.id.substring(12);
-		openUILink("http://talkback-public.mozilla.org/talkback/fastfind.jsp?search=2&type=iid&id="+id, event, false, true);
+		openUILink(url+id, event, false, true);
 	}
 },
 
