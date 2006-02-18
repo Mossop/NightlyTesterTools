@@ -380,7 +380,6 @@ incidents: [],
 orderedIncidents: [],
 talkbackdir: null,
 talkbackdbdir: null,
-callbackproxy: null,
 listeners: [],
 
 addProgressListener: function(listener)
@@ -400,13 +399,9 @@ _load: function()
 	if (!this.loading)
 	{
 		this.loading=true;
-		var eqs = Components.classes["@mozilla.org/event-queue-service;1"]
-                        .getService(Components.interfaces.nsIEventQueueService);
-    var queue = eqs.getSpecialEventQueue(Components.interfaces.nsIEventQueueService.CURRENT_THREAD_EVENT_QUEUE);
-    
-    var pom = Components.classes["@mozilla.org/xpcomproxy;1"]
-                        .getService(Components.interfaces.nsIProxyObjectManager);
-    this.callbackproxy = pom.getProxyForObject(queue, Components.interfaces.nsITalkbackCallback, this, Components.interfaces.nsIProxyObjectManager.INVOKE_SYNC+Components.interfaces.nsIProxyObjectManager.FORCE_PROXY_CREATION);
+		this._loadTimer = Components.classes["@mozilla.org/timer;1"]
+                                .getService(Components.interfaces.nsITimer);
+    this._loadTimer.initWithCallback(this, 200, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
 
 		var nsIThread = Components.interfaces.nsIThread;
 		var thread = Components.classes["@mozilla.org/thread;1"]
@@ -415,10 +410,12 @@ _load: function()
 	}
 },
 
-loadComplete: function()
+notify: function(timer)
 {
-	this.loaded=true;
-	
+	if (!this.loaded)
+		return;
+		
+	this._loadTimer.cancel();
 	for (var i=0; i<this.listeners.length; i++)
 	{
 		try
@@ -442,7 +439,7 @@ run: function()
 	this._findTalkback();
 	this._scanDir(this.talkbackdbdir);
 	
-	this.callbackproxy.loadComplete();
+	this.loaded=true;
 },
 
 _scanDir: function(dir)
@@ -843,7 +840,7 @@ QueryInterface: function(iid)
 {
 	if (iid.equals(Components.interfaces.nsITalkbackService)
 		|| iid.equals(Components.interfaces.nsIRunnable)
-		|| iid.equals(Components.interfaces.nsITalkbackCallback)
+		|| iid.equals(Components.interfaces.nsITimerCallback)
 		|| iid.equals(Components.interfaces.nsISupports))
 	{
 		return this;

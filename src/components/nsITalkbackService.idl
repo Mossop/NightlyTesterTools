@@ -110,12 +110,6 @@ interface nsITalkbackVendor : nsISupports
 	void remove();
 };
 
-[scriptable, uuid(4b0a4421-187f-4f28-8093-aa467ed1d916)]
-interface nsITalkbackCallback : nsISupports
-{
-	void loadComplete();
-};
-
 [scriptable, uuid(e5fb308e-9904-4e7d-96ca-c1a153b7e1a8)]
 interface nsITalkbackProgressListener : nsISupports
 {
