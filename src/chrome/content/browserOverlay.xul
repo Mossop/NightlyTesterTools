@@ -77,6 +77,9 @@
       <label id="tb-tooltip-date"/>
       <description id="tb-tooltip-comment"/>
     </tooltip>
+    <popup id="tb-incident-context">
+      <menuitem oncommand="talkback.copy(event)" label="Copy"/>
+    </popup>
   </popupset>
   
   <menupopup id="menu_ToolsPopup">

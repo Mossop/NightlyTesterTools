@@ -52,6 +52,19 @@ init: function(event)
 	service.addProgressListener(talkback);
 },
 
+copy: function(event)
+{
+	var node = document.popupNode;
+	if (node.id.substring(0,12)=="talkback-id-")
+	{
+		var id = node.id.substring(12);
+		var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+		                          .getService(Components.interfaces.nsIClipboardHelper);
+		clipboard.copyString(id);
+		closeMenus(node);
+	}
+},
+
 onDatabaseLoaded: function()
 {
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
@@ -72,6 +85,7 @@ onDatabaseLoaded: function()
 			var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
 			item.setAttribute("id", "talkback-id-"+incident.id);
 			item.setAttribute("tooltip", "tb-incident-tooltip");
+			item.setAttribute("context", "tb-incident-context");
 			item.setAttribute("label", incident.id);
 			parent.appendChild(item);
 		}
