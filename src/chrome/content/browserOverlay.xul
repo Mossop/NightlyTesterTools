@@ -56,7 +56,7 @@
   <broadcasterset id="mainBroadcasterSet">
     <broadcaster id="viewTalkbackSidebar"
           autoCheck="false" 
-          label="Talkback Sidebar"
+          label="&nightly.talkback.sidebar.title;"
           type="checkbox"
           group="sidebar"
           sidebarurl="chrome://nightly/content/talkback/sidebar.xul"
@@ -66,8 +66,8 @@
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
             class="toolbarbutton-1"
-            label="&nightly.insert-id.label;"
-            tooltiptext="&nightly.insert-id.tooltip;"
+            label="&nightly.id.insert.label;"
+            tooltiptext="&nightly.id.insert.tooltip;"
             oncommand="nightly.insertTemplate('buildid');"/>
   </toolbarpalette>
   
@@ -78,17 +78,17 @@
       <description id="tb-tooltip-comment"/>
     </tooltip>
     <popup id="tb-incident-context">
-      <menuitem oncommand="talkback.copy(event)" label="Copy"/>
+      <menuitem oncommand="talkback.copy(event)" label="&nightly.talkback.copyid;"/>
     </popup>
   </popupset>
   
   <menupopup id="menu_ToolsPopup">
     <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">
       <menupopup onpopupshowing="nightly.menuPopup(event,this);">
-        <menuitem id="build-copy" label="&nightly.copy-id.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
-        <menuitem id="build-insert" label="&nightly.insert-id.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
-        <menuitem id="list-copy" label="&nightly.copy-extensions.label;" oncommand="nightly.copyExtensions();"/>
-        <menuitem id="list-insert" label="&nightly.insert-extensions.label;" oncommand="nightly.insertExtensions();"/>
+        <menuitem id="build-copy" label="&nightly.id.copy.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
+        <menuitem id="build-insert" label="&nightly.id.insert.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
+        <menuitem id="list-copy" label="&nightly.extensions.copy.label;" oncommand="nightly.copyExtensions();"/>
+        <menuitem id="list-insert" label="&nightly.extensions.insert.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
         <menu label="Recent Incidents" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
           <menupopup id="nightly-incidents">

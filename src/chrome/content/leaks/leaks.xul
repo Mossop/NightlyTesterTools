@@ -42,6 +42,8 @@
    - $Revision$
    -->
 
+<!DOCTYPE window SYSTEM "chrome://nightly/locale/leaks.dtd">
+
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 <?xml-stylesheet href="chrome://nightly/skin/leaks/leaks.css" type="text/css"?>
 
@@ -63,36 +65,40 @@
   <script type="application/x-javascript" src="leaks.js"/>
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
   
+  <stringbundleset>
+    <stringbundle id="bundle" src="chrome://nightly/locale/leaks.properties"/>
+  </stringbundleset>
+  
   <vbox style="padding-bottom: 1em">
     <hbox align="center">
-      <label value="Log file:"/>
+      <label value="&nightly.leaks.logfile.label;"/>
       <textbox id="nsprlog" onchange="textEnter()" flex="1"/>
-      <button id="filebrowse" oncommand="selectLog()" label="Browse..."/>
+      <button id="filebrowse" oncommand="selectLog()" label="&nightly.leaks.browse.label;"/>
     </hbox>
     
-    <checkbox id="showlog" oncommand="flipLog()" label="Display full log"/>
+    <checkbox id="showlog" oncommand="flipLog()" label="&nightly.leaks.displayfull.label;"/>
   </vbox>
 
   <stack flex="1">
     <vbox align="center" pack="center">
-      <label style="font-size: 200%;" value="Loading..."/>
+      <label style="font-size: 200%;" value="&nightly.leaks.loading.label;"/>
     </vbox>
     <tabbox id="tabbox" flex="1">
       <tabs>
-        <tab label="Overview"/>
-        <tab label="Complete Log"/>
+        <tab label="&nightly.leaks.overview.label;"/>
+        <tab label="&nightly.leaks.fulllog.label;"/>
       </tabs>
       <tabpanels flex="1">
         <tabpanel orient="vertical">
           <hbox pack="start">
-            <button id="btnCopy" disabled="true" oncommand="clipboardCopy()" label="Copy to Clipboard"/>
-            <button id="btnSave" disabled="true" oncommand="save()" label="Save As..."/>
+            <button id="btnCopy" disabled="true" oncommand="clipboardCopy()" label="&nightly.leaks.copy.label;"/>
+            <button id="btnSave" disabled="true" oncommand="save()" label="&nightly.leaks.save.label;"/>
           </hbox>
           <vbox id="summary" collapsed="true">
-            <label style="font-size: 200%;" value="Summary"/>
+            <label style="font-size: 200%;" value="&nightly.leaks.summary.label;"/>
             <separator/>
             <label id="buildid"/>
-            <hbox><label value="Session ended"/><label id="date"/></hbox>
+            <hbox><label id="date"/></hbox>
             <separator/>
             <label id="windowLeaks"/>
             <label id="documentLeaks"/>
@@ -100,20 +106,20 @@
           </vbox>
           <separator/>
           <vbox id="detailsbox" flex="1" collapsed="true">
-            <label style="font-size: 200%;" value="Details"/>
+            <label style="font-size: 200%;" value="&nightly.leaks.details.label;"/>
             <separator/>
             <vbox flex="1" id="details" style="overflow: auto"/>
           </vbox>
         </tabpanel>
         <tabpanel orient="vertical">
           <hbox pack="start" align="center">
-            <label value="Display:"/>
-            <checkbox checked="true" oncommand="changeFilter()" id="filterDocshell" label="Docshells"/>
-            <checkbox checked="true" oncommand="changeFilter()" id="filterWindow" label="Windows"/>
-            <checkbox checked="true" oncommand="changeFilter()" id="filterDocument" label="Documents"/>
-            <checkbox checked="true" oncommand="changeFilter()" id="filterLeaked" label="Leaked"/>
-            <checkbox checked="true" oncommand="changeFilter()" id="filterCollected" label="Collected"/>
-            <checkbox checked="true" oncommand="changeFilter()" id="filterIgnored" label="Unknown"/>
+            <label value="&nightly.leaks.display.label;"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterDocshell" label="&nightly.leaks.docshellfilter.label;"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterWindow" label="&nightly.leaks.windowfilter.label;"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterDocument" label="&nightly.leaks.documentfilter.label;"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterLeaked" label="&nightly.leaks.leakedfilter.label;"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterCollected" label="&nightly.leaks.collectedfilter.label;"/>
+            <checkbox checked="true" oncommand="changeFilter()" id="filterIgnored" label="&nightly.leaks.unknownfilter.label;"/>
           </hbox>
           <iframe id="logframe" style="border: 1px solid threedshadow" flex="1"/>
         </tabpanel>

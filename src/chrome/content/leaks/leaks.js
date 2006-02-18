@@ -165,7 +165,7 @@ function doParse(storelog)
 	var fulllog = document.getElementById("logframe").contentDocument.body;
 	var datelbl = document.getElementById("date");
 	var date = new Date(nsprlog.lastModifiedTime);
-	datelbl.value=date.toLocaleString();
+	datelbl.value=bundle.getFormattedString("nightly.leaks.sessiondate.label", [date.toLocaleString()]);
 
 	var is = Components.classes["@mozilla.org/network/file-input-stream;1"]
 	                   .createInstance(Components.interfaces.nsIFileInputStream);
@@ -221,7 +221,7 @@ function doParse(storelog)
 	
 	var lbl = document.getElementById("windowLeaks");
 	var handler = handlers["DOMWINDOW"];
-	lbl.value="Leaked "+handler.leaked+" out of "+handler.count+" DOM Windows";
+	lbl.value=bundle.getFormattedString("nightly.leaks.windowleaks.label", [handler.leaked, handler.count]);
 	if (handler.leaked>0)
 	{
 		lbl.className="leaked";
@@ -237,22 +237,26 @@ function doParse(storelog)
 		var winobj = handler.windows[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
-		lbl.value="Leaked " + (winobj.outer=="0" ? "outer" : "inner") +
-					    " window "+addr+" "+
-					    (winobj.outer=="0" ? "" : "(outer " + winobj.outer + ") ") +
-        	    "at address " + addr + ".";
+		if (winobj.outer=="0")
+		{
+			lbl.value=bundle.getFormattedString("nightly.leaks.innerleak.text", [addr, winobj.outer, addr]);
+		}
+		else
+		{
+			lbl.value=bundle.getFormattedString("nightly.leaks.outerleak.text", [addr, addr]);
+		}
 	  for (var uri in winobj.uris)
 	  {
 			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 			details.appendChild(lbl);
-	  	lbl.value="with URI \"" + uri + "\".";
+	  	lbl.value=bundle.getFormattedString("nightly.leaks.urileak.text", [uri]);
 	  	lbl.className="uri";
 	  }
 	}
 
 	lbl = document.getElementById("documentLeaks");
 	handler = handlers["DOCUMENT"];
-	lbl.value="Leaked "+handler.leaked+" out of "+handler.count+" documents";
+	lbl.value=bundle.getFormattedString("nightly.leaks.documentleaks.label", [handler.leaked, handler.count]);
 	if (handler.leaked>0)
 	{
 		lbl.className="leaked";
@@ -268,19 +272,19 @@ function doParse(storelog)
 		var doc = handler.docs[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
-	  lbl.value="Leaked document at address " + addr + ".";
+	  lbl.value=bundle.getFormattedString("nightly.leaks.documentleak.text", [addr]);
 	  for (var uri in doc.uris)
 	  {
 			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 			details.appendChild(lbl);
-	    lbl.value="with URI \"" + uri + "\".";
+	  	lbl.value=bundle.getFormattedString("nightly.leaks.urileak.text", [uri]);
 	  	lbl.className="uri";
 	  }
 	}
 
 	lbl = document.getElementById("docshellLeaks");
 	handler = handlers["DOCSHELL"];
-	lbl.value="Leaked "+handler.leaked+" out of "+handler.count+" docshells";
+	lbl.value=bundle.getFormattedString("nightly.leaks.docshellleaks.label", [handler.leaked, handler.count]);
 	if (handler.leaked>0)
 	{
 		lbl.className="leaked";
@@ -296,12 +300,12 @@ function doParse(storelog)
 		var doc = handler.shells[addr];
 		lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 		details.appendChild(lbl);
-	  lbl.value="Leaked docshell at address " + addr + ".";
+	  lbl.value=bundle.getFormattedString("nightly.leaks.docshellleak.text", [addr]);
 	  for (var uri in doc.uris)
 	  {
 			lbl = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul","label");
 			details.appendChild(lbl);
-	    lbl.value="with URI \"" + uri + "\".";
+	  	lbl.value=bundle.getFormattedString("nightly.leaks.urileak.text", [uri]);
 	  	lbl.className="uri";
 	  }
 	}
@@ -316,6 +320,7 @@ var preferences = null;
 var summaryText = "";
 var detailsText = "";
 var logValid = false;
+var bundle = null;
 
 function frameLoaded(event)
 {
@@ -360,6 +365,8 @@ function parseLog()
 function init(event)
 {
 	window.removeEventListener("load", init, false);
+	
+	bundle = document.getElementById("bundle");
 	
 	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
 							.getService(Components.interfaces.nsIPrefService);
@@ -448,40 +455,44 @@ function pad(value)
 
 function getTextOverview()
 {
-	var text="Summary"+nightlyplatform.eol+nightlyplatform.eol;
+	var text=bundle.getString("nightly.leaks.summary.label")+nightlyplatform.eol+nightlyplatform.eol;
 	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
 	text+=navigator.userAgent+" ID:"+appinfo.appBuildID+nightlyplatform.eol+nightlyplatform.eol;
 	var date = new Date(nsprlog.lastModifiedTime);
-	text+="Session ended "+date.toLocaleString()+nightlyplatform.eol+nightlyplatform.eol;
+	text+=bundle.getFormattedString("nightly.leaks.sessiondate.label", [date.toLocaleString()])+nightlyplatform.eol+nightlyplatform.eol;
 	
 	var leaked = false;
 	var handler = handlers["DOMWINDOW"];
 	if (handler.leaked>0)
 		leaked=true;
-	text+="Leaked "+handler.leaked+" out of "+handler.count+" DOM Windows"+nightlyplatform.eol;
+	text+=bundle.getFormattedString("nightly.leaks.windowleaks.label", [handler.leaked, handler.count])+nightlyplatform.eol;
 	handler = handlers["DOCUMENT"];
 	if (handler.leaked>0)
 		leaked=true;
-	text+="Leaked "+handler.leaked+" out of "+handler.count+" documents"+nightlyplatform.eol;
+	text+=bundle.getFormattedString("nightly.leaks.documentleaks.label", [handler.leaked, handler.count])+nightlyplatform.eol;
 	handler = handlers["DOCSHELL"];
 	if (handler.leaked>0)
 		leaked=true;
-	text+="Leaked "+handler.leaked+" out of "+handler.count+" docshells"+nightlyplatform.eol;
+	text+=bundle.getFormattedString("nightly.leaks.docshellleaks.label", [handler.leaked, handler.count])+nightlyplatform.eol;
 	
 	if (leaked)
 	{
-		text+=nightlyplatform.eol+"Details"+nightlyplatform.eol+nightlyplatform.eol;
+		text+=nightlyplatform.eol+bundle.getString("nightly.leaks.details.label")+nightlyplatform.eol+nightlyplatform.eol;
 		handler = handlers["DOMWINDOW"];
 		for (var addr in handler.windows)
 		{
 			var winobj = handler.windows[addr];
-			text+="Leaked " + (winobj.outer=="0" ? "outer" : "inner") +
-						" window "+addr+" "+
-						(winobj.outer=="0" ? "" : "(outer " + winobj.outer + ") ") +
-            "at address " + addr + "."+nightlyplatform.eol;
+			if (winobj.outer=="0")
+			{
+				text+=bundle.getFormattedString("nightly.leaks.innerleak.text", [addr, winobj.outer, addr])+nightlyplatform.eol;
+			}
+			else
+			{
+				text+=bundle.getFormattedString("nightly.leaks.outerleak.text", [addr, addr])+nightlyplatform.eol;
+			}
       for (var uri in winobj.uris)
       {
-      	text+=" ... with URI \"" + uri + "\"."+nightlyplatform.eol;
+      	text+=" ... "+bundle.getFormattedString("nightly.leaks.urileak.text", [uri])+nightlyplatform.eol;
       }
 		}
 
@@ -489,10 +500,10 @@ function getTextOverview()
     for (var addr in handler.docs)
     {
     	var doc = handler.docs[addr];
-      text += "Leaked document at address " + addr + "."+nightlyplatform.eol;
+      text += bundle.getFormattedString("nightly.leaks.documentleak.text", [addr])+nightlyplatform.eol;
       for (var uri in doc.uris)
       {
-        text += " ... with URI \"" + uri + "\"."+nightlyplatform.eol;
+      	text+=" ... "+bundle.getFormattedString("nightly.leaks.urileak.text", [uri])+nightlyplatform.eol;
       }
     }
 
@@ -500,10 +511,10 @@ function getTextOverview()
     for (var addr in handler.shells)
     {
     	var doc = handler.shells[addr];
-      text += "Leaked docshell at address " + addr + "."+nightlyplatform.eol;
+      text += bundle.getFormattedString("nightly.leaks.docshellleak.text", [addr])+nightlyplatform.eol;
       for (var uri in doc.uris)
       {
-        text += " ... with URI \"" + uri + "\"."+nightlyplatform.eol;
+      	text+=" ... "+bundle.getFormattedString("nightly.leaks.urileak.text", [uri])+nightlyplatform.eol;
       }
     }
 	}

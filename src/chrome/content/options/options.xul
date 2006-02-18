@@ -53,7 +53,7 @@
   
   <script type="application/x-javascript" src="prefs.js"/>
 
-  <prefpane id="paneTitle" label="Titlebar">
+  <prefpane id="paneTitle" label="&nightly.options.titlebar.title;">
   
     <preferences>
       <preference id="idtitle" type="bool" name="nightly.idtitle" onchange="paneTitle.toggled();"/>
@@ -90,13 +90,13 @@
 
   </prefpane>
   
-  <prefpane id="paneExtensions" label="Extensions">
+  <prefpane id="paneExtensions" label="&nightly.options.extensions.title;">
 
     <preferences>
       <preference id="compatibility" type="bool" name="nightly.disablecompatibility"/>
     </preferences>
 
-    <checkbox preference="compatibility" label="Disable Firefox's compatibility check"/>
+    <checkbox preference="compatibility" label="&nightly.disablechecking.label;"/>
     
   </prefpane>
   

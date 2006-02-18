@@ -1,24 +1,33 @@
-<!ENTITY nightly.options.height          "30em">
+<!ENTITY nightly.options.height            "30em">
 
-<!ENTITY nightly.options.title           "Nightly Tester Options">
-<!ENTITY nightly.options.description     "You can use a custom title to always display the current build in the titlebar.">
-<!ENTITY nightly.customtitle.label       "Use custom title">
-<!ENTITY nightly.customtemplate.label    "Custom title template:">
-<!ENTITY nightly.variables.description   "The following variables can be used in the title (case insensitive).">
-<!ENTITY nightly.variable.label          "Variable">
-<!ENTITY nightly.variabledesc.label      "Description">
-<!ENTITY nightly.variablevalue.label     "Value">
-<!ENTITY nightly.ok.label                "Ok">
-<!ENTITY nightly.close.label             "Close">
-<!ENTITY nightly.cancel.label            "Cancel">
-<!ENTITY nightly.copy-extensions.label   "Copy List of Extensions to Clipboard">
-<!ENTITY nightly.insert-extensions.label "Insert List of Extensions into Textbox">
-<!ENTITY nightly.copy-id.label           "Copy Build ID to Clipboard">
-<!ENTITY nightly.insert-id.label         "Insert Build ID into Textbox">
-<!ENTITY nightly.insert-id.tooltip       "Inserts the build identifier into the current text box.">
-<!ENTITY nightly.talkback.label          "Launch Talkback">
-<!ENTITY nightly.customize.label         "Customize Nightly Tester Tools">
-<!ENTITY nightly.appenable.label         "Make compatible">
-<!ENTITY nightly.xpinstall.checkbox		   "Install using Nightly Tester Tools to override compatibility.">
-<!ENTITY nightly.enableall.label         "Make all compatible">
-<!ENTITY nightly.leakreporter.label      "Analyse Leak Log">
+<!ENTITY nightly.options.title             "Nightly Tester Options">
+<!ENTITY nightly.options.description       "You can use a custom title to always display the current build in the titlebar.">
+
+<!ENTITY nightly.options.titlebar.title    "Titlebar">
+<!ENTITY nightly.customtitle.label         "Use custom title">
+<!ENTITY nightly.customtemplate.label      "Custom title template:">
+<!ENTITY nightly.variables.description     "The following variables can be used in the title (case insensitive).">
+<!ENTITY nightly.variable.label            "Variable">
+<!ENTITY nightly.variabledesc.label        "Description">
+<!ENTITY nightly.variablevalue.label       "Value">
+
+<!ENTITY nightly.options.extensions.title  "Extensions">
+<!ENTITY nightly.disablechecking.label     "Disable Firefox's compatibility check">
+
+<!ENTITY nightly.id.copy.label             "Copy Build ID to Clipboard">
+<!ENTITY nightly.id.insert.label           "Insert Build ID into Textbox">
+<!ENTITY nightly.id.insert.tooltip         "Inserts the build identifier into the current text box.">
+
+<!ENTITY nightly.extensions.copy.label     "Copy List of Extensions to Clipboard">
+<!ENTITY nightly.extensions.insert.label   "Insert List of Extensions into Textbox">
+<!ENTITY nightly.appenable.label           "Make compatible">
+<!ENTITY nightly.xpinstall.checkbox		     "Install using Nightly Tester Tools to override compatibility.">
+<!ENTITY nightly.enableall.label           "Make all compatible">
+
+<!ENTITY nightly.leakreporter.label        "Analyse Leak Log">
+
+<!ENTITY nightly.talkback.sidebar.title    "Talkback Sidebar">
+<!ENTITY nightly.talkback.copyid           "Copy">
+<!ENTITY nightly.talkback.id               "ID">
+<!ENTITY nightly.talkback.date             "Date">
+<!ENTITY nightly.talkback.comment          "Comment">
