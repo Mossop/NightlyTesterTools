@@ -11,9 +11,9 @@
 <!ENTITY nightly.ok.label               "TAMAM">
 <!ENTITY nightly.close.label            "Kapat">
 <!ENTITY nightly.cancel.label           "Vazgeç">
-<!ENTITY nightly.copy-id.label          "Build-ID'sini kopyala">
-<!ENTITY nightly.insert-id.label        "Build-ID'sini yapıştır">
-<!ENTITY nightly.insert-id.tooltip      "Build-ID'yi güncel başlık alanına ekle">
+<!ENTITY nightly.id.copy.label          "Build-ID'sini kopyala">
+<!ENTITY nightly.id.insert.label        "Build-ID'sini yapıştır">
+<!ENTITY nightly.id.insert.tooltip      "Build-ID'yi güncel başlık alanına ekle">
 <!ENTITY nightly.talkback.label         "Talkback uygula">
 <!ENTITY nightly.customize.label        "Nightly-Tester araçlarını özelleştir">
 <!ENTITY nightly.appenable.label        "Uyumlu hale getir">

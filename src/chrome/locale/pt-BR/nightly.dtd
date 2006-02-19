@@ -11,9 +11,9 @@
 <!ENTITY nightly.ok.label               "Ok">
 <!ENTITY nightly.close.label            "Fechar">
 <!ENTITY nightly.cancel.label           "Cancelar">
-<!ENTITY nightly.copy-id.label          "Copiar Build ID">
-<!ENTITY nightly.insert-id.label        "Inserir Build ID">
-<!ENTITY nightly.insert-id.tooltip      "Inserir o identificador do build na caixa de testo selecionada.">
+<!ENTITY nightly.id.copy.label          "Copiar Build ID">
+<!ENTITY nightly.id.insert.label        "Inserir Build ID">
+<!ENTITY nightly.id.insert.tooltip      "Inserir o identificador do build na caixa de testo selecionada.">
 <!ENTITY nightly.talkback.label         "Carregar Talkback">
 <!ENTITY nightly.customize.label        "Personalizar o Nightly Tester">
 <!ENTITY nightly.appenable.label        "Tornar compatível">

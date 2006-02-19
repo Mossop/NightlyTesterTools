@@ -11,9 +11,9 @@
 <!ENTITY nightly.ok.label               "Ok">
 <!ENTITY nightly.close.label            "Fermer">
 <!ENTITY nightly.cancel.label           "Annuler">
-<!ENTITY nightly.copy-id.label          "Copier l'ID de Generation">
-<!ENTITY nightly.insert-id.label        "Inserer l'ID de Generation">
-<!ENTITY nightly.insert-id.tooltip      "Insere l'identifiant de construction dans la boite courante des textes.">
+<!ENTITY nightly.id.copy.label          "Copier l'ID de Generation">
+<!ENTITY nightly.id.insert.label        "Inserer l'ID de Generation">
+<!ENTITY nightly.id.insert.tooltip      "Insere l'identifiant de construction dans la boite courante des textes.">
 <!ENTITY nightly.talkback.label         "Lancement Talkback">
 <!ENTITY nightly.customize.label        "Customiser les outils 'Nightly Tester'">
 <!ENTITY nightly.appenable.label        "Rendre compatible">

@@ -1,13 +1,13 @@
 <!ENTITY nightly.appenable.label "Hacer compatible">
 <!ENTITY nightly.cancel.label "Cancelar">
 <!ENTITY nightly.close.label "Cerrar">
-<!ENTITY nightly.copy-id.label "Copiar Id de la versión">
+<!ENTITY nightly.id.copy.label "Copiar Id de la versión">
 <!ENTITY nightly.customize.label "Customize Nightly Tester Tools">
 <!ENTITY nightly.customtemplate.label "Plantilla de título personalizado">
 <!ENTITY nightly.customtitle.label "Usar título personalizado">
 <!ENTITY nightly.enableall.label "Hacer todas compatibles">
-<!ENTITY nightly.insert-id.label "Insertar Id de la versión">
-<!ENTITY nightly.insert-id.tooltip "Inserta el identificador de la versión en el cuadro de texto actual.">
+<!ENTITY nightly.id.insert.label "Insertar Id de la versión">
+<!ENTITY nightly.id.insert.tooltip "Inserta el identificador de la versión en el cuadro de texto actual.">
 <!ENTITY nightly.ok.label "Ok">
 <!ENTITY nightly.options.description "Puede usar un título personalizado para mostrar la versión actual en la barra de título.">
 <!ENTITY nightly.options.height "25em">

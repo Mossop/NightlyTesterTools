@@ -53,19 +53,24 @@
   
   <script type="application/x-javascript" src="prefs.js"/>
 
-  <prefpane id="paneTitle" label="&nightly.options.titlebar.title;">
+  <prefpane id="paneTitle">
   
     <preferences>
       <preference id="idtitle" type="bool" name="nightly.idtitle" onchange="paneTitle.toggled();"/>
       <preference id="title" type="string" name="nightly.templates.title"/>
+      <preference id="compatibility" type="bool" name="nightly.disablecompatibility"/>
     </preferences>
     
   	<script type="application/x-javascript" src="title.js"/>
   
   	<stringbundle id="variablesBundle" src="chrome://nightly/locale/variables.properties"/>
     
-		<description style="padding-bottom: 5px">&nightly.options.description;</description>
-	    
+    <description style="padding-bottom: 5px">&nightly.disablechecking.description;</description>
+      
+    <checkbox preference="compatibility" label="&nightly.disablechecking.label;"/>
+
+    <description style="padding-bottom: 5px">&nightly.options.description;</description>
+      
 		<checkbox preference="idtitle" style="padding-bottom: 5px" id="enableTitleBar" label="&nightly.customtitle.label;"/>
 	                
 		<hbox style="padding-bottom: 5px" align="center">
@@ -88,16 +93,6 @@
 			</listcols>
 		</listbox>
 
-  </prefpane>
-  
-  <prefpane id="paneExtensions" label="&nightly.options.extensions.title;">
-
-    <preferences>
-      <preference id="compatibility" type="bool" name="nightly.disablecompatibility"/>
-    </preferences>
-
-    <checkbox preference="compatibility" label="&nightly.disablechecking.label;"/>
-    
   </prefpane>
   
 </prefwindow>
