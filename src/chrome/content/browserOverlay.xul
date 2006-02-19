@@ -95,7 +95,7 @@
             <menuitem disabled="true" label="Loading..."/>
           </menupopup>
         </menu>
-        <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar" label="View Incidents in Sidebar"/>
+        <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar"/>
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>

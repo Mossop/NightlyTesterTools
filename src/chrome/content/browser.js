@@ -58,6 +58,11 @@ init: function()
 	document.getElementById("content").addEventListener("DOMTitleChanged",nightlyApp.titleUpdated,false);
 },
 
+openURL: function(url, event)
+{
+	openUILink(url, event, false, true);
+},
+
 titleUpdated: function()
 {
 	if (!gBrowser.mTabbedMode)

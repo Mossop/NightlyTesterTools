@@ -58,6 +58,17 @@ init: function()
   nightly.variables.brandname=brandbundle.getString("brandFullName");
 },
 
+openURL: function(url, event)
+{
+	var uri = Components.classes["@mozilla.org/network/io-service;1"]
+                      .getService(Components.interfaces.nsIIOService)
+                      .newURI(url, null, null);
+
+	var protocolSvc = Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
+                              .getService(Components.interfaces.nsIExternalProtocolService);
+	protocolSvc.loadUrl(uri);
+},
+
 customSetTitleFromFolder: function(msgfolder, subject)
 {
 	var brandbundle = document.getElementById("bundle_brand");

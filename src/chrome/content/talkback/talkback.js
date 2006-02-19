@@ -133,7 +133,7 @@ viewIncident: function(event)
 								                .getService(Components.interfaces.nsIPrefBranch);
 		var url = prefservice.getCharPref("nightly.talkback.searchurl");
 		var id = event.target.id.substring(12);
-		openUILink(url+id, event, false, true);
+		nightlyApp.openURL(url+id, event);
 	}
 },
 
