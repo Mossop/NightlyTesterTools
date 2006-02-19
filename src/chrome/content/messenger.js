@@ -69,6 +69,17 @@ openURL: function(url, event)
 	protocolSvc.loadUrl(uri);
 },
 
+detectLeaks: function(event)
+{
+  var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                     .getService(Components.interfaces.nsIWindowMediator);
+  var win = wm.getMostRecentWindow("Nightly:LeakReporter");
+  if (win)
+    win.focus();
+  else
+    openDialog("chrome://nightly/content/leaks/leaks.xul", "Leak Reporter");
+},
+
 customSetTitleFromFolder: function(msgfolder, subject)
 {
 	var brandbundle = document.getElementById("bundle_brand");

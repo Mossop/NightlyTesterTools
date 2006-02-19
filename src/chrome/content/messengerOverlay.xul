@@ -85,7 +85,7 @@
           </menupopup>
         </menu>
         <menuseparator/>
-        <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
+        <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);"/>
       </menupopup>
     </menu>
   </menupopup>

@@ -360,11 +360,6 @@ insertTemplate: function(template)
 	nightly.showAlert("nightly.notextbox.message",[]);
 },
 
-detectLeaks: function(event)
-{
-	openUILink("chrome://nightly/content/leaks/leaks.xul", event, false, true);
-},
-
 getExtensionList: function()
 {
 	var em = Components.classes["@mozilla.org/extensions/manager;1"]

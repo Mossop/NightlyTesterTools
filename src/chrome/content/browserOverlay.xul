@@ -97,7 +97,7 @@
         </menu>
         <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar"/>
         <menuseparator/>
-        <menuitem label="&nightly.leakreporter.label;" oncommand="nightly.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
+        <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>
     </menu>
   </menupopup>

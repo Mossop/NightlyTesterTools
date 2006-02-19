@@ -58,6 +58,11 @@ init: function()
 	document.getElementById("content").addEventListener("DOMTitleChanged",nightlyApp.titleUpdated,false);
 },
 
+detectLeaks: function(event)
+{
+	openUILink('chrome://nightly/content/leaks/leaks.xul', event, false, true);
+},
+
 openURL: function(url, event)
 {
 	openUILink(url, event, false, true);
