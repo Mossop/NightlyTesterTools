@@ -442,7 +442,7 @@ function changeFilter()
 	chk = document.getElementById("filterIgnored");
 	if (!chk.checked)
 		filter+=".logline.ignored { display: none }\n";
-		
+	
 	style.innerHTML=filter;
 }
 
