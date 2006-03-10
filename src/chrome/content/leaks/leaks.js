@@ -370,7 +370,7 @@ function init(event)
 	
 	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
 							.getService(Components.interfaces.nsIPrefService);
-	preferences = prefservice.getBranch("nightly.");
+	preferences = prefservice.getBranch("nightly.leaks.");
 	
 	var buildid = document.getElementById("buildid");
 	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
@@ -383,6 +383,24 @@ function init(event)
 	chk.checked = preferences.getBoolPref("showleaklog");
 	document.getElementById("tabbox").firstChild.style.display=(chk.checked ? null : 'none');
 	
+	chk = document.getElementById("filterDocshell");
+	chk.checked = preferences.getBoolPref("filterDocshell");
+
+	chk = document.getElementById("filterWindow");
+	chk.checked = preferences.getBoolPref("filterWindow");
+
+	chk = document.getElementById("filterDocument");
+	chk.checked = preferences.getBoolPref("filterDocument");
+		
+	chk = document.getElementById("filterLeaked");
+	chk.checked = preferences.getBoolPref("filterLeaked");
+		
+	chk = document.getElementById("filterCollected");
+	chk.checked = preferences.getBoolPref("filterCollected");
+		
+	chk = document.getElementById("filterIgnored");
+	chk.checked = preferences.getBoolPref("filterIgnored");
+
 	try
 	{
 		nsprlog = preferences.getComplexValue("nsprlog", Components.interfaces.nsILocalFile);
@@ -422,26 +440,32 @@ function changeFilter()
 	var chk = document.getElementById("filterDocshell");
 	if (!chk.checked)
 		filter+=".logline.DOCSHELL { display: none }\n";
+	preferences.setBoolPref("filterDocshell", chk.checked);
 
 	chk = document.getElementById("filterWindow");
 	if (!chk.checked)
 		filter+=".logline.DOMWINDOW { display: none }\n";
+	preferences.setBoolPref("filterWindow", chk.checked);
 
 	chk = document.getElementById("filterDocument");
 	if (!chk.checked)
 		filter+=".logline.DOCUMENT { display: none }\n";
+	preferences.setBoolPref("filterDocument", chk.checked);
 		
 	chk = document.getElementById("filterLeaked");
 	if (!chk.checked)
 		filter+=".leaked { display: none }\n";
+	preferences.setBoolPref("filterLeaked", chk.checked);
 		
 	chk = document.getElementById("filterCollected");
 	if (!chk.checked)
 		filter+=".logline:not(.leaked) { display: none }\n";
+	preferences.setBoolPref("filterCollected", chk.checked);
 		
 	chk = document.getElementById("filterIgnored");
 	if (!chk.checked)
 		filter+=".logline.ignored { display: none }\n";
+	preferences.setBoolPref("filterIgnored", chk.checked);
 	
 	style.innerHTML=filter;
 }
