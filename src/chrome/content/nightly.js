@@ -161,6 +161,7 @@ init: function()
 		nightly.variables.platformbuildid=nightly.variables.appbuildid;
 		nightly.variables.geckobuildid=nightly.variables.appbuildid;
 	}
+
   try {
     nightly.variables.locale = prefservice.getComplexValue("general.useragent.locale",
                         Components.interfaces.nsIPrefLocalizedString).data;
@@ -188,6 +189,11 @@ init: function()
 		prefservice.setCharPref("extensions.lastAppVersion", nightly.variables.version);
 	}
 
+	var profservice = Components.classes["@mozilla.org/toolkit/profile-service;1"]
+	                            .getService(Components.interfaces.nsIToolkitProfileService);
+	var profile = profservice.selectedProfile;
+	nightly.variables.profilename = profile.name;
+	
 	nightlyApp.init();
 	
 	nightly.preferences.addObserver("",nightly,false);
@@ -361,6 +367,18 @@ insertTemplate: function(template)
 	nightly.showAlert("nightly.notextbox.message",[]);
 },
 
+insensitiveSort: function(a, b)
+{
+	a = a.toLowerCase();
+	b = b.toLowerCase();
+	if (a < b)
+		return -1
+	if (a > b)
+		return 1
+	// a must be equal to b
+	return 0
+},
+
 getExtensionList: function()
 {
 	var em = Components.classes["@mozilla.org/extensions/manager;1"]
@@ -378,10 +396,10 @@ getExtensionList: function()
 		var rdfS = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
 		var ds = em.datasource;
 		var enabledResource = rdfS.GetResource("http://www.mozilla.org/2004/em-rdf#disabled");
-		var text="";
+		var text = [];
 		for (var i=0; i<items.length; i++)
 		{
-			text+=items[i].name+" "+items[i].version;
+			text[i] = items[i].name+" "+items[i].version;
 			var source = rdfS.GetResource("urn:mozilla:item:"+items[i].id);
 			var enabled = ds.GetTarget(source, enabledResource, true);
 			try
@@ -389,13 +407,13 @@ getExtensionList: function()
 				enabled=enabled.QueryInterface(Components.interfaces.nsIRDFLiteral);
 				if (enabled.Value=="true")
 				{
-					text+=" [DISABLED]";
+					text[i]+=" [DISABLED]";
 				}
 			}
 			catch (e) { }
-			text+="\n";
 		}
-		return text;
+		text.sort(nightly.insensitiveSort);
+		return text.join("\n");
 	}
 },
 

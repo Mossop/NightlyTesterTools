@@ -67,6 +67,7 @@ init: function()
 	paneTitle.addVariable("OS");
 	paneTitle.addVariable("Processor");
 	paneTitle.addVariable("Compiler");
+	paneTitle.addVariable("Profile");
 },
 
 addVariable: function(name)
