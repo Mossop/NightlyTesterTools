@@ -60,7 +60,8 @@ variables: {
 	os: null,
 	processor: null,
 	compiler: null,
-	defaulttitle: null
+	defaulttitle: null,
+	profilename: null
 },
 
 templates: {
@@ -423,6 +424,29 @@ copyExtensions: function()
 	var text = nightly.getExtensionList();
 	if (text)
 		nightly.copyText(text);
+},
+
+openProfileDir: function()
+{
+	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+										     .createInstance(Components.interfaces.nsIFileInputStream);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
+
+	var profile = directoryService.get("ProfD",Components.interfaces.nsILocalFile);
+  try
+  {
+    profile.reveal();
+  }
+  catch (ex)
+  {
+	  var uri = Components.classes["@mozilla.org/network/io-service;1"]
+	                      .getService(Components.interfaces.nsIIOService)
+	                      .newFileURI(profile);
+	  var protocolSvc = Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
+	                              .getService(Components.interfaces.nsIExternalProtocolService);
+	  protocolSvc.loadUrl(uri);
+  }
 },
 
 launch: function(file, args)
