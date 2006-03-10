@@ -61,7 +61,7 @@ variables: {
 	processor: null,
 	compiler: null,
 	defaulttitle: null,
-	profilename: null,
+	profile: null,
 	toolkit: null,
 	flags: null
 },
@@ -80,6 +80,70 @@ showAlert: function(id,args)
                                 .getService(Components.interfaces.nsIPromptService);
   var text=bundle.formatStringFromName(id,args,args.length);
   promptService.alert(null,"Nightly Tester Tools",text);
+},
+
+getProfileRegistry: function()
+{
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
+
+	var dir = directoryService.get("DefProfRt",Components.interfaces.nsIFile);
+	while (dir)
+	{
+		var file = dir.clone();
+		file.append("profiles.ini");
+		if (file.exists())
+			return file;
+		dir = dir.parent;
+	}
+	return null;
+},
+
+getProfileName: function()
+{
+	var name = "Unknown";
+	
+	var reg = nightly.getProfileRegistry();
+	if (!reg)
+		return name;
+	
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
+	var profd = directoryService.get("ProfD",Components.interfaces.nsIFile);
+	
+	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+	                       .createInstance(Components.interfaces.nsIFileInputStream);
+	stream.init(reg, 1, 0, 0);
+	stream.QueryInterface(Components.interfaces.nsILineInputStream);
+	
+	var dir = Components.classes["@mozilla.org/file/local;1"]
+	                    .createInstance(Components.interfaces.nsILocalFile);
+	var current = "";
+	var relative = "d";
+	var line = {};
+	while (stream.readLine(line))
+	{
+		if (line.value.substring(0,5)=="Name=")
+			current = line.value.substring(5);
+		if (line.value.substring(0,11)=="IsRelative=")
+			relative = line.value.substring(11);
+		if (line.value.substring(0,5)=="Path=")
+		{
+			path = line.value.substring(5);
+			if (relative=="1")
+				dir.setRelativeDescriptor(reg.parent, path);
+			else
+				dir.persistentDescriptor = path;
+			if (dir.path==profd.path)
+			{
+				name=current;
+				break;
+			}
+		}
+	}
+	
+	stream.close();
+	return name;
 },
 
 defineFlags: function()
@@ -234,17 +298,8 @@ init: function()
 		prefservice.setCharPref("extensions.lastAppVersion", nightly.variables.version);
 	}
 
-	try
-	{
-	var profservice = Components.classes["@mozilla.org/toolkit/profile-service;1"]
-	                            .getService(Components.interfaces.nsIToolkitProfileService);
-	var profile = profservice.selectedProfile;
-	nightly.variables.profilename = profile.name;
-	}
-	catch (e)
-	{
-	}
-	
+	nightly.variables.profile = nightly.getProfileName();
+		
 	nightly.loadGfxToolkit();
 	
 	nightly.defineFlags();
