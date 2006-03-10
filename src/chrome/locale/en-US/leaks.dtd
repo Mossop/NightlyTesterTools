@@ -1,3 +1,5 @@
+<!ENTITY nightly.leaks.title                  "Leak Log Analyzer">
+
 <!ENTITY nightly.leaks.logfile.label          "Log file:">
 <!ENTITY nightly.leaks.browse.label           "Browse...">
 <!ENTITY nightly.leaks.displayfull.label      "Display full log">

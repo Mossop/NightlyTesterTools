@@ -77,7 +77,7 @@ detectLeaks: function(event)
   if (win)
     win.focus();
   else
-    openDialog("chrome://nightly/content/leaks/leaks.xul", "Leak Reporter");
+    openDialog("chrome://nightly/content/leaks/leaks.xul", "_blank", "chrome,all,dialog=no");
 },
 
 customSetTitleFromFolder: function(msgfolder, subject)
