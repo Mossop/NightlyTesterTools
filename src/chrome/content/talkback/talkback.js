@@ -86,7 +86,7 @@ onDatabaseLoaded: function()
 			item.setAttribute("id", "talkback-id-"+incident.id);
 			item.setAttribute("tooltip", "tb-incident-tooltip");
 			item.setAttribute("context", "tb-incident-context");
-			item.setAttribute("label", incident.id);
+			item.setAttribute("label", incident.id+" ("+(new Date(incident.date)).toLocaleDateString()+")");
 			parent.appendChild(item);
 		}
 		document.getElementById("nightly-incidents").parentNode.hidden=false;
