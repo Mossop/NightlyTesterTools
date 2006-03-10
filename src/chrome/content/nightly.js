@@ -61,7 +61,9 @@ variables: {
 	processor: null,
 	compiler: null,
 	defaulttitle: null,
-	profilename: null
+	profilename: null,
+	toolkit: null,
+	flags: null
 },
 
 templates: {
@@ -78,6 +80,49 @@ showAlert: function(id,args)
                                 .getService(Components.interfaces.nsIPromptService);
   var text=bundle.formatStringFromName(id,args,args.length);
   promptService.alert(null,"Nightly Tester Tools",text);
+},
+
+defineFlags: function()
+{
+	var flags = "";
+	if (nightly.variables.toolkit.substr(0,6)=="cairo-")
+	{
+		flags+=" [cairo]";
+	}
+	
+	nightly.variables.flags = flags;
+},
+
+loadGfxToolkit: function()
+{
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
+
+	var datafile = directoryService.get("AChrom",Components.interfaces.nsIFile);
+	datafile.append("toolkit.jar");
+	var reader = Components.classes["@mozilla.org/libjar/zip-reader;1"]
+	                       .createInstance(Components.interfaces.nsIZipReader);
+	reader.init(datafile);
+	reader.open();
+	var stream = reader.getInputStream("content/global/buildconfig.html");
+	var sstream = Components.classes["@mozilla.org/scriptableinputstream;1"]
+	                        .createInstance(Components.interfaces.nsIScriptableInputStream);
+	sstream.init(stream);
+	var content = "";
+	var text = sstream.read(1024);
+	while (text.length>0)
+	{
+		content+=text;
+		text = sstream.read(1024);
+	}
+	var result = content.match(/--enable-default-toolkit=(\S+)/);
+	if (result)
+	{
+		nightly.variables.toolkit = result[1];
+	}
+	sstream.close();
+	stream.close();
+	reader.close();
 },
 
 loadBuildIDFromFile: function()
@@ -189,10 +234,20 @@ init: function()
 		prefservice.setCharPref("extensions.lastAppVersion", nightly.variables.version);
 	}
 
+	try
+	{
 	var profservice = Components.classes["@mozilla.org/toolkit/profile-service;1"]
 	                            .getService(Components.interfaces.nsIToolkitProfileService);
 	var profile = profservice.selectedProfile;
 	nightly.variables.profilename = profile.name;
+	}
+	catch (e)
+	{
+	}
+	
+	nightly.loadGfxToolkit();
+	
+	nightly.defineFlags();
 	
 	nightlyApp.init();
 	
@@ -286,7 +341,7 @@ generateText: function(template)
 			{
 				var varname = template.substring(pos+2,endpos);
 				var varvalue = nightly.getVariable(varname);
-				if (varvalue)
+				if (varvalue!==null)
 				{
 					template=template.substring(0,pos)+varvalue+template.substring(endpos+1,template.length);
 					start=pos+varvalue.length;
