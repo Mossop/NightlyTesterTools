@@ -4,7 +4,7 @@
 <!ENTITY nightly.options.description          "You can use a custom title to always display the current build in the titlebar.">
 
 <!ENTITY nightly.disablechecking.description  "When a new application version is installed, extensions that are not compatible can be forcibly disabled.">
-<!ENTITY nightly.disablechecking.label        "Disable compatibility checking">
+<!ENTITY nightly.disablechecking.label        "Disable compatibility checking during application update">
 
 <!ENTITY nightly.customtitle.label            "Use custom title">
 <!ENTITY nightly.customtemplate.label         "Custom title template:">

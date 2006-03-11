@@ -75,7 +75,7 @@ DownloadListener.prototype.onStateChange = function(webProgress, request, stateF
 	if (stateFlags&Components.interfaces.nsIWebProgressListener.STATE_STOP)
 	{
     var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
-                              .getService(Components.interfaces.nsINightlyToolsCallback);
+                                   .getService(Components.interfaces.nsINightlyToolsCallback);
     if (status==0)
     {
       nightlyService.installLocalExtension(this.name,this.uri,this.file);

@@ -120,17 +120,26 @@ performInstall: function(name, uri)
     {
       var fph = ioService.getProtocolHandler("file").QueryInterface(Components.interfaces.nsIFileProtocolHandler);
       var file = fph.getFileFromURLSpec(uri.spec);
-      if ((file)&&(file.exists()))
+      if (file)
       {
-        this.installLocalExtension(name,uri,file);
-        return;
+      	if (file.exists())
+	      {
+	        this.installLocalExtension(name,uri,file);
+	        return;
+	      }
+	      else
+	      {
+          this.displayAlert("nightly.nofile.message",[name]);
+			    this.installFailed(name,uri);
+			    return;
+        }
       }
     }
     catch (e)
     {
       dump("Failed - "+e+"\n");
     }
-    this.displayAlert("nightly.nofile.message",[name]);
+    this.displayAlert("nightly.unknownerror.message",[name]);
     this.installFailed(name,uri);
   }
   else
@@ -172,42 +181,25 @@ performInstall: function(name, uri)
   }
 },
 
-getAddonType: function(file, id, ds, em)
+getAddonType: function(ds)
 {
-	try
+  var gRDF = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                       .getService(Components.interfaces.nsIRDFService);
+	var manifest = gRDF.GetResource("urn:mozilla:install-manifest");
+	var property = gRDF.GetResource("http://www.mozilla.org/2004/em-rdf#type");
+  var value = ds.GetTarget(manifest, property, true);
+	if (value)
 	{
-	  var gRDF = Components.classes["@mozilla.org/rdf/rdf-service;1"]
-	                       .getService(Components.interfaces.nsIRDFService);
-		var manifest = gRDF.GetResource("urn:mozilla:install-manifest");
-		var property = gRDF.GetResource("http://www.mozilla.org/2004/em-rdf#type");
-	  var value = em.datasource.GetTarget(manifest, property, true);
-		if (value)
-		{
-			dump("Found type in manifest\n");
-			return value.Value;
-		}
-		
-		property = gRDF.GetResource("http://www.mozilla.org/2004/em-rdf#internalName");
-	  value = em.datasource.GetTarget(manifest, property, true);
-		if (value)
-		{
-			dump("Guessing theme from internalName\n");
-			return Components.interfaces.nsIUpdateItem.TYPE_THEME;
-		}
-		
-		var name = file.leafName;
-		var pos = name.lastIndexOf(".");
-		if (pos>=0)
-		{
-			var extension = name.substring(pos+1);
-			dump(extension+"\n");
-			if (extension=="jar")
-				return Components.interfaces.nsIUpdateItem.TYPE_THEME;
-		}
+		dump("Found type in manifest\n");
+		return value.Value;
 	}
-	catch (e)
+	
+	property = gRDF.GetResource("http://www.mozilla.org/2004/em-rdf#internalName");
+  value = ds.GetTarget(manifest, property, true);
+	if (value)
 	{
-		dump(e+"\n");
+		dump("Guessing theme from internalName\n");
+		return Components.interfaces.nsIUpdateItem.TYPE_THEME;
 	}
 
 	return Components.interfaces.nsIUpdateItem.TYPE_EXTENSION;
@@ -428,6 +420,16 @@ installLocalExtension: function(name, uri, file)
     return;
   }
   
+	var addonType = this.getAddonType(ds);
+	if ((addonType != Components.interfaces.nsIUpdateItem.TYPE_THEME)
+	  &&(addonType != Components.interfaces.nsIUpdateItem.TYPE_EXTENSION))
+	{
+		zipReader.close();
+		this.displayAlert("nightly.badtype.message",[name]);
+		this.installFailed(name, uri);
+		return;
+	}
+	
 	originalID=originalID.QueryInterface(Components.interfaces.nsIRDFLiteral);
 	extensionID=originalID.Value;
 	
@@ -471,23 +473,20 @@ installLocalExtension: function(name, uri, file)
 	}
 	else
 	{
-	  // Might be nice to implement the level of safety that the EM uses when there is an old version in place.
+	  // TODO Might be nice to implement the level of safety that the EM uses when there is an old version in place.
 	  var dest = installLocation.getItemLocation(extensionID);
 	  /*if (dest.exists())
 	    dest.remove(true);*/
 	}
 	
 	var dest = installLocation.getItemLocation(extensionID);
-	var addonType = this.getAddonType(file, extensionID, ds, em);
-				
+
 	try
 	{
 		if (addonType==Components.interfaces.nsIUpdateItem.TYPE_EXTENSION)
 			this.extractExtensionFiles(zipReader, extensionID, installLocation, file);
 		else if (addonType==Components.interfaces.nsIUpdateItem.TYPE_THEME)
 			this.extractThemeFiles(zipReader, extensionID, installLocation, file);
-		else
-			throw "Cannot install this type of addon.";
 	}
 	catch (e)
 	{
