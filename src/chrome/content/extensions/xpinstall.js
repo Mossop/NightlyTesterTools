@@ -70,9 +70,9 @@ dialogAccept: function()
 installExtensions: function()
 {
 	var ioService = Components.classes["@mozilla.org/network/io-service;1"]
-                          .getService(Components.interfaces.nsIIOService);
+                            .getService(Components.interfaces.nsIIOService);
 	var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
-                          .getService(Components.interfaces.nsINightlyToolsService);
+                            .getService(Components.interfaces.nsINightlyToolsService);
 
 	var itemList = document.getElementById("itemList");
 	var items = itemList.getElementsByTagName("installitem");

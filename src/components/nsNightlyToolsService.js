@@ -149,7 +149,7 @@ performInstall: function(name, uri)
   	  fileuri=ioService.newFileURI(file);
   		
   		var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-  											.createInstance(Components.interfaces.nsIWebBrowserPersist);
+  											      .createInstance(Components.interfaces.nsIWebBrowserPersist);
   		const nsIWBP = Components.interfaces.nsIWebBrowserPersist;
   		const flags = nsIWBP.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
   		persist.persistFlags = flags | nsIWBP.PERSIST_FLAGS_FROM_CACHE;
@@ -159,7 +159,7 @@ performInstall: function(name, uri)
   		var tr = Components.classes["@mozilla.org/transfer;1"].createInstance(Components.interfaces.nsITransfer);
   	  tr.init(uri, fileuri, name, null, null, null, persist);
   	  var listener = Components.classes["@blueprintit.co.uk/downloadlistener;1"]
-  	  											.createInstance(Components.interfaces.nsIDownloadListener);
+  	  											   .createInstance(Components.interfaces.nsIDownloadListener);
   	  listener.init(name,uri,file,tr);
   	  persist.progressListener = listener;
   	  persist.saveURI(uri, null, null, null, null, fileuri);
@@ -170,6 +170,160 @@ performInstall: function(name, uri)
       this.installFailed(name,uri);
     }
   }
+},
+
+getAddonType: function(file, id, ds, em)
+{
+	try
+	{
+	  var gRDF = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+	                       .getService(Components.interfaces.nsIRDFService);
+		var manifest = gRDF.GetResource("urn:mozilla:install-manifest");
+		var property = gRDF.GetResource("http://www.mozilla.org/2004/em-rdf#type");
+	  var value = em.datasource.GetTarget(manifest, property, true);
+		if (value)
+		{
+			dump("Found type in manifest\n");
+			return value.Value;
+		}
+		
+		property = gRDF.GetResource("http://www.mozilla.org/2004/em-rdf#internalName");
+	  value = em.datasource.GetTarget(manifest, property, true);
+		if (value)
+		{
+			dump("Guessing theme from internalName\n");
+			return Components.interfaces.nsIUpdateItem.TYPE_THEME;
+		}
+		
+		var name = file.leafName;
+		var pos = name.lastIndexOf(".");
+		if (pos>=0)
+		{
+			var extension = name.substring(pos+1);
+			dump(extension+"\n");
+			if (extension=="jar")
+				return Components.interfaces.nsIUpdateItem.TYPE_THEME;
+		}
+	}
+	catch (e)
+	{
+		dump(e+"\n");
+	}
+
+	return Components.interfaces.nsIUpdateItem.TYPE_EXTENSION;
+},
+
+extractThemeFiles: function(zipReader, id, installLocation, jarFile)
+{
+	dump("extractThemeFiles\n");
+  var themeDirectory = installLocation.getItemLocation(id);
+
+  // The only critical file is the install.rdf and we would not have
+  // gotten this far without one.
+  var rootFiles = ["install.rdf", "chrome.manifest",
+                   "preview.png", "icon.png"];
+  for (var i = 0; i < rootFiles.length; ++i)
+  {
+    try
+    {
+      var entry = zipReader.getEntry(rootFiles[i]);
+      var target = installLocation.getItemFile(id, rootFiles[i]);
+      zipReader.extract(rootFiles[i], target);
+    }
+    catch (e)
+    {
+    }
+  }
+
+  var manifestFile = installLocation.getItemFile(id, "chrome.manifest");
+  // new theme structure requires a chrome.manifest file
+  if (manifestFile.exists())
+  {
+    var entries = zipReader.findEntries("chrome/*");
+    while (entries.hasMoreElements())
+    {
+      entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
+      if (entry.name.substr(entry.name.length - 1, 1) == "/")
+        continue;
+      target = installLocation.getItemFile(id, entry.name);
+      try
+      {
+        target.create(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
+      }
+      catch (e)
+      {
+        LOG("extractThemeFiles: failed to create target file for extraction " + 
+            " file = " + target.path + ", exception = " + e + "\n");
+      }
+      zipReader.extract(entry.name, target);
+    }
+  }
+  else
+  { // old theme structure requires only an install.rdf
+    try
+    {
+      var entry = zipReader.getEntry("contents.rdf");
+      var contentsManifestFile = installLocation.getItemFile(id, "contents.rdf");
+      contentsManifestFile.create(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
+      zipReader.extract("contents.rdf", contentsManifestFile);
+    }
+    catch (e)
+    {
+      LOG("extractThemeFiles: failed to extract contents.rdf: " + target.path);
+      throw e; // let the safe-op clean up
+    }
+    var chromeDir = installLocation.getItemFile(id, "chrome");
+    try
+    {
+      jarFile.copyTo(chromeDir, jarFile.fileName);
+    }
+    catch (e)
+    {
+      LOG("extractThemeFiles: failed to copy theme JAR file to: " + chromeDir.path);
+      throw e; // let the safe-op clean up
+    }
+  }
+},
+
+extractExtensionFiles: function(zipReader, extensionID, installLocation, xpiFile)
+{
+	dump("extractExtensionFiles\n");
+	// create directories first
+	var entries = zipReader.findEntries("*/");
+	while (entries.hasMoreElements())
+	{
+	  var entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
+	  var target = installLocation.getItemFile(extensionID, entry.name);
+	  if (!target.exists())
+	  {
+	    try
+	    {
+	      target.create(Components.interfaces.nsILocalFile.DIRECTORY_TYPE, 0755);
+	    }
+	    catch (e)
+	    {
+	    }
+	  }
+	}
+	
+	entries = zipReader.findEntries("*");
+	while (entries.hasMoreElements())
+	{
+	  entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
+	  if (entry.name.substring(entry.name.length-1)!="/")
+	  {
+	    target = installLocation.getItemFile(extensionID, entry.name);
+	    try
+	    {
+	        if (!target.exists())
+	          target.create(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
+	    }
+	    catch (e)
+	    {
+	    }
+	    zipReader.extract(entry.name, target);
+	  }
+	}
 },
 
 installLocalExtension: function(name, uri, file)
@@ -309,7 +463,7 @@ installLocalExtension: function(name, uri, file)
 		}
     this.displayAlert("nightly.badguid.message",[name]);
 	}
-
+	
 	var installLocation = em.getInstallLocation(extensionID);
 	if (!installLocation)
 	{
@@ -324,45 +478,16 @@ installLocalExtension: function(name, uri, file)
 	}
 	
 	var dest = installLocation.getItemLocation(extensionID);
+	var addonType = this.getAddonType(file, extensionID, ds, em);
 				
 	try
 	{
-    // create directories first
-    var entries = zipReader.findEntries("*/");
-    while (entries.hasMoreElements())
-    {
-      var entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
-      var target = installLocation.getItemFile(extensionID, entry.name);
-      if (!target.exists())
-      {
-        try
-        {
-          target.create(Components.interfaces.nsILocalFile.DIRECTORY_TYPE, 0755);
-        }
-        catch (e)
-        {
-        }
-      }
-    }
-
-    entries = zipReader.findEntries("*");
-    while (entries.hasMoreElements())
-    {
-      entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
-      if (entry.name.substring(entry.name.length-1)!="/")
-      {
-        target = installLocation.getItemFile(extensionID, entry.name);
-        try
-        {
-	        if (!target.exists())
-	          target.create(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
-        }
-        catch (e)
-        {
-        }
-        zipReader.extract(entry.name, target);
-      }
-    }
+		if (addonType==Components.interfaces.nsIUpdateItem.TYPE_EXTENSION)
+			this.extractExtensionFiles(zipReader, extensionID, installLocation, file);
+		else if (addonType==Components.interfaces.nsIUpdateItem.TYPE_THEME)
+			this.extractThemeFiles(zipReader, extensionID, installLocation, file);
+		else
+			throw "Cannot install this type of addon.";
 	}
 	catch (e)
 	{
@@ -392,7 +517,6 @@ installLocalExtension: function(name, uri, file)
   	ds = rdfService.GetDataSourceBlocking(manifest.spec);
   	
   	var changed=false;
-
 
 	  if (extensionID!=originalID.Value)
 	  {

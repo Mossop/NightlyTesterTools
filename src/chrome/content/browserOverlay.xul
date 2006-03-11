@@ -90,7 +90,9 @@
         <menuitem id="list-copy" label="&nightly.extensions.copy.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.extensions.insert.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
-        <menuitem label="&nightly.extensions.openprofile.label;" oncommand="nightly.openProfileDir();"/>
+        <menuitem label="&nightly.extensions.install.label;" oncommand="nightly.installItem();"/>
+        <menuseparator/>
+        <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
         <menuseparator/>
         <menu label="Recent Incidents" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
           <menupopup id="nightly-incidents">

@@ -554,6 +554,32 @@ copyExtensions: function()
 		nightly.copyText(text);
 },
 
+installItem: function()
+{
+	var fp = Components.classes["@mozilla.org/filepicker;1"]
+	                   .createInstance(Components.interfaces.nsIFilePicker);
+	fp.init(window, "Select Log File", fp.modeOpen);
+	fp.appendFilter("Addon files (*.xpi, *.jar)", "*.xpi;*.jar");
+	fp.appendFilter("Extension files (*.xpi)", "*.xpi");
+	fp.appendFilter("Theme files (*.jar)", "*.jar");
+	fp.appendFilter("All Files (*.*)", "*.*");
+		
+	if (fp.show() == fp.returnOK)
+	{
+		var item=fp.file;
+		if (item.exists())
+		{
+			var itemURI = Components.classes["@mozilla.org/network/io-service;1"]
+		                          .getService(Components.interfaces.nsIIOService)
+		                          .newFileURI(item);
+			var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
+		                            .getService(Components.interfaces.nsINightlyToolsService);
+		  nightlyService.queueInstall(item.path, itemURI);
+		  nightlyService.performInstalls();
+		}
+	}
+},
+
 openProfileDir: function()
 {
 	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
