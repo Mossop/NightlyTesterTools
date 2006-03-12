@@ -62,7 +62,7 @@ variables: {
 	compiler: null,
 	defaulttitle: null,
 	profile: null,
-	toolkit: null,
+	toolkit: "Unknown",
 	flags: null
 },
 
@@ -149,7 +149,7 @@ getProfileName: function()
 defineFlags: function()
 {
 	var flags = "";
-	if (nightly.variables.toolkit.substr(0,6)=="cairo-")
+	if (nightly.variables.toolkit && nightly.variables.toolkit.substr(0,6)=="cairo-")
 	{
 		flags+=" [cairo]";
 	}
