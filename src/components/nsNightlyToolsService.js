@@ -42,6 +42,20 @@
  *
  */
 
+function stringData(literalOrResource) {
+  if (literalOrResource instanceof Components.interfaces.nsIRDFLiteral)
+    return literalOrResource.Value;
+  if (literalOrResource instanceof Components.interfaces.nsIRDFResource)
+    return literalOrResource.Value;
+  return undefined;
+}
+
+function intData(literal) {
+  if (literal instanceof Components.interfaces.nsIRDFInt)
+    return literal.Value;
+  return undefined;
+}
+
 var nsNightlyToolsService = {
 
 installs: [],
@@ -187,16 +201,17 @@ getAddonType: function(ds)
                        .getService(Components.interfaces.nsIRDFService);
 	var manifest = gRDF.GetResource("urn:mozilla:install-manifest");
 	var property = gRDF.GetResource("http://www.mozilla.org/2004/em-rdf#type");
-  var value = ds.GetTarget(manifest, property, true);
-	if (value)
+  var target = ds.GetTarget(manifest, property, true);
+	if (target)
 	{
 		dump("Found type in manifest\n");
-		return value.Value;
+    var type = stringData(target);
+    return type === undefined ? intData(target) : parseInt(type);
 	}
 	
 	property = gRDF.GetResource("http://www.mozilla.org/2004/em-rdf#internalName");
-  value = ds.GetTarget(manifest, property, true);
-	if (value)
+  target = ds.GetTarget(manifest, property, true);
+	if (target)
 	{
 		dump("Guessing theme from internalName\n");
 		return Components.interfaces.nsIUpdateItem.TYPE_THEME;
@@ -425,6 +440,7 @@ installLocalExtension: function(name, uri, file)
 	  &&(addonType != Components.interfaces.nsIUpdateItem.TYPE_EXTENSION))
 	{
 		zipReader.close();
+		dump("Bad type - "+addonType);
 		this.displayAlert("nightly.badtype.message",[name]);
 		this.installFailed(name, uri);
 		return;
