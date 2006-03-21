@@ -43,6 +43,21 @@
  */
 
 var nightlyplatform = {
-	eol: "\n"
+	eol: "\n",
+	
+	getTalkbackExe: function(dir)
+	{
+		if (dir)
+		{
+			var exe = dir.clone();
+			exe.append("Talkback.app");
+			exe.append("Contents");
+			exe.append("MacOS");
+			exe.append("Talkback");
+			if (exe.exists())
+				return exe;
+		}
+		return null;
+	}
 }
  

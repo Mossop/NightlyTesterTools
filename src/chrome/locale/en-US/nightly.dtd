@@ -34,3 +34,5 @@
 <!ENTITY nightly.talkback.id                  "ID">
 <!ENTITY nightly.talkback.date                "Date">
 <!ENTITY nightly.talkback.comment             "Comment">
+<!ENTITY nightly.talkback.label               "Launch Talkback">
+<!ENTITY nightly.talkback.disabled            "Talkback is not installed">

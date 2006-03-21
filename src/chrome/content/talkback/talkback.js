@@ -70,6 +70,12 @@ onDatabaseLoaded: function()
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
 	                        .getService(Components.interfaces.nsITalkbackService);
 	
+	var exe = nightlyplatform.getTalkbackExe(service.talkbackdir);
+	if (!exe)
+		document.getElementById("nightly-talkback-disabled").hidden=false;
+	else
+		document.getElementById("nightly-talkback-launch").hidden=false;
+		
 	var incidents = service.getPreviousIncidents(10);
 	if ((incidents)&&(incidents.length>0))
 	{
@@ -135,6 +141,22 @@ viewIncident: function(event)
 		var id = event.target.id.substring(12);
 		nightlyApp.openURL(url+id, event);
 	}
+},
+
+	
+launchTalkback: function()
+{
+	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
+	                        .getService(Components.interfaces.nsITalkbackService);
+	var talkback = nightlyplatform.getTalkbackExe(service.talkbackdir);
+
+	if (!talkback)
+	{
+		alert("Could not find talkback");
+		return;
+	}
+
+	nightly.launch(talkback,null);
 },
 
 QueryInterface: function(iid)

@@ -88,6 +88,8 @@
             <menuitem disabled="true" label="Loading..."/>
           </menupopup>
         </menu>
+        <menuitem id="nightly-talkback-launch" hidden="true" label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
+        <menuitem id="nightly-talkback-disabled" hidden="true" label="&nightly.talkback.disabled;" disabled="true"/>
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);"/>
       </menupopup>

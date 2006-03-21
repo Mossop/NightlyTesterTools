@@ -43,6 +43,18 @@
  */
 
 var nightlyplatform = {
-	eol: "\n"
+	eol: "\n",
+	
+	getTalkbackExe: function(dir)
+	{
+		if (dir)
+		{
+			var exe = dir.clone();
+			exe.append("talkback");
+			if (exe.exists() && exe.isExecutable())
+				return exe;
+		}
+		return null;
+	}
 }
  

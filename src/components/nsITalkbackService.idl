@@ -45,6 +45,7 @@
 #include "nsISupports.idl"
 
 interface nsIArray;
+interface nsIFile;
 interface nsITreeView;
 interface nsITalkbackIncident;
 interface nsITalkbackBuild;
@@ -120,6 +121,7 @@ interface nsITalkbackProgressListener : nsISupports
 interface nsITalkbackService : nsISupports
 {
 	readonly attribute nsITalkbackBuild currentBuild;
+	readonly attribute nsIFile talkbackdir;
 
 	nsIArray getRecentIncidents(in unsigned long long date);
 	nsIArray getPreviousIncidents(in long count);
