@@ -27,7 +27,7 @@
 
     <!-- Front End MetaData -->
     <em:name>Nightly Tester Tools</em:name>
-    <em:description>Useful tools for the nightly tester (Formerly known as the Build ID Copier).</em:description>
+    <em:description>Useful tools for the nightly tester.</em:description>
     <em:creator>Mossop</em:creator>
     <em:contributor>Peter van der Woude (original idea)</em:contributor>
     <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
