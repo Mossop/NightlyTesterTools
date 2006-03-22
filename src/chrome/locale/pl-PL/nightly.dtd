@@ -1,0 +1,29 @@
+<!ENTITY nightly.options.height "30em">
+<!ENTITY nightly.options.title "Nightly Tester - opcje">
+<!ENTITY nightly.options.description "Można użyć konfigurowalnego szablonu tytułu, aby zawsze wyświetlać aktualny identyfikator wydania na pasku tytułu okna przeglądarki.">
+<!ENTITY nightly.disablechecking.description "Gdy nowa wersja aplikacji jest instalowana można wymusić wyłączenie sprawdzania niekompatybilnych rozszerzeń.">
+<!ENTITY nightly.disablechecking.label "Wyłącz sprawdzanie kompatybilności podczas aktualizacji aplikacji">
+<!ENTITY nightly.customtitle.label "Użyj szablonu tytułu">
+<!ENTITY nightly.customtemplate.label "Konfiguracja szablonu tytułu:">
+<!ENTITY nightly.variables.description "Zmienne, które mogą być używane w tytułach:">
+<!ENTITY nightly.variable.label "Zmienna">
+<!ENTITY nightly.variabledesc.label "Objaśnienie">
+<!ENTITY nightly.variablevalue.label "Aktualna wartość">
+<!ENTITY nightly.openprofile.label "Otwórz folder profilu">
+<!ENTITY nightly.id.copy.label "Kopiuj identyfikator wydania do schowka">
+<!ENTITY nightly.id.insert.label "Identyfikator wydania">
+<!ENTITY nightly.id.insert.tooltip "Wstawia identyfikator wydania do aktywnego pola tekstowego">
+<!ENTITY nightly.extensions.install.label "Zainstaluj rozszerzenie lub motyw">
+<!ENTITY nightly.extensions.copy.label "Kopiuj listę rozszerzeń do schowka">
+<!ENTITY nightly.extensions.insert.label "Wstaw listę rozszerzeń">
+<!ENTITY nightly.appenable.label "Kompatybilizuj">
+<!ENTITY nightly.xpinstall.checkbox "Zainstaluj przy pomocy Nightly Tester Tools.">
+<!ENTITY nightly.enableall.label "Kompatybilizuj wszystkie">
+<!ENTITY nightly.leakreporter.label "Analizator wycieków">
+<!ENTITY nightly.talkback.sidebar.title "Panel boczny Talkbacka">
+<!ENTITY nightly.talkback.copyid "Kopiuj">
+<!ENTITY nightly.talkback.id "ID">
+<!ENTITY nightly.talkback.date "Data">
+<!ENTITY nightly.talkback.comment "Komentarz">
+<!ENTITY nightly.talkback.label "Uruchom Talkbacka">
+<!ENTITY nightly.talkback.disabled "Talkback nie jest zainstalowany">
