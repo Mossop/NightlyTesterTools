@@ -1,18 +1,18 @@
-content			nightly																							jar:chrome/nightly.jar!/content/
-content			nightly-platform																		jar:chrome/nightly.jar!/content/platform/              platform
-skin				nightly					classic/1.0													jar:chrome/nightly.jar!/skin/
+content			nightly																							${extension.chromebase}/content/
+content			nightly-platform																		${extension.chromebase}/content/platform/              platform
+skin				nightly					classic/1.0													${extension.chromebase}/skin/
 
-locale			nightly					en-US																jar:chrome/nightly.jar!/locale/en-US/
-locale			nightly					it-IT																jar:chrome/nightly.jar!/locale/it-IT/
-locale			nightly					ru-RU																jar:chrome/nightly.jar!/locale/ru-RU/
-locale			nightly					de-DE																jar:chrome/nightly.jar!/locale/de-DE/
-locale			nightly					es-ES																jar:chrome/nightly.jar!/locale/es-ES/
-locale			nightly					fr-FR																jar:chrome/nightly.jar!/locale/fr-FR/
-locale			nightly					hu-HU																jar:chrome/nightly.jar!/locale/hu-HU/
-locale			nightly					pt-BR																jar:chrome/nightly.jar!/locale/pt-BR/
-locale			nightly					ja																	jar:chrome/nightly.jar!/locale/ja/
-locale			nightly					tr-TR																jar:chrome/nightly.jar!/locale/tr-TR/
-locale			nightly					zh-TW																jar:chrome/nightly.jar!/locale/zh-TW/
+locale			nightly					en-US																${extension.chromebase}/locale/en-US/
+locale			nightly					it-IT																${extension.chromebase}/locale/it-IT/
+locale			nightly					ru-RU																${extension.chromebase}/locale/ru-RU/
+locale			nightly					de-DE																${extension.chromebase}/locale/de-DE/
+locale			nightly					es-ES																${extension.chromebase}/locale/es-ES/
+locale			nightly					fr-FR																${extension.chromebase}/locale/fr-FR/
+locale			nightly					hu-HU																${extension.chromebase}/locale/hu-HU/
+locale			nightly					pt-BR																${extension.chromebase}/locale/pt-BR/
+locale			nightly					ja																	${extension.chromebase}/locale/ja/
+locale			nightly					tr-TR																${extension.chromebase}/locale/tr-TR/
+locale			nightly					zh-TW																${extension.chromebase}/locale/zh-TW/
 
 overlay			chrome://browser/content/browser.xul								chrome://nightly/content/browserOverlay.xul		     application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
 overlay 		chrome://messenger/content/messenger.xul 						chrome://nightly/content/messengerOverlay.xul      application={3550f703-e582-4d05-9a08-453d09bdfdc6}
