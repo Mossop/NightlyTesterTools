@@ -548,9 +548,9 @@ function getTextOverview()
 function save()
 {
 	var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(Components.interfaces.nsIFilePicker);
-	fp.init(window, "Select Log File", fp.modeSave);
-	fp.appendFilter("Log Files (*.log)", "*.log");
-	fp.appendFilter("All Files (*.*)", "*.*");
+	fp.init(window, bundle.getString("nightly.leaks.filepicker.title"), fp.modeSave);
+	fp.appendFilter(bundle.getString("nightly.leaks.filepicker.filterlog"), "*.log");
+	fp.appendFilter(bundle.getString("nightly.leaks.filepicker.filterall"), "*.*");
 	fp.displayDirectory=nsprlog.parent;
 
 	var date = new Date(nsprlog.lastModifiedTime);
@@ -625,9 +625,9 @@ function textEnter()
 function selectLog()
 {
 	var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(Components.interfaces.nsIFilePicker);
-	fp.init(window, "Select Log File", fp.modeOpen);
-	fp.appendFilter("Log Files (*.log)", "*.log");
-	fp.appendFilter("All Files (*.*)", "*.*");
+	fp.init(window, bundle.getString("nightly.leaks.filepicker.title"), fp.modeOpen);
+	fp.appendFilter(bundle.getString("nightly.leaks.filepicker.filterlog"), "*.log");
+	fp.appendFilter(bundle.getString("nightly.leaks.filepicker.filterall"), "*.*");
 	if (nsprlog)
 		fp.displayDirectory=nsprlog.parent;
 		
