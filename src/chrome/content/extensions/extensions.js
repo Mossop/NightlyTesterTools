@@ -111,6 +111,11 @@ isCompatible: function(id)
   return true;
 },
 
+isUsable: function(id)
+{
+	return true;
+},
+
 makeCompatible: function(id,app,version)
 {
 	var em = Components.classes["@mozilla.org/extensions/manager;1"]
@@ -122,6 +127,8 @@ makeCompatible: function(id,app,version)
 	var targappprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#targetApplication");
 	var minprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#minVersion");
 	var maxprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#maxVersion");
+	var appdisprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#appDisabled");
+	var userdisprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#userDisabled");
 
 	var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
                                .getService(Components.interfaces.nsIVersionComparator);
@@ -152,6 +159,15 @@ makeCompatible: function(id,app,version)
 	}
 	if (changed)
 	{
+		var target = ds.GetTarget(extension, appdisprop, true);
+		if (target)
+			ds.Unassert(extension, appdisprop, target);
+		target = ds.GetTarget(extension, userdisprop, true);
+		var newtarget = rdfService.GetLiteral("true");
+		if (target)
+			ds.Change(extension, userdisprop, target, newtarget);
+		else
+			ds.Assert(extension, userdisprop, newtarget, true);
     ds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
     ds.Flush();
 		em.enableItem(getIDFromResourceURI(id));
