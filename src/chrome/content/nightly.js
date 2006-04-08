@@ -101,15 +101,15 @@ getProfileRegistry: function()
 
 getProfileName: function()
 {
-	var name = "Unknown";
-	
-	var reg = nightly.getProfileRegistry();
-	if (!reg)
-		return name;
-	
 	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
 										               .getService(Components.interfaces.nsIProperties);
 	var profd = directoryService.get("ProfD",Components.interfaces.nsIFile);
+	
+	var name = profd.leafName;
+
+	var reg = nightly.getProfileRegistry();
+	if (!reg)
+		return name;
 	
 	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
 	                       .createInstance(Components.interfaces.nsIFileInputStream);
