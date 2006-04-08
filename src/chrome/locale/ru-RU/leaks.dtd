@@ -1,0 +1,18 @@
+<!ENTITY nightly.leaks.title "Анализатор логов утечек">
+<!ENTITY nightly.leaks.logfile.label "Файл журнала:">
+<!ENTITY nightly.leaks.browse.label "Обзор...">
+<!ENTITY nightly.leaks.displayfull.label "Показать журнал целиком">
+<!ENTITY nightly.leaks.loading.label "Идет загрузка...">
+<!ENTITY nightly.leaks.overview.label "Обзор">
+<!ENTITY nightly.leaks.fulllog.label "Полный журнал">
+<!ENTITY nightly.leaks.copy.label "Копировать в буфер обмена">
+<!ENTITY nightly.leaks.save.label "Сохранить как...">
+<!ENTITY nightly.leaks.summary.label "Сводка">
+<!ENTITY nightly.leaks.details.label "Подробности">
+<!ENTITY nightly.leaks.display.label "Показать:">
+<!ENTITY nightly.leaks.docshellfilter.label "Docshells">
+<!ENTITY nightly.leaks.windowfilter.label "Окна">
+<!ENTITY nightly.leaks.documentfilter.label "Документы">
+<!ENTITY nightly.leaks.leakedfilter.label "Утечки">
+<!ENTITY nightly.leaks.collectedfilter.label "Собрано">
+<!ENTITY nightly.leaks.unknownfilter.label "Неизвестно">

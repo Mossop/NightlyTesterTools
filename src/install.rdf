@@ -32,16 +32,10 @@
     <em:contributor>Peter van der Woude (original idea)</em:contributor>
     <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
     <em:contributor>Shimoda "Piro" Hiroshi (Fixing invalid guids)</em:contributor>
-    <em:contributor>Luana - MatrixIsAllOver (Italian localisation)</em:contributor>
     <em:contributor>Unghost (Russian localisation)</em:contributor>
-    <em:contributor>SION (Japanese localisation)</em:contributor>
-    <em:contributor>Jose Sun (Traditional Chinese localisation)</em:contributor>
-    <em:contributor>Armin C. Schneider (German localisation)</em:contributor>
-    <em:contributor>Erkan Kaplan (Limited Turkish localisation)</em:contributor>
-    <em:contributor>Frackounet (Limited French localisation)</em:contributor>
-    <em:contributor>Fernando Pereira Silveira (Limited Brazilian Portuguese localisation)</em:contributor>
-    <em:contributor>Henriett Peller (Limited Hungarian localisation)</em:contributor>
-    <em:contributor>Proyecto Nave (Limited Spanish localisation)</em:contributor>
+    <em:contributor>Vladimír (Czech localisation)</em:contributor>
+    <em:contributor>Luana - MatrixIsAllOver (Italian localisation)</em:contributor>
+    <em:contributor>Teo (Polish localisation)</em:contributor>
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>
     <em:homepageURL>http://users.blueprintit.co.uk/~dave/web/firefox/buildid/nightly.html</em:homepageURL>

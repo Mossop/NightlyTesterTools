@@ -1,0 +1,29 @@
+<!ENTITY nightly.options.height "30em">
+<!ENTITY nightly.options.title "Nastavení Nightly Tester">
+<!ENTITY nightly.options.description "Můžete použít vlastní titulek, který zobrazí číslo verze (build) v titulku aplikace.">
+<!ENTITY nightly.disablechecking.description "Pokud bude nainstalována nová verze aplikace rozšíření nekompatibilní stouto verzí mohou být automaticky zakázána.">
+<!ENTITY nightly.disablechecking.label "Vypnout ověření kompatibility během aktualizace aplikace">
+<!ENTITY nightly.customtitle.label "Používat vlastní titulek">
+<!ENTITY nightly.customtemplate.label "Vzor vlastního titulku:">
+<!ENTITY nightly.variables.description "Následující proměné můžete použít v titulku">
+<!ENTITY nightly.variable.label "proměnná">
+<!ENTITY nightly.variabledesc.label "popis">
+<!ENTITY nightly.variablevalue.label "obsah">
+<!ENTITY nightly.openprofile.label "Otevřít složku s profilem">
+<!ENTITY nightly.id.copy.label "Kopírovat číslo verze (Build ID)">
+<!ENTITY nightly.id.insert.label "Vložit číslo verze (Build ID)">
+<!ENTITY nightly.id.insert.tooltip "Vložit číslo verze do tohoto textového pole.">
+<!ENTITY nightly.extensions.install.label "Nainstalovat rozšíření nebo motiv vzhledu">
+<!ENTITY nightly.extensions.copy.label "Kopírovat list rozšíření do schránky">
+<!ENTITY nightly.extensions.insert.label "Vložit výpis rozšíření do textbou">
+<!ENTITY nightly.appenable.label "Nastavit kompatibilní">
+<!ENTITY nightly.xpinstall.checkbox "Instalovat za použití Nightly Tester Tools a obejít tak nekompatibilitu.">
+<!ENTITY nightly.enableall.label "Nastavit vše kompatibilní">
+<!ENTITY nightly.leakreporter.label "Analizovat log leaků">
+<!ENTITY nightly.talkback.sidebar.title "Talkback Sidebar">
+<!ENTITY nightly.talkback.copyid "Kopírovat">
+<!ENTITY nightly.talkback.id "ID">
+<!ENTITY nightly.talkback.date "Datum">
+<!ENTITY nightly.talkback.comment "Komentář">
+<!ENTITY nightly.talkback.label "Spustit Talkback">
+<!ENTITY nightly.talkback.disabled "Talkback není nainstalován">

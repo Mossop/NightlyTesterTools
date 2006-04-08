@@ -1,0 +1,18 @@
+<!ENTITY nightly.leaks.title "Analizzatore del file di filtro">
+<!ENTITY nightly.leaks.logfile.label "File di registrazione:">
+<!ENTITY nightly.leaks.browse.label "Sfoglia...">
+<!ENTITY nightly.leaks.displayfull.label "Visualizza l'intero file">
+<!ENTITY nightly.leaks.loading.label "In caricamento...">
+<!ENTITY nightly.leaks.overview.label "Descrizione">
+<!ENTITY nightly.leaks.fulllog.label "File di registrazione completo">
+<!ENTITY nightly.leaks.copy.label "Copia negli appunti">
+<!ENTITY nightly.leaks.save.label "Salva come...">
+<!ENTITY nightly.leaks.summary.label "Sommario">
+<!ENTITY nightly.leaks.details.label "Dettagli">
+<!ENTITY nightly.leaks.display.label "Visualizza:">
+<!ENTITY nightly.leaks.docshellfilter.label "Docshell">
+<!ENTITY nightly.leaks.windowfilter.label "Finestre">
+<!ENTITY nightly.leaks.documentfilter.label "Documenti">
+<!ENTITY nightly.leaks.leakedfilter.label "Divulgati">
+<!ENTITY nightly.leaks.collectedfilter.label "Collezionati">
+<!ENTITY nightly.leaks.unknownfilter.label "Sconosciuti">
