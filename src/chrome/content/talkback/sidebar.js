@@ -53,6 +53,7 @@ init: function()
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
 	                        .getService(Components.interfaces.nsITalkbackService);
 	
+	service.loadDatabase();
 	service.addProgressListener(sidebar);
 },
 
@@ -61,7 +62,11 @@ onDatabaseLoaded: function()
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
 	                        .getService(Components.interfaces.nsITalkbackService);
 
-	document.getElementById("tree").view = service.getTreeView();
+	var tree = document.getElementById("tree");
+	tree.view = service.getTreeView();
+	
+	document.getElementById("loading").hidden=true;
+	tree.hidden=false;
 },
 
 copy: function(event)
@@ -105,7 +110,6 @@ checkPopup: function(event)
 {
 	var tree = document.getElementById("tree");
 	var type = tree.view.getCellText(tree.currentIndex, tree.columns.getNamedColumn("type"));
-	dump(type+"\n");
 	return type=="incident";
 },
 

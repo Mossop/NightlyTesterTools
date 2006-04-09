@@ -2,6 +2,11 @@
 	-moz-box-flex: 1;
 }
 
+subpane {
+  -moz-binding: url('chrome://nightly/content/options/subpane.xml#subpane');
+  padding-left: 2em;
+}
+
 #NightlyTesterOptions {
 	padding: 0;
 	width: 40em;
@@ -14,4 +19,8 @@
 
 #NightlyTesterOptions radio[pane=paneExtensions] {
   	list-style-image: url("chrome://nightly/skin/options/extension.png");
+}
+
+#NightlyTesterOptions radio[pane=paneTalkback] {
+  	list-style-image: url("chrome://nightly/skin/options/talkback.png");
 }

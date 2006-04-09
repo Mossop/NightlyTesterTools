@@ -1,0 +1,27 @@
+<!ENTITY nightly.options.height               "30em">
+
+<!ENTITY nightly.options.title                "Nightly Tester Options">
+
+
+<!ENTITY nightly.paneTitlebar.title           "Titlebar">
+<!ENTITY nightly.paneTitlebar.description     "You can use a custom title to always display the current build in the titlebar.">
+
+<!ENTITY nightly.customtitle.label            "Use custom title">
+<!ENTITY nightly.customtemplate.label         "Custom title template:">
+<!ENTITY nightly.variables.description        "The following variables can be used in the title (case insensitive).">
+<!ENTITY nightly.variable.label               "Variable">
+<!ENTITY nightly.variabledesc.label           "Description">
+<!ENTITY nightly.variablevalue.label          "Value">
+
+
+<!ENTITY nightly.paneExtensions.title         "Extensions">
+<!ENTITY nightly.paneExtensions.description   "When a new application version is installed, extensions that are not compatible can be forcibly disabled.">
+
+<!ENTITY nightly.disablechecking.label        "Disable compatibility checking during application update">
+
+
+<!ENTITY nightly.paneTalkback.title           "Talkback">
+<!ENTITY nightly.paneTalkback.description     "Nightly Tester Tools provides convenient access to the Talkback database.">
+
+<!ENTITY nightly.recentlist.label             "Show recent incidents in the menu">
+<!ENTITY nightly.otherbuilds.label            "Only include incidents for the current build">

@@ -117,14 +117,25 @@ interface nsITalkbackProgressListener : nsISupports
 	void onDatabaseLoaded();
 };
 
+[scriptable, uuid(96719a31-e311-461d-bed0-cebc3c0d45e8)]
+interface nsITalkbackLoaderProxy : nsISupports
+{
+	void onDatabaseLoaded();
+};
+
 [scriptable, uuid(943acc93-a529-4fb9-98d5-7e4a733953d2)]
 interface nsITalkbackService : nsISupports
 {
 	readonly attribute nsITalkbackBuild currentBuild;
 	readonly attribute nsIFile talkbackdir;
 
+	void loadDatabase();
+	
 	nsIArray getRecentIncidents(in unsigned long long date);
 	nsIArray getPreviousIncidents(in long count);
+
+	nsIArray getBuildRecentIncidents(in nsITalkbackBuild build, in unsigned long long date);
+	nsIArray getBuildPreviousIncidents(in nsITalkbackBuild build, in long count);
 
 	nsITalkbackIncident getIncident(in AString id);
 	nsITalkbackVendor getVendor(in AString name);

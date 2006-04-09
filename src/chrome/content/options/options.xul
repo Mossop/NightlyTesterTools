@@ -45,7 +45,7 @@
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 <?xml-stylesheet href="chrome://nightly/skin/options/options.css" type="text/css"?>
 
-<!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
+<!DOCTYPE window SYSTEM "chrome://nightly/locale/options.dtd">
 
 <prefwindow id="NightlyTesterOptions" windowtype="NightlyTester:Options"
             title="&nightly.options.title;"
@@ -53,7 +53,7 @@
   
   <script type="application/x-javascript" src="prefs.js"/>
 
-  <prefpane id="paneTitle">
+  <prefpane id="paneTitle" label="&nightly.paneTitlebar.title;">
   
     <preferences>
       <preference id="idtitle" type="bool" name="nightly.idtitle" onchange="paneTitle.toggled();"/>
@@ -65,11 +65,7 @@
   
   	<stringbundle id="variablesBundle" src="chrome://nightly/locale/variables.properties"/>
     
-    <description style="padding-bottom: 5px">&nightly.disablechecking.description;</description>
-      
-    <checkbox preference="compatibility" label="&nightly.disablechecking.label;"/>
-
-    <description style="padding-bottom: 5px">&nightly.options.description;</description>
+    <description style="padding-bottom: 5px">&nightly.paneTitlebar.description;</description>
       
 		<checkbox preference="idtitle" style="padding-bottom: 5px" id="enableTitleBar" label="&nightly.customtitle.label;"/>
 	                
@@ -92,6 +88,35 @@
 				<listcol style="width: 15em"/>
 			</listcols>
 		</listbox>
+
+  </prefpane>
+  
+  <prefpane id="paneExtensions" label="&nightly.paneExtensions.title;">
+  
+    <preferences>
+      <preference id="compatibility" type="bool" name="nightly.disablecompatibility"/>
+    </preferences>
+    
+    <description style="padding-bottom: 5px">&nightly.paneExtensions.description;</description>
+      
+    <checkbox preference="compatibility" label="&nightly.disablechecking.label;"/>
+
+  </prefpane>
+  
+  <prefpane id="paneTalkback" label="&nightly.paneTalkback.title;">
+  
+    <preferences>
+      <preference id="recentlist" type="bool" name="nightly.talkback.recentlist.display"/>
+      <preference id="otherbuilds" inverted="true" type="bool" name="nightly.talkback.recentlist.otherbuilds"/>
+    </preferences>
+    
+    <description style="padding-bottom: 5px">&nightly.paneTalkback.description;</description>
+      
+    <checkbox preference="recentlist" label="&nightly.recentlist.label;"/>
+
+		<subpane preference="recentlist" action="disable">
+	    <checkbox preference="otherbuilds" label="&nightly.otherbuilds.label;"/>
+	  </subpane>
 
   </prefpane>
   

@@ -1,0 +1,70 @@
+[Project ID]
+Signature=UE Proj: v.1
+[Project Information]
+Compilable=1
+Use Relative Directory=1
+Relative to Project File=1
+Project Start=D6070400000009000B002B002200000042
+Include Sub Directories=1
+Project Tagfile=
+Project Wordfile=
+Filter=
+Using VCS=1
+Save Account=0
+Create Tagfile=0
+CTags Legacy Support=0
+Working Time=8035
+VCS Default Module={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
+[uemakeXp]
+ReleaseMode=0
+Compiler=Configs\Ant Build\Extension Build
+Files=1988754814
+[Open Files]
+Open File0=C:\UserData\Dave\UEStudio\Nightly\src\components\nsTalkbackService.js
+Active File Display Mode=3
+Open File Pos0=3584
+Open File Line0=2721
+Active File Index=0
+Open File Window Pos0=2,3,-1,-1,-4,-25,132,144,836,633
+Open File1=C:\UserData\Dave\UEStudio\Nightly\src\components\nsITalkbackService.idl
+Open File Pos1=4576
+Open File Line1=2148
+Open File Window Pos1=0,1,-1,-1,-4,-25,154,168,884,667
+Open File2=C:\UserData\Dave\UEStudio\Nightly\src\chrome\content\talkback\talkback.js
+Open File Pos2=0
+Open File Line2=958
+Open File Window Pos2=0,1,-1,-1,-4,-25,176,192,906,691
+Open File3=C:\UserData\Dave\UEStudio\Nightly\src\chrome\content\talkback\sidebar.js
+Open File Pos3=3877
+Open File Line3=3108
+Open File Window Pos3=0,1,-1,-1,-4,-25,198,216,928,715
+Open File4=
+[Configs\Ant Build\Extension Build]
+OutputDirectory_ReleaseMode=
+OutputDirectory_DebugMode=
+Target=nightly.xpi
+Gecko SDK=c:\gecko-sdk
+[Files]
+0=C:\UserData\Dave\UEStudio\Nightly\
+[VCS Module List]
+{F80E7E6D-D360-47a5-85D8-9DE97F4F8247}=
+[Folders]
+C:\UserData\Dave\UEStudio\Nightly\=1
+C:\UserData\Dave\UEStudio\Nightly\ - src=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - defaults - preferences=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - skin=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - skin - options=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - content=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - content - options=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - components=1
+[{F80E7E6D-D360-47a5-85D8-9DE97F4F8247}]
+Module Id={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
+Module Type=SVN
+Module Path=C:\UserData\Dave\UEStudio\Nightly
+Module Enabled=true
+Account Id={9CB86718-A610-4b92-92D2-BBB0383B90BE}
+Account Type=SVN
+Account Name=Mossop
+VCS Module Path=mozilla/firefox/buildid/trunk
+VCS Specific Settings=

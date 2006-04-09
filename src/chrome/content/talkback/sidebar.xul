@@ -42,7 +42,12 @@
    - $Revision$
    -->
 
-<!DOCTYPE page SYSTEM "chrome://nightly/locale/nightly.dtd">
+<!DOCTYPE window [
+<!ENTITY % nightlyDTD SYSTEM "chrome://nightly/locale/nightly.dtd">
+%nightlyDTD;
+<!ENTITY % leaksDTD SYSTEM "chrome://nightly/locale/leaks.dtd">
+%leaksDTD;
+]>
 
 <?xml-stylesheet href="chrome://global/skin/global.css"?>
 <?xml-stylesheet href="chrome://nightly/skin/talkback/sidebar.css"?>
@@ -58,7 +63,11 @@
     </popup>
   </popupset>
   
-  <tree id="tree" flex="1" seltype="single" onkeypress="if (event.keyCode==13) sidebar.selectedCommand(event);">
+  <vbox id="loading" align="center" pack="center" flex="1">
+  	<label style="font-size: 150%;" value="&nightly.leaks.loading.label;"/>
+  </vbox>
+  
+  <tree id="tree" hidden="true" flex="1" seltype="single" onkeypress="if (event.keyCode==13) sidebar.selectedCommand(event);">
     <treecols>
       <treecol id="incidentID" label="&nightly.talkback.id;" primary="true" flex="1" persist="width"/>
       <splitter class="tree-splitter"/>

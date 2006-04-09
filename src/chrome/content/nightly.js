@@ -342,6 +342,10 @@ prefChange: function(pref)
 			prefservice.setCharPref("extensions.lastAppVersion", nightly.variables.version);
 		}
 	}
+	else if (pref.substring(0,20)=="talkback.recentlist.")
+	{
+		talkback.init();
+	}
 },
 
 observe: function(prefBranch, subject, pref)

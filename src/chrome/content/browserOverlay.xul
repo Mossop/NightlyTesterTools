@@ -42,7 +42,12 @@
    - $Revision$
    -->
 
-<!DOCTYPE window SYSTEM "chrome://nightly/locale/nightly.dtd">
+<!DOCTYPE window [
+<!ENTITY % nightlyDTD SYSTEM "chrome://nightly/locale/nightly.dtd">
+%nightlyDTD;
+<!ENTITY % leaksDTD SYSTEM "chrome://nightly/locale/leaks.dtd">
+%leaksDTD;
+]>
 
 <overlay id="NightlyBrowserOverlay"
                         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -94,9 +99,9 @@
         <menuseparator/>
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
         <menuseparator/>
-        <menu label="Recent Incidents" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+        <menu label="&nightly.talkback.recentlist;" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
           <menupopup id="nightly-incidents">
-            <menuitem disabled="true" label="Loading..."/>
+            <menuitem disabled="true" label="&nightly.leaks.loading.label;"/>
           </menupopup>
         </menu>
         <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar"/>

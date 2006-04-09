@@ -42,14 +42,17 @@
  *
  */
 
-Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
-          .getService(Components.interfaces.mozIJSSubScriptLoader)
-          .loadSubScript("chrome://nightly/content/includes/tree-utils.js", null);
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
+Cc["@mozilla.org/moz/jssubscript-loader;1"]
+  .getService(Ci.mozIJSSubScriptLoader)
+  .loadSubScript("chrome://nightly/content/includes/tree-utils.js", null);
 
 function TB_CreateArray(source)
 {
-	var result = Components.classes["@mozilla.org/array;1"]
-	                       .createInstance(Components.interfaces.nsIMutableArray);
+	var result = Cc["@mozilla.org/array;1"]
+	               .createInstance(Ci.nsIMutableArray);
 	
 	for (var key in source)
 	{
@@ -99,8 +102,8 @@ filename: null,
 
 QueryInterface: function(iid)
 {
-	if (iid.equals(Components.interfaces.nsITalkbackIncident)
-		|| iid.equals(Components.interfaces.nsISupports))
+	if (iid.equals(Ci.nsITalkbackIncident)
+		|| iid.equals(Ci.nsISupports))
 	{
 		return this;
 	}
@@ -140,13 +143,13 @@ _removeIncident: function(name)
 _loadIncidents: function(db)
 {
 	var service = this.platform.product.vendor.service;
-	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-									       .createInstance(Components.interfaces.nsIFileInputStream);
+	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
+								 .createInstance(Ci.nsIFileInputStream);
 	
-	stream.init(db, 1, 384, Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
+	stream.init(db, 1, 384, Ci.nsIFileInputStream.CLOSE_ON_EOF);
 	
-	var bstream = Components.classes["@mozilla.org/binaryinputstream;1"]
-	                        .createInstance(Components.interfaces.nsIBinaryInputStream);
+	var bstream = Cc["@mozilla.org/binaryinputstream;1"]
+	                .createInstance(Ci.nsIBinaryInputStream);
 	bstream.setInputStream(stream);
 	
 	bstream.read32();                        // INFO
@@ -186,8 +189,8 @@ remove: function()
 
 QueryInterface: function(iid)
 {
-	if (iid.equals(Components.interfaces.nsITalkbackBuild)
-		|| iid.equals(Components.interfaces.nsISupports))
+	if (iid.equals(Ci.nsITalkbackBuild)
+		|| iid.equals(Ci.nsISupports))
 	{
 		return this;
 	}
@@ -243,8 +246,8 @@ remove: function()
 
 QueryInterface: function(iid)
 {
-	if (iid.equals(Components.interfaces.nsITalkbackBuild)
-		|| iid.equals(Components.interfaces.nsISupports))
+	if (iid.equals(Ci.nsITalkbackBuild)
+		|| iid.equals(Ci.nsISupports))
 	{
 		return this;
 	}
@@ -300,8 +303,8 @@ remove: function()
 
 QueryInterface: function(iid)
 {
-	if (iid.equals(Components.interfaces.nsITalkbackProduct)
-		|| iid.equals(Components.interfaces.nsISupports))
+	if (iid.equals(Ci.nsITalkbackProduct)
+		|| iid.equals(Cis.nsISupports))
 	{
 		return this;
 	}
@@ -357,8 +360,8 @@ remove: function()
 
 QueryInterface: function(iid)
 {
-	if (iid.equals(Components.interfaces.nsITalkbackVendor)
-		|| iid.equals(Components.interfaces.nsISupports))
+	if (iid.equals(Ci.nsITalkbackVendor)
+		|| iid.equals(Ci.nsISupports))
 	{
 		return this;
 	}
@@ -373,6 +376,7 @@ var nsTalkbackService = {
 
 currentBuild: null,
 
+inited: false,
 loaded: false,
 loading: false,
 vendors: [],
@@ -381,6 +385,7 @@ orderedIncidents: [],
 talkbackdir: null,
 talkbackdbdir: null,
 listeners: [],
+proxy: null,
 
 addProgressListener: function(listener)
 {
@@ -394,28 +399,49 @@ addProgressListener: function(listener)
 	}
 },
 
-_load: function()
+_init: function()
 {
-	if (!this.loading)
-	{
-		this.loading=true;
-		this._loadTimer = Components.classes["@mozilla.org/timer;1"]
-                                .getService(Components.interfaces.nsITimer);
-    this._loadTimer.initWithCallback(this, 200, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
+	if (this.inited)
+		return;
+	
+	this.inited=true;
 
-		var nsIThread = Components.interfaces.nsIThread;
-		var thread = Components.classes["@mozilla.org/thread;1"]
-		                       .createInstance(nsIThread);
-		thread.init(this, 0, nsIThread.PRIORITY_NORMAL, nsIThread.SCOPE_GLOBAL, nsIThread.STATE_JOINABLE);
-	}
+	this._findTalkback();
 },
 
-notify: function(timer)
+loadDatabase: function()
 {
-	if (!this.loaded)
+	if (this.loading)
 		return;
 		
-	this._loadTimer.cancel();
+	this.loading=true;
+
+  var eQs = Cc["@mozilla.org/event-queue-service;1"]
+              .getService(Ci.nsIEventQueueService);
+  var eQueue = eQs.getSpecialEventQueue(Ci.nsIEventQueueService.UI_THREAD_EVENT_QUEUE);
+  
+  // Creates a proxy for this object that will make calls on the UI event queue.
+  var proxyManager = Cc["@mozilla.org/xpcomproxy;1"]
+                       .getService(Ci.nsIProxyObjectManager);
+  this.proxy = proxyManager.getProxyForObject(eQueue, 
+                                              Ci.nsITalkbackLoaderProxy, 
+                                              this, 
+                                              Ci.nsIProxyObjectManager.INVOKE_SYNC
+                                               + Ci.nsIProxyObjectManager.FORCE_PROXY_CREATION);
+                                              
+	var thread = Cc["@mozilla.org/thread;1"]
+	               .createInstance(Ci.nsIThread);
+	thread.init(this, 0, Ci.nsIThread.PRIORITY_NORMAL,
+	                     Ci.nsIThread.SCOPE_LOCAL,
+	                     Ci.nsIThread.STATE_UNJOINABLE);
+},
+
+// nsITalkbackLoaderProxy
+
+onDatabaseLoaded: function()
+{
+	this.loaded=true;
+		
 	for (var i=0; i<this.listeners.length; i++)
 	{
 		try
@@ -436,10 +462,10 @@ run: function()
 	this.orderedIncidents = [];
 	this.vendors = [];
 
-	this._findTalkback();
-	this._scanDir(this.talkbackdbdir);
+	if (this.talkbackdbdir)
+		this._scanDir(this.talkbackdbdir);
 	
-	this.loaded=true;
+	this.proxy.onDatabaseLoaded();
 },
 
 _scanDir: function(dir)
@@ -447,7 +473,7 @@ _scanDir: function(dir)
 	var entries = dir.directoryEntries;
 	while (entries.hasMoreElements())
 	{
-		var ndir = entries.getNext().QueryInterface(Components.interfaces.nsIFile);
+		var ndir = entries.getNext().QueryInterface(Ci.nsIFile);
 		if (ndir.isDirectory())
 			this._scanDir(ndir);
 	}
@@ -486,11 +512,11 @@ _scanDir: function(dir)
 
 _loadDetails: function(dir, ini)
 {
-	stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-									       .createInstance(Components.interfaces.nsIFileInputStream);
+	stream = Cc["@mozilla.org/network/file-input-stream;1"]
+						 .createInstance(Ci.nsIFileInputStream);
 	
-	stream.init(ini,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
-	stream.QueryInterface(Components.interfaces.nsILineInputStream);
+	stream.init(ini,1,384,Ci.nsIFileInputStream.CLOSE_ON_EOF);
+	stream.QueryInterface(Ci.nsILineInputStream);
 
 	var fieldcount=0;
 	var line = { value: null };
@@ -574,10 +600,10 @@ _findTalkbackInDir: function(dir)
 _findTalkback: function()
 {
 	// Firefox 1.5 location
-	if (Components.classes["@mozilla.org/extensions/manager;1"])
+	if (Cc["@mozilla.org/extensions/manager;1"])
 	{
-		var extensionManager = Components.classes["@mozilla.org/extensions/manager;1"]
-											               .getService(Components.interfaces.nsIExtensionManager);
+		var extensionManager = Cc["@mozilla.org/extensions/manager;1"]
+											       .getService(Ci.nsIExtensionManager);
 	
 		if (extensionManager.getInstallLocation)
 		{
@@ -597,17 +623,17 @@ _findTalkback: function()
 	{
 		// Firefox 1.0 location
 		// (before the fix for https://bugzilla.mozilla.org/show_bug.cgi?id=299040)
-		var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-											               .getService(Components.interfaces.nsIProperties);
-		var dir = directoryService.get("CurProcD",Components.interfaces.nsIFile);
+		var directoryService = Cc["@mozilla.org/file/directory_service;1"]
+											       .getService(Ci.nsIProperties);
+		var dir = directoryService.get("CurProcD",Ci.nsIFile);
 		this._findTalkbackInDir(dir);
 	}
 
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-										               .getService(Components.interfaces.nsIProperties);
+	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
+										       .getService(Ci.nsIProperties);
 	try
 	{
-		var dir = directoryService.get("AppData",Components.interfaces.nsIFile);
+		var dir = directoryService.get("AppData",Ci.nsIFile);
 		dir.append("Talkback");
 
 		if (dir.exists())
@@ -621,7 +647,7 @@ _findTalkback: function()
 	
 	if (!this.talkbackdbdir)
 	{
-		var dir = directoryService.get("Home",Components.interfaces.nsIFile);
+		var dir = directoryService.get("Home",Ci.nsIFile);
 		var check = dir.clone();
 		check.append(".fullcircle");
 
@@ -683,8 +709,8 @@ _addIncident: function(incident)
 
 getRecentIncidents: function(date)
 {
-	var result = Components.classes["@mozilla.org/array;1"]
-	                       .createInstance(Components.interfaces.nsIMutableArray);
+	var result = Cc["@mozilla.org/array;1"]
+	               .createInstance(Ci.nsIMutableArray);
 	
 	for (var i=0; i<this.orderedIncidents.length; i++)
 	{
@@ -699,14 +725,55 @@ getRecentIncidents: function(date)
 
 getPreviousIncidents: function(count)
 {
-	var result = Components.classes["@mozilla.org/array;1"]
-	                       .createInstance(Components.interfaces.nsIMutableArray);
+	var result = Cc["@mozilla.org/array;1"]
+	               .createInstance(Ci.nsIMutableArray);
 	
 	count=Math.min(count, this.orderedIncidents.length);
 	
 	for (var i=0; i<count; i++)
 	{
 		result.appendElement(this.orderedIncidents[i], false);
+	}
+	
+	return result;
+},
+
+getBuildRecentIncidents: function(build, date)
+{
+	var result = Cc["@mozilla.org/array;1"]
+	               .createInstance(Ci.nsIMutableArray);
+	
+	for (var i=0; i<this.orderedIncidents.length; i++)
+	{
+		if (this.orderedIncidents[i].date<date)
+			break;
+			
+		if (this.orderedIncidents[i].build!=build)
+			continue;
+			
+		result.appendElement(this.orderedIncidents[i], false);
+	}
+	
+	return result;
+},
+
+getBuildPreviousIncidents: function(build, count)
+{
+	var result = Cc["@mozilla.org/array;1"]
+	               .createInstance(Ci.nsIMutableArray);
+	
+	if (count==0)
+		return result;
+	
+	for (var i=0; i<this.orderedIncidents.length; i++)
+	{
+		if (this.orderedIncidents[i].build!=build)
+			continue;
+		
+		result.appendElement(this.orderedIncidents[i], false);
+		count--;
+		if (count==0)
+			break;
 	}
 	
 	return result;
@@ -838,10 +905,10 @@ getTreeView: function()
 
 QueryInterface: function(iid)
 {
-	if (iid.equals(Components.interfaces.nsITalkbackService)
-		|| iid.equals(Components.interfaces.nsIRunnable)
-		|| iid.equals(Components.interfaces.nsITimerCallback)
-		|| iid.equals(Components.interfaces.nsISupports))
+	if (iid.equals(Ci.nsITalkbackService)
+		|| iid.equals(Ci.nsIRunnable)
+		|| iid.equals(Ci.nsITalkbackLoaderProxy)
+		|| iid.equals(Ci.nsISupports))
 	{
 		return this;
 	}
@@ -860,14 +927,14 @@ var initModule =
 	
 	registerSelf: function (compMgr, fileSpec, location, type)
 	{
-		compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+		compMgr = compMgr.QueryInterface(Ci.nsIComponentRegistrar);
 		compMgr.registerFactoryLocation(this.ServiceCID,this.ServiceName,this.ServiceContractID,
 			fileSpec,location,type);
 	},
 
 	unregisterSelf: function (compMgr, fileSpec, location)
 	{
-		compMgr = compMgr.QueryInterface(Components.interfaces.nsIComponentRegistrar);
+		compMgr = compMgr.QueryInterface(Ci.nsIComponentRegistrar);
 		compMgr.unregisterFactoryLocation(this.ServiceCID,fileSpec);
 	},
 
@@ -891,7 +958,7 @@ var initModule =
 		{
 			if (outer != null)
 				throw Components.results.NS_ERROR_NO_AGGREGATION;
-			nsTalkbackService._load();
+			nsTalkbackService._init();
 			return nsTalkbackService.QueryInterface(iid);
 		}
 	}

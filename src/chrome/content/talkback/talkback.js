@@ -49,7 +49,21 @@ init: function(event)
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
 	                        .getService(Components.interfaces.nsITalkbackService);
 	
-	service.addProgressListener(talkback);
+	var exe = nightlyplatform.getTalkbackExe(service.talkbackdir);
+	if (!exe)
+		document.getElementById("nightly-talkback-disabled").hidden=false;
+	else
+		document.getElementById("nightly-talkback-launch").hidden=false;
+		
+	if (nightly.preferences.getBoolPref("talkback.recentlist.display"))
+	{
+		service.loadDatabase();
+		service.addProgressListener(talkback);
+	}
+	else
+	{
+		document.getElementById("nightly-incidents").parentNode.hidden=true;
+	}
 },
 
 copy: function(event)
@@ -70,16 +84,21 @@ onDatabaseLoaded: function()
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
 	                        .getService(Components.interfaces.nsITalkbackService);
 	
-	var exe = nightlyplatform.getTalkbackExe(service.talkbackdir);
-	if (!exe)
-		document.getElementById("nightly-talkback-disabled").hidden=false;
+	var incidents = null;
+	
+	if (nightly.preferences.getBoolPref("talkback.recentlist.otherbuilds"))
+	{
+		incidents = service.getPreviousIncidents(10);
+	}
 	else
-		document.getElementById("nightly-talkback-launch").hidden=false;
-		
-	var incidents = service.getPreviousIncidents(10);
+	{
+		if (service.currentBuild)
+			incidents = service.getBuildPreviousIncidents(build, 10);
+	}
+	
+	var parent = document.getElementById("nightly-incidents");
 	if ((incidents)&&(incidents.length>0))
 	{
-		var parent = document.getElementById("nightly-incidents");
 		while (parent.firstChild)
 			parent.removeChild(parent.firstChild);
 		
@@ -95,11 +114,11 @@ onDatabaseLoaded: function()
 			item.setAttribute("label", incident.id+" ("+(new Date(incident.date)).toLocaleDateString()+")");
 			parent.appendChild(item);
 		}
-		document.getElementById("nightly-incidents").parentNode.hidden=false;
+		parent.parentNode.hidden=false;
 	}
 	else
 	{
-		document.getElementById("nightly-incidents").parentNode.hidden=true;
+		parent.parentNode.hidden=true;
 	}
 },
 
