@@ -1,0 +1,3 @@
+MacOSX: ~/Library/Application Support/FullCircle/MozillaOrgFirefoxTrunkMacOSX2006011504
+Win32:  %APPDATA%\Talkback
+Unix:   ??
