@@ -36,3 +36,4 @@
 <!ENTITY nightly.talkback.comment             "Comment">
 <!ENTITY nightly.talkback.label               "Launch Talkback">
 <!ENTITY nightly.talkback.disabled            "Talkback is not installed">
+<!ENTITY nightly.talkback.recentlist          "Recent Incidents">
