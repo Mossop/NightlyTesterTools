@@ -14,13 +14,13 @@ subpane {
 }
 
 #NightlyTesterOptions radio[pane=paneTitle] {
-  	list-style-image: url("chrome://nightly/content/brand/icon.png");
+  list-style-image: url("chrome://nightly/content/brand/icon.png");
 }
 
 #NightlyTesterOptions radio[pane=paneExtensions] {
-  	list-style-image: url("chrome://nightly/skin/options/extension.png");
+  list-style-image: url("chrome://nightly/skin/options/extension.png");
 }
 
 #NightlyTesterOptions radio[pane=paneTalkback] {
-  	list-style-image: url("chrome://nightly/skin/options/talkback.png");
+  list-style-image: url("chrome://nightly/skin/options/talkback.png");
 }
