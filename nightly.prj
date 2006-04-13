@@ -13,31 +13,31 @@ Using VCS=1
 Save Account=0
 Create Tagfile=0
 CTags Legacy Support=0
-Working Time=13360
+Working Time=15446
 VCS Default Module={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
 [uemakeXp]
 ReleaseMode=0
 Compiler=Configs\Ant Build\Extension Build
-Files=1940958354
+Files=906709310
 [Open Files]
 Open File0=C:\UserData\Dave\UEStudio\Nightly\src\chrome\skin\options\options.css
 Active File Display Mode=3
 Open File Pos0=535
 Open File Line0=0
-Active File Index=1
+Active File Index=3
 Open File Window Pos0=0,1,-1,-1,-4,-25,66,72,770,561
 Open File1=C:\UserData\Dave\UEStudio\Nightly\src\chrome\content\nightly.js
 Open File Pos1=1984
 Open File Line1=858
-Open File Window Pos1=2,3,-1,-1,-4,-25,44,48,774,547
-Open File2=
-Open File Pos2=0
-Open File Line2=958
-Open File Window Pos2=0,1,-1,-1,-4,-25,176,192,906,691
-Open File3=C:\UserData\Dave\UEStudio\Nightly\src\chrome\content\talkback\sidebar.js
-Open File Pos3=3877
-Open File Line3=3108
-Open File Window Pos3=0,1,-1,-1,-4,-25,198,216,928,715
+Open File Window Pos1=0,1,-1,-1,-4,-25,44,48,774,547
+Open File2=C:\UserData\Dave\UEStudio\Nightly\src\components\nsTalkbackService.js
+Open File Pos2=9371
+Open File Line2=8039
+Open File Window Pos2=0,1,-1,-1,-4,-25,66,72,730,687
+Open File3=C:\UserData\Dave\UEStudio\Nightly\build\build.xml
+Open File Pos3=2789
+Open File Line3=2056
+Open File Window Pos3=2,3,-1,-1,-4,-25,88,96,752,711
 Open File4=
 [Configs\Ant Build\Extension Build]
 OutputDirectory_ReleaseMode=
@@ -51,9 +51,10 @@ Gecko SDK=c:\gecko-sdk
 [Folders]
 C:\UserData\Dave\UEStudio\Nightly\=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - defaults - preferences=1
-C:\UserData\Dave\UEStudio\Nightly\ - src=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - chrome=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - content=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - components=1
+C:\UserData\Dave\UEStudio\Nightly\ - build=1
 [{F80E7E6D-D360-47a5-85D8-9DE97F4F8247}]
 Module Id={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
 Module Type=SVN
