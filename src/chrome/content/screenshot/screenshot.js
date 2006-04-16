@@ -45,7 +45,7 @@ function saveScreenshot()
 	fp.init(window, bundle.getString("screenshot.filepicker.title"), fp.modeSave);
 	//fp.appendFilter(bundle.getString("screenshot.filepicker.filterJPG"), "*.jpg");
 	fp.appendFilter(bundle.getString("screenshot.filepicker.filterPNG"), "*.png");
-	fp.defaultString="screenshot.jpg";
+	fp.defaultString="screenshot.png";
 
 	var result = fp.show();
 	if (result==fp.returnOK || result==fp.returnReplace)
