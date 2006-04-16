@@ -42,6 +42,8 @@
    - $Revision$
    -->
 
+<!DOCTYPE window SYSTEM "chrome://nightly/locale/screenshot.dtd">
+
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://nightly/skin/screenshot/screenshot.css" type="text/css"?>
 
@@ -51,6 +53,37 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
 	<script src="screenshot.js" type="application/x-javascript"/>
+	
+  <stringbundleset>
+    <stringbundle id="bundle" src="chrome://nightly/locale/screenshot.properties"/>
+  </stringbundleset>
+  
+	<toolbox>
+		<toolbar>
+			<toolbarbutton label="&screenshot.save.label;" oncommand="saveScreenshot();"/>
+			<toolbaritem align="center">
+				<label control="zoomlist" value="&screenshot.zoom.label;"/>
+				<menulist id="zoomlist">
+					<menupopup>
+						<menuitem label="25%" value="0.25"/>
+						<menuitem label="50%" value="0.5"/>
+						<menuitem label="75%" value="0.75"/>
+						<menuitem label="100%" value="1"/>
+						<menuitem label="150%" value="1.5"/>
+						<menuitem label="200%" value="2"/>
+					</menupopup>
+				</menulist>
+			</toolbaritem>
+			<toolbaritem align="center">
+				<label control="winlist" value="&screenshot.window.label;"/>
+				<menulist id="winlist">
+					<menupopup id="winpopup">
+					</menupopup>
+				</menulist>
+			</toolbaritem>
+			<toolbarbutton label="&screenshot.redraw.label;" oncommand="resetScreenshot();"/>
+		</toolbar>
+	</toolbox>
 	
 	<scrollbox flex="1">
 		<stack>

@@ -9,17 +9,138 @@ var canvas = null;
 
 var cropX = 0;
 var cropY = 0;
-var cropWidth = shotWindow.innerWidth;
-var cropHeight = shotWindow.innerHeight;
+var cropWidth = 0;
+var cropHeight = 0;
 
 var areax = 0;
 var areay = 0;
 
-function init()
+var windows = [];
+
+function init(event)
 {
 	canvas = document.getElementById("canvas");
-	drawScreenshot();
+	resetScreenshot();
 	canvas.parentNode.addEventListener("mousedown", startAreaSelect, true);
+	
+	var zoomlist = document.getElementById("zoomlist");
+	zoomlist.value = zoom;
+	zoomlist.addEventListener("ValueChange", zoomChange, false);
+	
+	buildWinPopup()
+		
+	var winlist = document.getElementById("winlist");
+	winlist.addEventListener("ValueChange", winChange, false);
+	
+	var winpopup = document.getElementById("winpopup");
+	winpopup.addEventListener("popupshowing", buildWinPopup, false);
+	
+	bundle = document.getElementById("bundle");
+}
+
+function saveScreenshot()
+{
+	var fp = Cc["@mozilla.org/filepicker;1"]
+	           .createInstance(Ci.nsIFilePicker);
+	fp.init(window, bundle.getString("screenshot.filepicker.title"), fp.modeSave);
+	//fp.appendFilter(bundle.getString("screenshot.filepicker.filterJPG"), "*.jpg");
+	fp.appendFilter(bundle.getString("screenshot.filepicker.filterPNG"), "*.png");
+	fp.defaultString="screenshot.jpg";
+
+	var result = fp.show();
+	if (result==fp.returnOK || result==fp.returnReplace)
+	{
+		var mimetype = "image/png";
+		/*var options = "";
+		if (fp.filterIndex == 0)
+		{
+			mimetype = "image/jpg";
+		}
+		else if (fp.filterIndex == 1)
+		{
+			mimetype = "image/png";
+		}*/
+		
+	  var ioService = Cc["@mozilla.org/network/io-service;1"]
+	                    .getService(Ci.nsIIOService);
+	  
+	  var source = ioService.newURI(canvas.toDataURL(), "UTF8", null);
+	  var target = ioService.newFileURI(fp.file)
+	  
+	  var persist = Cc["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+	                  .createInstance(Ci.nsIWebBrowserPersist);
+	
+	  persist.persistFlags = Ci.nsIWebBrowserPersist.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+	  persist.persistFlags |= Ci.nsIWebBrowserPersist.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
+	
+	  var tr = Cc["@mozilla.org/transfer;1"]
+	             .createInstance(Ci.nsITransfer);
+	
+	  tr.init(source, target, "", null, null, null, persist);
+	  persist.progressListener = tr;
+	  persist.saveURI(source, null, null, null, null, fp.file);
+	}
+}
+
+function resetScreenshot()
+{
+	cropX = 0;
+	cropY = 0;
+	cropWidth = shotWindow.innerWidth;
+	cropHeight = shotWindow.innerHeight;
+	drawScreenshot();
+}
+
+function buildWinPopup(event)
+{
+	var winlist = document.getElementById("winlist");
+	var winpopup = document.getElementById("winpopup");
+	
+	windows = [];
+	while (winpopup.firstChild)
+		winpopup.removeChild(winpopup.firstChild);
+
+	var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
+	          .getService(Ci.nsIWindowMediator);
+	var wins = wm.getEnumerator(null);
+	var pos = 0;
+	while (wins.hasMoreElements())
+	{
+		var win = wins.getNext().QueryInterface(Ci.nsIDOMWindow);
+		windows[pos] = win;
+		var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
+		if (win.document.title)
+			item.setAttribute("label", win.document.title);
+		else
+			item.setAttribute("label", win.document.location.href);
+		item.setAttribute("value", pos);
+		winpopup.appendChild(item);
+		
+		if (!event && win==shotWindow)
+			winlist.value=pos;
+			
+		pos++;
+	}
+}
+
+function winChange(event)
+{
+	var winlist = document.getElementById("winlist");
+	shotWindow = windows[winlist.value];
+	resetScreenshot();
+}
+
+function zoomChange(event)
+{
+	var menulist = document.getElementById("zoomlist");
+	zoom = menulist.value;
+
+	canvas.style.width = (cropWidth*zoom)+"px";
+	canvas.style.minWidth = (cropWidth*zoom)+"px";
+	canvas.style.maxWidth = (cropWidth*zoom)+"px";
+	canvas.style.height = (cropHeight*zoom)+"px";
+	canvas.style.minHeight = (cropHeight*zoom)+"px";
+	canvas.style.maxHeight = (cropHeight*zoom)+"px";
 }
 
 function startAreaSelect(event)
@@ -27,8 +148,8 @@ function startAreaSelect(event)
 	var box = document.getElementById("areaselect");
 	box.hidden=false;
 
-	areax = event.clientX;
-	areay = event.clientY;
+	areax = event.layerX;
+	areay = event.layerY;
 	
 	box.parentNode.addEventListener("mousemove", updateAreaSelect, true);
 	box.parentNode.addEventListener("mouseup", completeAreaSelect, true);
@@ -39,8 +160,8 @@ function updateAreaSelect(event)
 {
 	var box = document.getElementById("areaselect");
 
-	var newx = event.clientX;
-	var newy = event.clientY
+	var newx = event.layerX;
+	var newy = event.layerY
 	
 	box.top = Math.min(newy, areay);
 	box.left = Math.min(newx, areax);
@@ -60,14 +181,14 @@ function completeAreaSelect(event)
 	box.parentNode.removeEventListener("mousemove", updateAreaSelect, true);
 	box.parentNode.removeEventListener("mouseup", completeAreaSelect, true);
 
-	var newx = event.clientX;
-	var newy = event.clientY
+	var newx = event.layerX;
+	var newy = event.layerY
 
-	cropY += zoom*Math.min(newy, areay);
-	cropX += zoom*Math.min(newx, areax);
+	cropY += Math.min(newy, areay)/zoom;
+	cropX += Math.min(newx, areax)/zoom;
 	
-	cropWidth = zoom*(Math.abs(newx-areax));
-	cropHeight = zoom*(Math.abs(newy-areay));
+	cropWidth = Math.abs(newx-areax)/zoom;
+	cropHeight = Math.abs(newy-areay)/zoom;
 
 	drawScreenshot();
 }

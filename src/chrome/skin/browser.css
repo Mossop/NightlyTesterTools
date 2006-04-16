@@ -5,9 +5,3 @@
 toolbar[iconsize="small"] #nightly-tester-enter {
 	list-style-image: url("chrome://nightly/skin/idsmall.png");
 }
-
-#nightlyScreenshot {
-	position: absolute;
-	border: 2px solid red;
-	background-color: transparent;
-}
