@@ -90,10 +90,12 @@
   <menupopup id="menu_ToolsPopup">
     <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">
       <menupopup onpopupshowing="nightly.menuPopup(event,this);">
-        <menuitem id="build-copy" label="&nightly.id.copy.label;" oncommand="nightly.copyTemplate('buildid');" insertbefore="aboutSeparator"/>
-        <menuitem id="build-insert" label="&nightly.id.insert.label;" oncommand="nightly.insertTemplate('buildid');" insertbefore="aboutSeparator"/>
+        <menuitem id="build-copy" label="&nightly.id.copy.label;" oncommand="nightly.copyTemplate('buildid');"/>
+        <menuitem id="build-insert" label="&nightly.id.insert.label;" oncommand="nightly.insertTemplate('buildid');"/>
         <menuitem id="list-copy" label="&nightly.extensions.copy.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.extensions.insert.label;" oncommand="nightly.insertExtensions();"/>
+        <menuseparator/>
+        <menuitem label="&nightly.screenshot.full.label;" oncommand="nightly.getScreenshot(0, 0, window.innerWidth, window.innerHeight);"/>
         <menuseparator/>
         <menuitem label="&nightly.extensions.install.label;" oncommand="nightly.installItem();"/>
         <menuseparator/>

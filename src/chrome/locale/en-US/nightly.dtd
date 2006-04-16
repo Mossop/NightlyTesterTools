@@ -14,6 +14,8 @@
 
 <!ENTITY nightly.leakreporter.label           "Analyse Leak Log">
 
+<!ENTITY nightly.screenshot.full.label        "Take Screenshot">
+
 <!ENTITY nightly.talkback.sidebar.title       "Talkback Sidebar">
 <!ENTITY nightly.talkback.copyid              "Copy">
 <!ENTITY nightly.talkback.id                  "ID">

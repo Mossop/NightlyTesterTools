@@ -73,21 +73,21 @@ preferences: null,
 
 showAlert: function(id,args)
 {
- 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-									    .getService(Components.interfaces.nsIStringBundleService);
+ 	var sbs = Cc["@mozilla.org/intl/stringbundle;1"]
+									    .getService(Ci.nsIStringBundleService);
 	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
-	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                                .getService(Components.interfaces.nsIPromptService);
+	var promptService = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+                                .getService(Ci.nsIPromptService);
   var text=bundle.formatStringFromName(id,args,args.length);
   promptService.alert(null,"Nightly Tester Tools",text);
 },
 
 getProfileRegistry: function()
 {
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-										               .getService(Components.interfaces.nsIProperties);
+	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
+										               .getService(Ci.nsIProperties);
 
-	var dir = directoryService.get("DefProfRt",Components.interfaces.nsIFile);
+	var dir = directoryService.get("DefProfRt",Ci.nsIFile);
 	while (dir)
 	{
 		var file = dir.clone();
@@ -101,9 +101,9 @@ getProfileRegistry: function()
 
 getProfileName: function()
 {
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-										               .getService(Components.interfaces.nsIProperties);
-	var profd = directoryService.get("ProfD",Components.interfaces.nsIFile);
+	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
+										               .getService(Ci.nsIProperties);
+	var profd = directoryService.get("ProfD",Ci.nsIFile);
 	
 	var name = profd.leafName;
 
@@ -111,13 +111,13 @@ getProfileName: function()
 	if (!reg)
 		return name;
 	
-	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-	                       .createInstance(Components.interfaces.nsIFileInputStream);
+	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
+	                       .createInstance(Ci.nsIFileInputStream);
 	stream.init(reg, 1, 0, 0);
-	stream.QueryInterface(Components.interfaces.nsILineInputStream);
+	stream.QueryInterface(Ci.nsILineInputStream);
 	
-	var dir = Components.classes["@mozilla.org/file/local;1"]
-	                    .createInstance(Components.interfaces.nsILocalFile);
+	var dir = Cc["@mozilla.org/file/local;1"]
+	                    .createInstance(Ci.nsILocalFile);
 	var current = "";
 	var relative = "d";
 	var line = {};
@@ -159,18 +159,18 @@ defineFlags: function()
 
 loadGfxToolkit: function()
 {
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-										               .getService(Components.interfaces.nsIProperties);
+	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
+										               .getService(Ci.nsIProperties);
 
-	var datafile = directoryService.get("AChrom",Components.interfaces.nsIFile);
+	var datafile = directoryService.get("AChrom",Ci.nsIFile);
 	datafile.append("toolkit.jar");
-	var reader = Components.classes["@mozilla.org/libjar/zip-reader;1"]
-	                       .createInstance(Components.interfaces.nsIZipReader);
+	var reader = Cc["@mozilla.org/libjar/zip-reader;1"]
+	                       .createInstance(Ci.nsIZipReader);
 	reader.init(datafile);
 	reader.open();
 	var stream = reader.getInputStream("content/global/buildconfig.html");
-	var sstream = Components.classes["@mozilla.org/scriptableinputstream;1"]
-	                        .createInstance(Components.interfaces.nsIScriptableInputStream);
+	var sstream = Cc["@mozilla.org/scriptableinputstream;1"]
+	                        .createInstance(Ci.nsIScriptableInputStream);
 	sstream.init(stream);
 	var content = "";
 	var text = sstream.read(1024);
@@ -191,17 +191,17 @@ loadGfxToolkit: function()
 
 loadBuildIDFromFile: function()
 {
-	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-										     .createInstance(Components.interfaces.nsIFileInputStream);
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-										               .getService(Components.interfaces.nsIProperties);
+	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
+										     .createInstance(Ci.nsIFileInputStream);
+	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
+										               .getService(Ci.nsIProperties);
 
-	var datafile = directoryService.get("ProfD",Components.interfaces.nsIFile);
+	var datafile = directoryService.get("ProfD",Ci.nsIFile);
 	datafile.append("compatibility.ini");
 	if (datafile.exists())
 	{
-		stream.init(datafile,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
-		stream.QueryInterface(Components.interfaces.nsILineInputStream);
+		stream.init(datafile,1,384,Ci.nsIFileInputStream.CLOSE_ON_EOF);
+		stream.QueryInterface(Ci.nsILineInputStream);
 	
 		var line = { value: null };
 		while (stream.readLine(line))
@@ -223,14 +223,14 @@ loadBuildIDFromFile: function()
 
 init: function()
 {	
-	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-							                .getService(Components.interfaces.nsIPrefService);
-	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
-	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
+	var prefservice = Cc['@mozilla.org/preferences-service;1']
+							                .getService(Ci.nsIPrefService);
+	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Ci.nsIPrefBranchInternal);
+	prefservice=prefservice.QueryInterface(Ci.nsIPrefBranch);
 	
-	if ((Components.classes['@mozilla.org/xre/app-info;1'])&&(Components.interfaces.nsIXULAppInfo))
+	if ((Cc['@mozilla.org/xre/app-info;1'])&&(Ci.nsIXULAppInfo))
 	{
-		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+		var appinfo = Cc['@mozilla.org/xre/app-info;1'].getService(Ci.nsIXULAppInfo);
 		nightly.variables.appid=appinfo.ID;
 		nightly.variables.vendor=appinfo.vendor;
 		nightly.variables.name=appinfo.name;
@@ -248,9 +248,9 @@ init: function()
 			nightly.variables.geckobuildid=appinfo.geckoBuildID;
 		}
 		
-		if (Components.interfaces.nsIXULRuntime)
+		if (Ci.nsIXULRuntime)
 		{
-  		appinfo=appinfo.QueryInterface(Components.interfaces.nsIXULRuntime);
+  		appinfo=appinfo.QueryInterface(Ci.nsIXULRuntime);
   		nightly.variables.os=appinfo.OS;
   		var bits=appinfo.XPCOMABI.split("-");
   		nightly.variables.processor=bits[0];
@@ -273,7 +273,7 @@ init: function()
 
   try {
     nightly.variables.locale = prefservice.getComplexValue("general.useragent.locale",
-                        Components.interfaces.nsIPrefLocalizedString).data;
+                        Ci.nsIPrefLocalizedString).data;
   }
   catch (e)
   {
@@ -329,8 +329,8 @@ prefChange: function(pref)
 	}
 	else if (pref=="disablecompatibility")
 	{
-		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-								                .getService(Components.interfaces.nsIPrefBranch);
+		var prefservice = Cc['@mozilla.org/preferences-service;1']
+								                .getService(Ci.nsIPrefBranch);
 
 		if (nightly.preferences.getBoolPref(pref))
 		{
@@ -426,8 +426,8 @@ generateText: function(template)
 
 copyText: function(text)
 {
-  var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].
-                                         getService(Components.interfaces.nsIClipboardHelper);
+  var clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"].
+                                         getService(Ci.nsIClipboardHelper);
   clipboard.copyString(text);
 },
 
@@ -495,10 +495,10 @@ insensitiveSort: function(a, b)
 
 getExtensionList: function()
 {
-	var em = Components.classes["@mozilla.org/extensions/manager;1"]
-										 .getService(Components.interfaces.nsIExtensionManager);
+	var em = Cc["@mozilla.org/extensions/manager;1"]
+										 .getService(Ci.nsIExtensionManager);
 										 
-	var items = em.getItemList(Components.interfaces.nsIUpdateItem.TYPE_EXTENSION, {});
+	var items = em.getItemList(Ci.nsIUpdateItem.TYPE_EXTENSION, {});
 
 	if (items.length==0)
 	{
@@ -507,7 +507,7 @@ getExtensionList: function()
 	}
 	else
 	{
-		var rdfS = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
+		var rdfS = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
 		var ds = em.datasource;
 		var enabledResource = rdfS.GetResource("http://www.mozilla.org/2004/em-rdf#disabled");
 		var text = [];
@@ -518,7 +518,7 @@ getExtensionList: function()
 			var enabled = ds.GetTarget(source, enabledResource, true);
 			try
 			{
-				enabled=enabled.QueryInterface(Components.interfaces.nsIRDFLiteral);
+				enabled=enabled.QueryInterface(Ci.nsIRDFLiteral);
 				if (enabled.Value=="true")
 				{
 					text[i]+=" [DISABLED]";
@@ -560,12 +560,12 @@ copyExtensions: function()
 
 installItem: function()
 {
- 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-									    .getService(Components.interfaces.nsIStringBundleService);
+ 	var sbs = Cc["@mozilla.org/intl/stringbundle;1"]
+									    .getService(Ci.nsIStringBundleService);
 	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
 
-	var fp = Components.classes["@mozilla.org/filepicker;1"]
-	                   .createInstance(Components.interfaces.nsIFilePicker);
+	var fp = Cc["@mozilla.org/filepicker;1"]
+	                   .createInstance(Ci.nsIFilePicker);
 	fp.init(window, bundle.GetStringFromName("nightly.selectaddon.title"), fp.modeOpen);
 	fp.appendFilter(bundle.GetStringFromName("nightly.selectaddon.filteraddons"), "*.xpi;*.jar");
 	fp.appendFilter(bundle.GetStringFromName("nightly.selectaddon.filterextensions"), "*.xpi");
@@ -577,11 +577,11 @@ installItem: function()
 		var item=fp.file;
 		if (item.exists())
 		{
-			var itemURI = Components.classes["@mozilla.org/network/io-service;1"]
-		                          .getService(Components.interfaces.nsIIOService)
+			var itemURI = Cc["@mozilla.org/network/io-service;1"]
+		                          .getService(Ci.nsIIOService)
 		                          .newFileURI(item);
-			var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
-		                                 .getService(Components.interfaces.nsINightlyToolsService);
+			var nightlyService = Cc["@blueprintit.co.uk/nightlytools;1"]
+		                                 .getService(Ci.nsINightlyToolsService);
 		  nightlyService.queueInstall(item.path, itemURI);
 		  nightlyService.performInstalls();
 		}
@@ -590,31 +590,31 @@ installItem: function()
 
 openProfileDir: function()
 {
-	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-										     .createInstance(Components.interfaces.nsIFileInputStream);
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-										               .getService(Components.interfaces.nsIProperties);
+	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
+										     .createInstance(Ci.nsIFileInputStream);
+	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
+										               .getService(Ci.nsIProperties);
 
-	var profile = directoryService.get("ProfD",Components.interfaces.nsILocalFile);
+	var profile = directoryService.get("ProfD",Ci.nsILocalFile);
   try
   {
     profile.reveal();
   }
   catch (ex)
   {
-	  var uri = Components.classes["@mozilla.org/network/io-service;1"]
-	                      .getService(Components.interfaces.nsIIOService)
+	  var uri = Cc["@mozilla.org/network/io-service;1"]
+	                      .getService(Ci.nsIIOService)
 	                      .newFileURI(profile);
-	  var protocolSvc = Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
-	                              .getService(Components.interfaces.nsIExternalProtocolService);
+	  var protocolSvc = Cc["@mozilla.org/uriloader/external-protocol-service;1"]
+	                              .getService(Ci.nsIExternalProtocolService);
 	  protocolSvc.loadUrl(uri);
   }
 },
 
 launch: function(file, args)
 {
-	var process = Components.classes["@mozilla.org/process/util;1"].
-										createInstance(Components.interfaces.nsIProcess);
+	var process = Cc["@mozilla.org/process/util;1"]
+										.createInstance(Ci.nsIProcess);
 	process.init(file);
 	if (args)
 	{
@@ -628,11 +628,51 @@ launch: function(file, args)
 
 alertType: function(type)
 {
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
-										getService(Components.interfaces.nsIProperties);
+	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
+										       .getService(Ci.nsIProperties);
 
-	var dir = directoryService.get(type,Components.interfaces.nsIFile);
+	var dir = directoryService.get(type,Ci.nsIFile);
 	alert(dir.path);
+},
+
+getScreenshot: function(x, y, width, height)
+{
+	var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+	canvas.width = width;
+	canvas.height = height;
+	var ctx = canvas.getContext("2d");
+	ctx.translate(x, y);
+	
+  var winbo = document.getBoxObjectFor(document.documentElement);
+  var winx = winbo.screenX;
+  var winy = winbo.screenY;
+
+	ctx.drawWindow(window, 0, 0, window.innerWidth, window.innerHeight, "rgba(255,255,255,255)");
+	
+	var docshell = window.QueryInterface(Ci.nsIInterfaceRequestor)
+                       .getInterface(Ci.nsIWebNavigation)
+                       .QueryInterface(Ci.nsIDocShell);
+	var shells = docshell.getDocShellEnumerator(Ci.nsIDocShellTreeItem.typeAll, Ci.nsIDocShell.ENUMERATE_FORWARDS);
+	while (shells.hasMoreElements())
+	{
+		var shell = shells.getNext().QueryInterface(Ci.nsIDocShell);
+		if (shell == docshell)
+			continue;
+
+		shell.QueryInterface(Ci.nsIBaseWindow);
+		if (!shell.visibility)
+			continue;
+
+		var shellwin = shell.QueryInterface(Ci.nsIInterfaceRequestor)
+		                    .getInterface(Ci.nsIDOMWindow);
+	  var shellbo = shellwin.document.getBoxObjectFor(shellwin.document.documentElement);
+	  
+	  ctx.save();
+	  ctx.translate(shellbo.screenX-winx, shellbo.screenY-winy);
+	  ctx.drawWindow(shellwin, 0, 0, shellwin.innerWidth, shellwin.innerHeight, "rgba(255,255,255,255)");
+	  ctx.restore();
+	}
+	saveImageURL(canvas.toDataURL(), "screenshot.png", "SaveImageTitle", true, false, null);
 },
 
 launchOptions: function()
