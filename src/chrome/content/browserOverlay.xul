@@ -68,6 +68,10 @@
           oncommand="toggleSidebar('viewTalkbackSidebar');"/>
   </broadcasterset>
 
+  <keyset id="mainKeyset">
+    <key key="s" modifiers="accel,shift" oncommand="nightly.getScreenshot();"/>
+  </keyset>
+
   <toolbarpalette id="BrowserToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
             class="toolbarbutton-1"
