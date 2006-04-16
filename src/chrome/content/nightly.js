@@ -635,44 +635,9 @@ alertType: function(type)
 	alert(dir.path);
 },
 
-getScreenshot: function(x, y, width, height)
+getScreenshot: function()
 {
-	var canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
-	canvas.width = width;
-	canvas.height = height;
-	var ctx = canvas.getContext("2d");
-	ctx.translate(x, y);
-	
-  var winbo = document.getBoxObjectFor(document.documentElement);
-  var winx = winbo.screenX;
-  var winy = winbo.screenY;
-
-	ctx.drawWindow(window, 0, 0, window.innerWidth, window.innerHeight, "rgba(255,255,255,255)");
-	
-	var docshell = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                       .getInterface(Ci.nsIWebNavigation)
-                       .QueryInterface(Ci.nsIDocShell);
-	var shells = docshell.getDocShellEnumerator(Ci.nsIDocShellTreeItem.typeAll, Ci.nsIDocShell.ENUMERATE_FORWARDS);
-	while (shells.hasMoreElements())
-	{
-		var shell = shells.getNext().QueryInterface(Ci.nsIDocShell);
-		if (shell == docshell)
-			continue;
-
-		shell.QueryInterface(Ci.nsIBaseWindow);
-		if (!shell.visibility)
-			continue;
-
-		var shellwin = shell.QueryInterface(Ci.nsIInterfaceRequestor)
-		                    .getInterface(Ci.nsIDOMWindow);
-	  var shellbo = shellwin.document.getBoxObjectFor(shellwin.document.documentElement);
-	  
-	  ctx.save();
-	  ctx.translate(shellbo.screenX-winx, shellbo.screenY-winy);
-	  ctx.drawWindow(shellwin, 0, 0, shellwin.innerWidth, shellwin.innerHeight, "rgba(255,255,255,255)");
-	  ctx.restore();
-	}
-	saveImageURL(canvas.toDataURL(), "screenshot.png", "SaveImageTitle", true, false, null);
+	openDialog("chrome://nightly/content/screenshot/screenshot.xul", "_blank", "chrome,all,dialog=no");
 },
 
 launchOptions: function()

@@ -1,0 +1,10 @@
+window {
+}
+
+scrollbox {
+	overflow: auto;
+}
+
+#areaselect {
+	border: 1px solid red;
+}
