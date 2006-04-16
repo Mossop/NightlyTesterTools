@@ -148,8 +148,8 @@ function startAreaSelect(event)
 	var box = document.getElementById("areaselect");
 	box.hidden=false;
 
-	areax = event.layerX;
-	areay = event.layerY;
+	areax = Math.round(event.layerX/zoom)*zoom;
+	areay = Math.round(event.layerY/zoom)*zoom;
 	
 	box.parentNode.addEventListener("mousemove", updateAreaSelect, true);
 	box.parentNode.addEventListener("mouseup", completeAreaSelect, true);
@@ -160,8 +160,8 @@ function updateAreaSelect(event)
 {
 	var box = document.getElementById("areaselect");
 
-	var newx = event.layerX;
-	var newy = event.layerY
+	var newx = Math.round(event.layerX/zoom)*zoom;
+	var newy = Math.round(event.layerY/zoom)*zoom;
 	
 	box.top = Math.min(newy, areay);
 	box.left = Math.min(newx, areax);
@@ -181,8 +181,8 @@ function completeAreaSelect(event)
 	box.parentNode.removeEventListener("mousemove", updateAreaSelect, true);
 	box.parentNode.removeEventListener("mouseup", completeAreaSelect, true);
 
-	var newx = event.layerX;
-	var newy = event.layerY
+	var newx = Math.round(event.layerX/zoom)*zoom;
+	var newy = Math.round(event.layerY/zoom)*zoom;
 
 	cropY += Math.min(newy, areay)/zoom;
 	cropX += Math.min(newx, areax)/zoom;

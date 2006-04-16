@@ -1,3 +1,5 @@
+<!ENTITY screenshot.window.title        "Screenshot Grabber">
+
 <!ENTITY screenshot.save.label          "Save As...">
 <!ENTITY screenshot.redraw.label        "Redraw">
 <!ENTITY screenshot.zoom.label          "Zoom:">
