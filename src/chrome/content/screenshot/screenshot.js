@@ -249,7 +249,13 @@ function drawScreenshot()
   var winx = winbo.screenX;
   var winy = winbo.screenY;
 
-	ctx.drawWindow(shotWindow, shotWindow.scrollX, shotWindow.scrollY, shotWindow.innerWidth, shotWindow.innerHeight, "rgba(255,255,255,255)");
+	try
+	{
+		ctx.drawWindow(shotWindow, shotWindow.scrollX, shotWindow.scrollY, shotWindow.innerWidth, shotWindow.innerHeight, "rgba(255,255,255,255)");
+	}
+	catch (e)
+	{
+	}
 	
 	var docshell = shotWindow.QueryInterface(Ci.nsIInterfaceRequestor)
                            .getInterface(Ci.nsIWebNavigation)

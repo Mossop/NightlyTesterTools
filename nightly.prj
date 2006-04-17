@@ -13,15 +13,15 @@ Using VCS=1
 Save Account=0
 Create Tagfile=0
 CTags Legacy Support=0
-Working Time=65272
+Working Time=65400
 VCS Default Module={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
 [uemakeXp]
 ReleaseMode=0
 Compiler=Configs\Ant Build\Extension Build
 Files=2125969683
 [Open Files]
-Open File0=C:\UserData\Dave\UEStudio\Nightly\src\chrome\content\screenshot\screenshot.js
-Active File Display Mode=3
+Open File0=
+Active File Display Mode=-1
 Open File Pos0=8774
 Open File Line0=7325
 Active File Index=0
