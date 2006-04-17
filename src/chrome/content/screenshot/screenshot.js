@@ -258,21 +258,33 @@ function drawScreenshot()
 	while (shells.hasMoreElements())
 	{
 		var shell = shells.getNext().QueryInterface(Ci.nsIDocShell);
-		if (shell == docshell)
-			continue;
-
-		shell.QueryInterface(Ci.nsIBaseWindow);
-		if (!shell.visibility)
-			continue;
-
-		var shellwin = shell.QueryInterface(Ci.nsIInterfaceRequestor)
-		                    .getInterface(Ci.nsIDOMWindow);
-	  var shellbo = shellwin.document.getBoxObjectFor(shellwin.document.documentElement);
-	  
-	  ctx.save();
-	  ctx.translate(shellbo.screenX-winx+shellwin.scrollX, shellbo.screenY-winy+shellwin.scrollY);
-	  ctx.drawWindow(shellwin, shellwin.scrollX, shellwin.scrollY, shellwin.innerWidth, shellwin.innerHeight, "rgba(255,255,255,255)");
-	  ctx.restore();
+		try
+		{
+			if (shell == docshell)
+				continue;
+	
+			shell.QueryInterface(Ci.nsIBaseWindow);
+			if (!shell.visibility)
+				continue;
+	
+			var shellwin = shell.QueryInterface(Ci.nsIInterfaceRequestor)
+			                    .getInterface(Ci.nsIDOMWindow);
+		  var shellbo = shellwin.document.getBoxObjectFor(shellwin.document.documentElement);
+		  
+		  ctx.save();
+		  try
+		  {
+			  ctx.translate(shellbo.screenX-winx+shellwin.scrollX, shellbo.screenY-winy+shellwin.scrollY);
+			  ctx.drawWindow(shellwin, shellwin.scrollX, shellwin.scrollY, shellwin.innerWidth, shellwin.innerHeight, "rgba(255,255,255,255)");
+			}
+			catch (e)
+			{
+			}
+		  ctx.restore();
+		}
+		catch (e)
+		{
+		}
 	}
 }
 
