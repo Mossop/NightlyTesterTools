@@ -43,7 +43,7 @@ function saveScreenshot()
 	var fp = Cc["@mozilla.org/filepicker;1"]
 	           .createInstance(Ci.nsIFilePicker);
 	fp.init(window, bundle.getString("screenshot.filepicker.title"), fp.modeSave);
-	//fp.appendFilter(bundle.getString("screenshot.filepicker.filterJPG"), "*.jpg");
+	//Mookfp.appendFilter(bundle.getString("screenshot.filepicker.filterJPG"), "*.jpg");
 	fp.appendFilter(bundle.getString("screenshot.filepicker.filterPNG"), "*.png");
 	fp.defaultString="screenshot.png";
 
@@ -51,8 +51,8 @@ function saveScreenshot()
 	if (result==fp.returnOK || result==fp.returnReplace)
 	{
 		var mimetype = "image/png";
-		/*var options = "";
-		if (fp.filterIndex == 0)
+		var options = "";
+		/*if (fp.filterIndex == 0)
 		{
 			mimetype = "image/jpg";
 		}
@@ -64,7 +64,7 @@ function saveScreenshot()
 	  var ioService = Cc["@mozilla.org/network/io-service;1"]
 	                    .getService(Ci.nsIIOService);
 	  
-	  var source = ioService.newURI(canvas.toDataURL(), "UTF8", null);
+	  var source = ioService.newURI(canvas.toDataURLAs(mimetype, options), "UTF8", null);
 	  var target = ioService.newFileURI(fp.file)
 	  
 	  var persist = Cc["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
