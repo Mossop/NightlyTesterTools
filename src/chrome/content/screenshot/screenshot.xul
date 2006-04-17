@@ -61,6 +61,7 @@
 	<toolbox>
 		<toolbar>
 			<toolbarbutton label="&screenshot.save.label;" oncommand="saveScreenshot();"/>
+			<toolbarbutton label="&screenshot.submit.label;" oncommand="submitScreenshot();"/>
 			<toolbaritem align="center">
 				<label control="zoomlist" value="&screenshot.zoom.label;"/>
 				<menulist id="zoomlist">

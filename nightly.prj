@@ -13,15 +13,15 @@ Using VCS=1
 Save Account=0
 Create Tagfile=0
 CTags Legacy Support=0
-Working Time=53412
+Working Time=54032
 VCS Default Module={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
 [uemakeXp]
 ReleaseMode=0
 Compiler=Configs\Ant Build\Extension Build
-Files=1540669260
+Files=1324203464
 [Open Files]
-Open File0=C:\UserData\Dave\UEStudio\Nightly\src\chrome\content\nightly.js
-Active File Display Mode=3
+Open File0=
+Active File Display Mode=-1
 Open File Pos0=17559
 Open File Line0=17396
 Active File Index=6
@@ -71,13 +71,13 @@ Gecko SDK=c:\gecko-sdk
 [Folders]
 C:\UserData\Dave\UEStudio\Nightly\=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - defaults - preferences=1
-C:\UserData\Dave\UEStudio\Nightly\ - src - chrome=1
 C:\UserData\Dave\UEStudio\Nightly\ - src=1
-C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - locale=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - components=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - content=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - content - screenshot=1
-C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - content - leaks=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - locale=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - locale - en-US=1
 [{F80E7E6D-D360-47a5-85D8-9DE97F4F8247}]
 Module Id={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
 Module Type=SVN

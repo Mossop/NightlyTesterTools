@@ -38,6 +38,44 @@ function init(event)
 	bundle = document.getElementById("bundle");
 }
 
+function getTopWin()
+{
+  var windowManager = Cc['@mozilla.org/appshell/window-mediator;1']
+                        .getService(Ci.nsIWindowMediator);
+  return windowManager.getMostRecentWindow("navigator:browser");
+}
+
+function submitScreenshot()
+{
+	var data = canvas.toDataURLAs("image/png", "");
+	var pos = data.indexOf(";",5);
+	var contenttype = data.substring(5,pos);
+	var npos = data.indexOf(",",pos+1);
+	var encoding = data.substring(pos+1,npos);
+	data = data.substring(npos+1);
+	
+	var fd = Cc["@blueprintit.co.uk/multipartformdata;1"]
+	           .createInstance(Ci.nttIMultipartFormData);
+	fd.addControl("uploadtype", "on");
+	fd.addControl("url", "paste image url here");
+	fd.addControl("MAX_FILE_SIZE", "3145728");
+	fd.addControl("refer", "");
+	fd.addControl("brand", "");
+	fd.addControl("optsize", "320x320");
+	fd.addFileData("fileupload", "screenshot.png", contenttype, encoding, data);
+	
+  var ioService = Cc["@mozilla.org/network/io-service;1"]
+                    .getService(Ci.nsIIOService);
+  
+  var referer = ioService.newURI("http://www.imageshack.us/", "UTF8", null);
+  
+  var win = getTopWin();
+  var webnav = win.content.QueryInterface(Ci.nsIInterfaceRequestor)
+                          .getInterface(Ci.nsIWebNavigation);
+  webnav.loadURI("http://www.imageshack.us/", Ci.nsIWebNavigation.LOAD_FLAGS_NONE
+                , referer, fd.getPostDataStream(), fd.getHeaderStream());
+}
+
 function saveScreenshot()
 {
 	var fp = Cc["@mozilla.org/filepicker;1"]
