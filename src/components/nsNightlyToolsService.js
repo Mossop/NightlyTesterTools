@@ -259,8 +259,8 @@ extractThemeFiles: function(zipReader, id, installLocation, jarFile)
       }
       catch (e)
       {
-        LOG("extractThemeFiles: failed to create target file for extraction " + 
-            " file = " + target.path + ", exception = " + e + "\n");
+        dump("extractThemeFiles: failed to create target file for extraction " + 
+             " file = " + target.path + ", exception = " + e + "\n");
       }
       zipReader.extract(entry.name, target);
     }
@@ -276,7 +276,7 @@ extractThemeFiles: function(zipReader, id, installLocation, jarFile)
     }
     catch (e)
     {
-      LOG("extractThemeFiles: failed to extract contents.rdf: " + target.path);
+      dump("extractThemeFiles: failed to extract contents.rdf: " + target.path);
       throw e; // let the safe-op clean up
     }
     var chromeDir = installLocation.getItemFile(id, "chrome");
@@ -286,7 +286,7 @@ extractThemeFiles: function(zipReader, id, installLocation, jarFile)
     }
     catch (e)
     {
-      LOG("extractThemeFiles: failed to copy theme JAR file to: " + chromeDir.path);
+      dump("extractThemeFiles: failed to copy theme JAR file to: " + chromeDir.path);
       throw e; // let the safe-op clean up
     }
   }
