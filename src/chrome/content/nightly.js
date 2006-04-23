@@ -42,6 +42,11 @@
  *
  */
 
+if (!Cc)
+  const Cc = Components.classes;
+if (!Ci)
+  const Ci = Components.interfaces;
+
 var nightly = {
 
 variables: {
@@ -129,7 +134,7 @@ getProfileName: function()
 			relative = line.value.substring(11);
 		if (line.value.substring(0,5)=="Path=")
 		{
-			path = line.value.substring(5);
+			var path = line.value.substring(5);
 			if (relative=="1")
 				dir.setRelativeDescriptor(reg.parent, path);
 			else
@@ -279,7 +284,7 @@ init: function()
   {
     nightly.variables.locale = prefservice.getCharPref("general.useragent.locale");
   }
-	ua=nightly.variables.useragent;
+	var ua=nightly.variables.useragent;
 	ua=ua.substring(ua.indexOf("rv:")+3,ua.indexOf(")"));
 	nightly.variables.geckoversion=ua;
 

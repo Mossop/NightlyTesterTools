@@ -162,14 +162,14 @@ performInstall: function(name, uri)
     {  
      	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
     										getService(Components.interfaces.nsIProperties);
-    	dir = directoryService.get("TmpD",Components.interfaces.nsIFile);
+    	var dir = directoryService.get("TmpD",Components.interfaces.nsIFile);
     
     	var i=0;
     	var file;
   		file=dir.clone();
   		file.append("nightlytmp.xpi");
   		file.createUnique(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
-  	  fileuri=ioService.newFileURI(file);
+  	  var fileuri=ioService.newFileURI(file);
   		
   		var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
   											      .createInstance(Components.interfaces.nsIWebBrowserPersist);
@@ -259,7 +259,7 @@ extractThemeFiles: function(zipReader, id, installLocation, jarFile)
       }
       catch (e)
       {
-        LOG("extractThemeFiles: failed to create target file for extraction " + 
+        dump("extractThemeFiles: failed to create target file for extraction " + 
             " file = " + target.path + ", exception = " + e + "\n");
       }
       zipReader.extract(entry.name, target);
@@ -276,7 +276,7 @@ extractThemeFiles: function(zipReader, id, installLocation, jarFile)
     }
     catch (e)
     {
-      LOG("extractThemeFiles: failed to extract contents.rdf: " + target.path);
+      dump("extractThemeFiles: failed to extract contents.rdf: " + target.path);
       throw e; // let the safe-op clean up
     }
     var chromeDir = installLocation.getItemFile(id, "chrome");
@@ -286,7 +286,7 @@ extractThemeFiles: function(zipReader, id, installLocation, jarFile)
     }
     catch (e)
     {
-      LOG("extractThemeFiles: failed to copy theme JAR file to: " + chromeDir.path);
+      dump("extractThemeFiles: failed to copy theme JAR file to: " + chromeDir.path);
       throw e; // let the safe-op clean up
     }
   }
@@ -428,7 +428,7 @@ installLocalExtension: function(name, uri, file)
 
   if (!originalID)
   {
-		dump("Failed - "+e+"\n");
+		dump("Failed - No ID in rdf\n");
 		zipReader.close();
     this.displayAlert("nightly.badrdf.message",[name]);
     this.installFailed(name,uri);
@@ -519,7 +519,9 @@ installLocalExtension: function(name, uri, file)
 	var appversion = appinfo.version;
 	try
 	{
-		appversion=prefservice.getCharPref("app.extensions.version");
+    var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+                                .getService(Components.interfaces.nsIPrefService);
+    appversion=prefservice.getCharPref("app.extensions.version");
 		if (!appversion)
 			appversion=appinfo.version;
 	}

@@ -304,7 +304,7 @@ remove: function()
 QueryInterface: function(iid)
 {
 	if (iid.equals(Ci.nsITalkbackProduct)
-		|| iid.equals(Cis.nsISupports))
+		|| iid.equals(Ci.nsISupports))
 	{
 		return this;
 	}
