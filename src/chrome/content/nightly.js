@@ -42,11 +42,6 @@
  *
  */
 
-if (!Cc)
-  const Cc = Components.classes;
-if (!Ci)
-  const Ci = Components.interfaces;
-
 var nightly = {
 
 variables: {

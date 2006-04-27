@@ -18,7 +18,7 @@ VCS Default Module={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
 [uemakeXp]
 ReleaseMode=0
 Compiler=Configs\Ant Build\Extension Build
-Files=2125969683
+Files=3173684144
 [Open Files]
 Open File0=C:\UserData\Dave\UEStudio\Nightly\src\chrome\locale\en-US\nightly.properties
 Active File Display Mode=3
@@ -75,6 +75,9 @@ C:\UserData\Dave\UEStudio\Nightly\ - src=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - chrome=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - components=1
 C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - content=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - skin=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - skin - extensions=1
+C:\UserData\Dave\UEStudio\Nightly\ - src - chrome - content - extensions=1
 [{F80E7E6D-D360-47a5-85D8-9DE97F4F8247}]
 Module Id={F80E7E6D-D360-47a5-85D8-9DE97F4F8247}
 Module Type=SVN

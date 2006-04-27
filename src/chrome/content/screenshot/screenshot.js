@@ -6,6 +6,7 @@ var shotWindow = window.opener;
 var zoom = 1;
 
 var canvas = null;
+var bundle = null;
 
 var cropX = 0;
 var cropY = 0;

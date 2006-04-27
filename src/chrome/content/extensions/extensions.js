@@ -74,8 +74,13 @@ addInArray: function(menus,item,before,after)
 
 init: function()
 {
-	gExtensionContextMenus=extensionAppEnabler.addInArray(gExtensionContextMenus,"menuitem_appenable","menuseparator_2",null);
-	gThemeContextMenus=extensionAppEnabler.addInArray(gThemeContextMenus,"menuitem_appenable",null,"menuitem_enable");
+  if (gAddonContextMenus)
+  	gAddonContextMenus=extensionAppEnabler.addInArray(gAddonContextMenus,"menuitem_appenable","menuitem_enable",null);
+  else
+  {
+  	gExtensionContextMenus=extensionAppEnabler.addInArray(gExtensionContextMenus,"menuitem_appenable","menuseparator_2",null);
+  	gThemeContextMenus=extensionAppEnabler.addInArray(gThemeContextMenus,"menuitem_appenable",null,"menuitem_enable");
+  }
 },
 
 load: function()
@@ -87,7 +92,10 @@ load: function()
 	var enableb = document.getElementById("enableallButton");
 	enableb.setAttribute("hidden",!prefs.getBoolPref("showEnableAll"));
 	
-	document.getElementById("extensionContextMenu").addEventListener("popupshowing",extensionAppEnabler.popupShowing,false);
+	var context = document.getElementById("addonContextMenu");
+	if (!context)
+	  context = document.getElementById("extensionContextMenu");
+	context.addEventListener("popupshowing",extensionAppEnabler.popupShowing,false);
 },
 
 isCompatible: function(id)
@@ -177,7 +185,7 @@ makeCompatible: function(id,app,version)
 
 popupShowing: function(event)
 {
-	var item = document.getElementById("extensionsView").selectedItem;
+	var item = gExtensionsView.selectedItem;
 	var menu = document.getElementById("menuitem_appenable");
 	var menuclone = document.getElementById("menuitem_appenable_clone");
 	menu.hidden=extensionAppEnabler.isCompatible(item.id);
@@ -222,7 +230,7 @@ appEnable: function()
 {
 	if (extensionAppEnabler.confirmChange())
 	{
-    var ev = document.getElementById("extensionsView");
+    var ev = gExtensionsView;
 		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
 		var item = ev.selectedItem;
 		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
@@ -261,7 +269,7 @@ enableAll: function()
 	
 	var confirmed=false;
 	
-  var ev = document.getElementById("extensionsView");
+  var ev = gExtensionsView;
   var count = ev.getRowCount();
   for (var i=0; i<count; i++)
   {

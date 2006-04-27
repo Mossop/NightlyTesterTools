@@ -1,7 +1,7 @@
 #enableallButton {
-  list-style-image: url("chrome://nightly/skin/extensions/enable-messenger.png");
+  list-style-image: url("chrome://nightly/skin/extensions/enable-messenger.png") !important;
 }
 
 #enableallButton[disabled="true"] {
-  list-style-image: url("chrome://nightly/skin/extensions/enableDisabled-messenger.png");
+  list-style-image: url("chrome://nightly/skin/extensions/enableDisabled-messenger.png") !important;
 }
