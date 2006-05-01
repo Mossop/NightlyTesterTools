@@ -1,3 +1,4 @@
+// -*- js-var:Components,document,window,navigator,Cc,Ci,nightlyApp,talkback,gBrowser -*-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -502,7 +503,7 @@ getExtensionList: function()
 
 	if (items.length==0)
 	{
-		alert("No extensions were found.");
+		window.alert("No extensions were found.");
 		return null;
 	}
 	else
@@ -632,17 +633,17 @@ alertType: function(type)
 										       .getService(Ci.nsIProperties);
 
 	var dir = directoryService.get(type,Ci.nsIFile);
-	alert(dir.path);
+	window.alert(dir.path);
 },
 
 getScreenshot: function()
 {
-	openDialog("chrome://nightly/content/screenshot/screenshot.xul", "_blank", "chrome,all,dialog=no");
+	window.openDialog("chrome://nightly/content/screenshot/screenshot.xul", "_blank", "chrome,all,dialog=no");
 },
 
 launchOptions: function()
 {
-	openDialog("chrome://nightly/content/options.xul", "", "chrome,titlebar,toolbar,centerscreen,modal");
+	window.openDialog("chrome://nightly/content/options.xul", "", "chrome,titlebar,toolbar,centerscreen,modal");
 }
 
 }

@@ -1,3 +1,4 @@
+// -*- js-var:Components,dump,document,window,nightly,nightlyplatform,nightlyApp,closeMenus -*-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -93,7 +94,7 @@ onDatabaseLoaded: function()
 	else
 	{
 		if (service.currentBuild)
-			incidents = service.getBuildPreviousIncidents(build, 10);
+			incidents = service.getBuildPreviousIncidents(service.currentBuild, 10);
 	}
 	
 	var parent = document.getElementById("nightly-incidents");
@@ -171,7 +172,7 @@ launchTalkback: function()
 
 	if (!talkback)
 	{
-		alert("Could not find talkback");
+		window.alert("Could not find talkback");
 		return;
 	}
 

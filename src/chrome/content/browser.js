@@ -1,3 +1,4 @@
+// -*- js-var:Components,document,window,gBrowser,nightly,openUILink -*-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -78,7 +79,7 @@ titleUpdated: function()
 
 updateTitlebar: function()
 {
-	setTimeout("gBrowser.updateTitlebar();", 50);
+	window.setTimeout("gBrowser.updateTitlebar();", 50);
 },
 
 setCustomTitle: function(title)

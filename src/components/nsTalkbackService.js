@@ -1,3 +1,4 @@
+// -*- js-var:dump,Components,XULTreeView,XULTreeViewRecord -*-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -512,12 +513,17 @@ _scanDir: function(dir)
 
 _loadDetails: function(dir, ini)
 {
-	stream = Cc["@mozilla.org/network/file-input-stream;1"]
+	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
 						 .createInstance(Ci.nsIFileInputStream);
 	
 	stream.init(ini,1,384,Ci.nsIFileInputStream.CLOSE_ON_EOF);
 	stream.QueryInterface(Ci.nsILineInputStream);
 
+  var vendor = null;
+  var product = null;
+  var platform = null;
+  var build = null;
+  
 	var fieldcount=0;
 	var line = { value: null };
 	while ((stream.readLine(line))&&(fieldcount<4))

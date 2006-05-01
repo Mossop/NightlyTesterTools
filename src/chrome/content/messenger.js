@@ -1,3 +1,4 @@
+// -*- js-var:Components,document,window,gBrowser,gDBView,nightly,openUILink -*-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -77,7 +78,7 @@ detectLeaks: function(event)
   if (win)
     win.focus();
   else
-    openDialog("chrome://nightly/content/leaks/leaks.xul", "_blank", "chrome,all,dialog=no");
+    window.openDialog("chrome://nightly/content/leaks/leaks.xul", "_blank", "chrome,all,dialog=no");
 },
 
 customSetTitleFromFolder: function(msgfolder, subject)

@@ -1,3 +1,4 @@
+// -*- js-var:Components,dump,document,window, -*-
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 
