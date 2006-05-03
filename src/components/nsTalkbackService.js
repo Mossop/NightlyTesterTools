@@ -486,12 +486,17 @@ _scanDir: function(dir)
 
 _loadDetails: function(dir, ini)
 {
-	stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
 									       .createInstance(Components.interfaces.nsIFileInputStream);
 	
 	stream.init(ini,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
 	stream.QueryInterface(Components.interfaces.nsILineInputStream);
 
+  var vendor = null;
+  var product = null;
+  var platform = null;
+  var build = null;
+  
 	var fieldcount=0;
 	var line = { value: null };
 	while ((stream.readLine(line))&&(fieldcount<4))

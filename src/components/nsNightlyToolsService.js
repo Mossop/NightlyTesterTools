@@ -447,7 +447,7 @@ installLocalExtension: function(name, uri, file)
 	}
 	
 	originalID=originalID.QueryInterface(Components.interfaces.nsIRDFLiteral);
-	extensionID=originalID.Value;
+	var extensionID=originalID.Value;
 	
   var simpleTest = /^[\w-\.]*$/;
 	var em = Components.classes["@mozilla.org/extensions/manager;1"]
@@ -530,8 +530,8 @@ installLocalExtension: function(name, uri, file)
 	
 	try
 	{
-  	manifest=ioService.newFileURI(installLocation.getItemFile(extensionID, "install.rdf"));
-  	ds = rdfService.GetDataSourceBlocking(manifest.spec);
+  	var manifest=ioService.newFileURI(installLocation.getItemFile(extensionID, "install.rdf"));
+  	var ds = rdfService.GetDataSourceBlocking(manifest.spec);
   	
   	var changed=false;
 

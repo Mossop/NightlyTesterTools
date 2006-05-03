@@ -587,21 +587,6 @@ function clipboardCopy()
   clipboard.copyString(getTextOverview());
 }
 
-function browserLoad(event)
-{
-	var fulllog=browser.contentDocument.getElementById("fulllog");
-	var leaklog=browser.contentDocument.getElementById("leaks");
-	var summary=browser.contentDocument.getElementById("summary");
-	
-	var p = browser.contentDocument.getElementById("build");
-	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
-	p.innerHTML=navigator.userAgent+" ID:"+appinfo.appBuildID;
-	p = browser.contentDocument.getElementById("date");
-	var date = new Date(nsprlog.lastModifiedTime);
-	p.innerHTML="Session ended "+date.toLocaleString();
-	run(summary,leaklog,fulllog);
-}
-
 function textEnter()
 {
 	var logtext = document.getElementById("nsprlog");

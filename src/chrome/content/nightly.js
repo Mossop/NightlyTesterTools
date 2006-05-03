@@ -166,8 +166,13 @@ loadGfxToolkit: function()
 	datafile.append("toolkit.jar");
 	var reader = Components.classes["@mozilla.org/libjar/zip-reader;1"]
 	                       .createInstance(Components.interfaces.nsIZipReader);
-	reader.init(datafile);
-	reader.open();
+	if (reader.init)
+	{
+  	reader.init(datafile);
+  	reader.open();
+  }
+  else
+    reader.open(datafile);
 	var stream = reader.getInputStream("content/global/buildconfig.html");
 	var sstream = Components.classes["@mozilla.org/scriptableinputstream;1"]
 	                        .createInstance(Components.interfaces.nsIScriptableInputStream);
@@ -505,17 +510,20 @@ getExtensionList: function()
 	{
 		var rdfS = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
 		var ds = em.datasource;
-		var enabledResource = rdfS.GetResource("http://www.mozilla.org/2004/em-rdf#disabled");
+		var disabledResource = rdfS.GetResource("http://www.mozilla.org/2004/em-rdf#disabled");
+		var isDisabledResource = rdfS.GetResource("http://www.mozilla.org/2004/em-rdf#isDisabled");
 		var text = [];
 		for (var i=0; i<items.length; i++)
 		{
 			text[i] = items[i].name+" "+items[i].version;
 			var source = rdfS.GetResource("urn:mozilla:item:"+items[i].id);
-			var enabled = ds.GetTarget(source, enabledResource, true);
+			var disabled = ds.GetTarget(source, disabledResource, true);
+			if (!disabled)
+			  disabled = ds.GetTarget(source, isDisabledResource, true);
 			try
 			{
-				enabled=enabled.QueryInterface(Components.interfaces.nsIRDFLiteral);
-				if (enabled.Value=="true")
+				disabled=disabled.QueryInterface(Ci.nsIRDFLiteral);
+				if (disabled.Value=="true")
 				{
 					text[i]+=" [DISABLED]";
 				}
