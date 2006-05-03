@@ -1,6 +1,6 @@
 <!ENTITY nightly.options.height "26em">
 <!ENTITY nightly.options.title "Opzioni di Nightly Tester Tools">
-<!ENTITY nightly.options.description "Si pu&#242; usare un titolo personalizzato della versione attuale da visualizzare sempre nella barra del titolo">
+<!ENTITY nightly.options.description "Si può usare un titolo personalizzato della versione attuale da visualizzare sempre nella barra del titolo">
 <!ENTITY nightly.disablechecking.description "Quando si installa una nuova versione dell'applicazione, le estensioni non compatibili possono essere forzatamente disattivate">
 <!ENTITY nightly.disablechecking.label "Disattiva il controllo della compatibilità durante l'aggiornamento dell'applicazione">
 <!ENTITY nightly.customtitle.label "Usa un titolo personalizzato">
@@ -27,3 +27,4 @@
 <!ENTITY nightly.talkback.comment "Commento">
 <!ENTITY nightly.talkback.label "Avvia Talkback">
 <!ENTITY nightly.talkback.disabled "Talkback non è installato">
+<!ENTITY nightly.talkback.recentlist "Incidenti recenti">

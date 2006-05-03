@@ -5,7 +5,7 @@
 <!ENTITY nightly.disablechecking.label "Vypnout ověření kompatibility během aktualizace aplikace">
 <!ENTITY nightly.customtitle.label "Používat vlastní titulek">
 <!ENTITY nightly.customtemplate.label "Vzor vlastního titulku:">
-<!ENTITY nightly.variables.description "Následující proměné můžete použít v titulku">
+<!ENTITY nightly.variables.description "Následující proměné můžete použít v titulku (záleží na velikosti písmen)">
 <!ENTITY nightly.variable.label "proměnná">
 <!ENTITY nightly.variabledesc.label "popis">
 <!ENTITY nightly.variablevalue.label "obsah">
@@ -27,3 +27,4 @@
 <!ENTITY nightly.talkback.comment "Komentář">
 <!ENTITY nightly.talkback.label "Spustit Talkback">
 <!ENTITY nightly.talkback.disabled "Talkback není nainstalován">
+<!ENTITY nightly.talkback.recentlist "Poslední nehody">

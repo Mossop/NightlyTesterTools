@@ -36,3 +36,4 @@
 <!ENTITY nightly.talkback.comment             "コメント">
 <!ENTITY nightly.talkback.label               "Talkback の起動">
 <!ENTITY nightly.talkback.disabled            "Talkback はインストールされていません">
+<!ENTITY nightly.talkback.recentlist          "最近の出来事">

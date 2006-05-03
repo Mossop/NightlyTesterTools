@@ -1,0 +1,18 @@
+<!ENTITY nightly.leaks.title "Leak Log Analyzer">
+<!ENTITY nightly.leaks.logfile.label "Arquivo de Log:">
+<!ENTITY nightly.leaks.browse.label "Procurar...">
+<!ENTITY nightly.leaks.displayfull.label "Exibir log completo">
+<!ENTITY nightly.leaks.loading.label "Carregando...">
+<!ENTITY nightly.leaks.overview.label "Visão Geral">
+<!ENTITY nightly.leaks.fulllog.label "Log Completo">
+<!ENTITY nightly.leaks.copy.label "Copiar para Área de Transferência">
+<!ENTITY nightly.leaks.save.label "Salvar Como...">
+<!ENTITY nightly.leaks.summary.label "Resumo">
+<!ENTITY nightly.leaks.details.label "Detalhes">
+<!ENTITY nightly.leaks.display.label "Exibir:">
+<!ENTITY nightly.leaks.docshellfilter.label "DocShells">
+<!ENTITY nightly.leaks.windowfilter.label "Janelas">
+<!ENTITY nightly.leaks.documentfilter.label "Documentos">
+<!ENTITY nightly.leaks.leakedfilter.label "Leaked">
+<!ENTITY nightly.leaks.collectedfilter.label "Coletados">
+<!ENTITY nightly.leaks.unknownfilter.label "Desconhecido">
