@@ -162,14 +162,14 @@ performInstall: function(name, uri)
     {  
      	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"].
     										getService(Components.interfaces.nsIProperties);
-    	dir = directoryService.get("TmpD",Components.interfaces.nsIFile);
+    	var dir = directoryService.get("TmpD",Components.interfaces.nsIFile);
     
     	var i=0;
     	var file;
   		file=dir.clone();
   		file.append("nightlytmp.xpi");
   		file.createUnique(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
-  	  fileuri=ioService.newFileURI(file);
+  	  var fileuri=ioService.newFileURI(file);
   		
   		var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
   											      .createInstance(Components.interfaces.nsIWebBrowserPersist);
@@ -519,6 +519,8 @@ installLocalExtension: function(name, uri, file)
 	var appversion = appinfo.version;
 	try
 	{
+    var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+                                .getService(Components.interfaces.nsIPrefService);
 		appversion=prefservice.getCharPref("app.extensions.version");
 		if (!appversion)
 			appversion=appinfo.version;
