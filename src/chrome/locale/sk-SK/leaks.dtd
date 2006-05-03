@@ -1,0 +1,18 @@
+<!ENTITY nightly.leaks.title "Analyzátor záznamov">
+<!ENTITY nightly.leaks.logfile.label "Súbor záznamov:">
+<!ENTITY nightly.leaks.browse.label "Prehľadávať...">
+<!ENTITY nightly.leaks.displayfull.label "Zobraziť všetky záznamy">
+<!ENTITY nightly.leaks.loading.label "Načítavam...">
+<!ENTITY nightly.leaks.overview.label "Prehľad">
+<!ENTITY nightly.leaks.fulllog.label "Všetky záznamy">
+<!ENTITY nightly.leaks.copy.label "Kopírovať do schránky">
+<!ENTITY nightly.leaks.save.label "Uložiť ako...">
+<!ENTITY nightly.leaks.summary.label "Zhrnutie">
+<!ENTITY nightly.leaks.details.label "Podrobnosti">
+<!ENTITY nightly.leaks.display.label "Zobraziť:">
+<!ENTITY nightly.leaks.docshellfilter.label "Docshelly">
+<!ENTITY nightly.leaks.windowfilter.label "Okná">
+<!ENTITY nightly.leaks.documentfilter.label "Dokumenty">
+<!ENTITY nightly.leaks.leakedfilter.label "Úniky">
+<!ENTITY nightly.leaks.collectedfilter.label "Zozbierané">
+<!ENTITY nightly.leaks.unknownfilter.label "Neznáme">

@@ -1,0 +1,30 @@
+<!ENTITY nightly.options.height "30em">
+<!ENTITY nightly.options.title "Opções Nightly Tester">
+<!ENTITY nightly.options.description "Você pode usar um título personalizado para exibir sempre a versão atual na barra de título.">
+<!ENTITY nightly.disablechecking.description "Quando uma nova versão da aplicação é instalada, as extensões que não são compatíveis são desativadas.">
+<!ENTITY nightly.disablechecking.label "Desativar a Verificação de compatibilidade durante a atualização da aplicação">
+<!ENTITY nightly.customtitle.label "Usar título personalizado">
+<!ENTITY nightly.customtemplate.label "Modelos de títulos personalizados:">
+<!ENTITY nightly.variables.description "As seguintes variáveis podem ser usadas no título (tanto faz maiuscula ou minuscula)">
+<!ENTITY nightly.variable.label "Variável">
+<!ENTITY nightly.variabledesc.label "Descrição">
+<!ENTITY nightly.variablevalue.label "Valor">
+<!ENTITY nightly.openprofile.label "Abrir Pasta de Perfil">
+<!ENTITY nightly.id.copy.label "Copiar o Build ID para área de transferência">
+<!ENTITY nightly.id.insert.label "Inserir Build ID na caixa de texto">
+<!ENTITY nightly.id.insert.tooltip "Inserir o indentificador de build na caixa de texto atual.">
+<!ENTITY nightly.extensions.install.label "Instalar Extensão ou Tema...">
+<!ENTITY nightly.extensions.copy.label "Copiar Lista de Extesões para a Área de Transferência">
+<!ENTITY nightly.extensions.insert.label "Inserir Lista de Extensões na Caixa de Texto">
+<!ENTITY nightly.appenable.label "Tornar compatível">
+<!ENTITY nightly.xpinstall.checkbox "Instalar usando o Nightly Tester Tools para sobrescrever a compatibilidade.">
+<!ENTITY nightly.enableall.label "Tornar todas compatíveis">
+<!ENTITY nightly.leakreporter.label "Analizar o Relatório de Falhas">
+<!ENTITY nightly.talkback.sidebar.title "Painel Talkback">
+<!ENTITY nightly.talkback.copyid "Copiar">
+<!ENTITY nightly.talkback.id "ID">
+<!ENTITY nightly.talkback.date "Data">
+<!ENTITY nightly.talkback.comment "Comentário">
+<!ENTITY nightly.talkback.label "Iniciar Talkback">
+<!ENTITY nightly.talkback.disabled "Talkback não esta instalado">
+<!ENTITY nightly.talkback.recentlist "Incidentes Recentes">
