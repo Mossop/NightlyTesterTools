@@ -380,9 +380,14 @@ installLocalExtension: function(name, uri, file)
   {
   	zipReader = Components.classes["@mozilla.org/libjar/zip-reader;1"]
   									.createInstance(Components.interfaces.nsIZipReader);
-  	zipReader.init(file);
-  	zipReader.open();
-
+    if (zipReader.init)
+    {
+    	zipReader.init(file);
+    	zipReader.open();
+    }
+    else
+      zipReader.open(file);
+      
     try
     {
   	  // Extract the rdf file.
