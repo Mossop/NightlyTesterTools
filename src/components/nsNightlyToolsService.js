@@ -247,12 +247,25 @@ extractThemeFiles: function(zipReader, id, installLocation, jarFile)
   if (manifestFile.exists())
   {
     var entries = zipReader.findEntries("chrome/*");
-    while (entries.hasMoreElements())
+    while (true)
     {
-      entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
-      if (entry.name.substr(entry.name.length - 1, 1) == "/")
+      var entryName;
+      if (entries.hasMoreElements)
+      {
+        if (!entries.hasMoreElements())
+          break;
+        entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
+        entryName = entry.name;
+      }
+      else
+      {
+        if (!entries.hasMore())
+          break;
+        entryName = entries.getNext();
+      }
+      if (entryName.substr(entryName.length - 1, 1) == "/")
         continue;
-      target = installLocation.getItemFile(id, entry.name);
+      target = installLocation.getItemFile(id, entryName);
       try
       {
         target.create(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
@@ -262,7 +275,7 @@ extractThemeFiles: function(zipReader, id, installLocation, jarFile)
         dump("extractThemeFiles: failed to create target file for extraction " + 
              " file = " + target.path + ", exception = " + e + "\n");
       }
-      zipReader.extract(entry.name, target);
+      zipReader.extract(entryName, target);
     }
   }
   else
@@ -297,10 +310,23 @@ extractExtensionFiles: function(zipReader, extensionID, installLocation, xpiFile
 	dump("extractExtensionFiles\n");
 	// create directories first
 	var entries = zipReader.findEntries("*/");
-	while (entries.hasMoreElements())
-	{
-	  var entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
-	  var target = installLocation.getItemFile(extensionID, entry.name);
+  while (true)
+  {
+    var entryName;
+    if (entries.hasMoreElements)
+    {
+      if (!entries.hasMoreElements())
+        break;
+      entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
+      entryName = entry.name;
+    }
+    else
+    {
+      if (!entries.hasMore())
+        break;
+      entryName = entries.getNext();
+    }
+	  var target = installLocation.getItemFile(extensionID, entryName);
 	  if (!target.exists())
 	  {
 	    try
@@ -314,12 +340,25 @@ extractExtensionFiles: function(zipReader, extensionID, installLocation, xpiFile
 	}
 	
 	entries = zipReader.findEntries("*");
-	while (entries.hasMoreElements())
-	{
-	  entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
-	  if (entry.name.substring(entry.name.length-1)!="/")
+  while (true)
+  {
+    var entryName;
+    if (entries.hasMoreElements)
+    {
+      if (!entries.hasMoreElements())
+        break;
+      entry = entries.getNext().QueryInterface(Components.interfaces.nsIZipEntry);
+      entryName = entry.name;
+    }
+    else
+    {
+      if (!entries.hasMore())
+        break;
+      entryName = entries.getNext();
+    }
+	  if (entryName.substring(entryName.length-1)!="/")
 	  {
-	    target = installLocation.getItemFile(extensionID, entry.name);
+	    target = installLocation.getItemFile(extensionID, entryName);
 	    try
 	    {
 	        if (!target.exists())
@@ -328,7 +367,7 @@ extractExtensionFiles: function(zipReader, extensionID, installLocation, xpiFile
 	    catch (e)
 	    {
 	    }
-	    zipReader.extract(entry.name, target);
+	    zipReader.extract(entryName, target);
 	  }
 	}
 },
