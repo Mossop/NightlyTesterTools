@@ -229,6 +229,7 @@ loadBuildIDFromFile: function()
 
 init: function()
 {	
+  window.removeEventListener("load",nightly.init,false);
 	var prefservice = Cc['@mozilla.org/preferences-service;1']
 							                .getService(Ci.nsIPrefService);
 	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Ci.nsIPrefBranchInternal);
@@ -314,6 +315,12 @@ init: function()
 	
 	nightly.preferences.addObserver("",nightly,false);
 	nightly.prefChange("idtitle");
+},
+
+unload: function(pref)
+{
+  window.removeEventListener("unload",nightly.unload,false);
+  nightly.preferences.removeObserver("",nightly);
 },
 
 prefChange: function(pref)
@@ -657,3 +664,4 @@ launchOptions: function()
 }
 
 window.addEventListener("load",nightly.init,false);
+window.addEventListener("unload",nightly.unload,false);
