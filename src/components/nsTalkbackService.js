@@ -399,14 +399,24 @@ _load: function()
 	if (!this.loading)
 	{
 		this.loading=true;
-		this._loadTimer = Components.classes["@mozilla.org/timer;1"]
-                                .getService(Components.interfaces.nsITimer);
-    this._loadTimer.initWithCallback(this, 200, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
-
-		var nsIThread = Components.interfaces.nsIThread;
-		var thread = Components.classes["@mozilla.org/thread;1"]
-		                       .createInstance(nsIThread);
-		thread.init(this, 0, nsIThread.PRIORITY_NORMAL, nsIThread.SCOPE_GLOBAL, nsIThread.STATE_JOINABLE);
+    if (Components.classes["@mozilla.org/thread-manager;1"])
+    {
+      var tm = Components.classes["@mozilla.org/thread-manager;1"]
+                         .getService(Components.interfaces.nsIThreadManager)
+      var thread = tm.newThread(0);
+      thread.dispatch(this, Components.interfaces.nsIEventTarget.DISPATCH_NORMAL);
+    }
+    else
+    {
+  		this._loadTimer = Components.classes["@mozilla.org/timer;1"]
+                                  .getService(Components.interfaces.nsITimer);
+      this._loadTimer.initWithCallback(this, 200, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
+  
+  		var nsIThread = Components.interfaces.nsIThread;
+  		var thread = Components.classes["@mozilla.org/thread;1"]
+  		                       .createInstance(nsIThread);
+  		thread.init(this, 0, nsIThread.PRIORITY_NORMAL, nsIThread.SCOPE_GLOBAL, nsIThread.STATE_JOINABLE);
+    }
 	}
 },
 
