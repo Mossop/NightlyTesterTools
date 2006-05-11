@@ -387,12 +387,38 @@ talkbackdir: null,
 talkbackdbdir: null,
 listeners: [],
 proxy: null,
+notifier: {
+  listeners: [],
+  
+  run: function()
+  {
+  	for (var i=0; i<this.listeners.length; i++)
+  	{
+  		try
+  		{
+  			this.listeners[i].onDatabaseLoaded();
+  		}
+  		catch (e)
+  		{
+  			dump(e+"\n");
+  		}
+  	}
+  	this.listeners = [];
+  },
+
+  QueryInterface: function(iid) {
+    if (iid.equals(Components.interfaces.nsIRunnable) ||
+        iid.equals(Components.interfaces.nsISupports))
+      return this;
+    throw Components.results.NS_ERROR_NO_INTERFACE;
+  },
+},
 
 addProgressListener: function(listener)
 {
 	if (!this.loaded)
 	{
-		this.listeners.push(listener);
+		this.notifier.listeners.push(listener);
 	}
 	else
 	{
@@ -417,44 +443,34 @@ loadDatabase: function()
 		
 	this.loading=true;
 
-  var eQs = Cc["@mozilla.org/event-queue-service;1"]
-              .getService(Ci.nsIEventQueueService);
-  var eQueue = eQs.getSpecialEventQueue(Ci.nsIEventQueueService.UI_THREAD_EVENT_QUEUE);
-  
-  // Creates a proxy for this object that will make calls on the UI event queue.
-  var proxyManager = Cc["@mozilla.org/xpcomproxy;1"]
-                       .getService(Ci.nsIProxyObjectManager);
-  this.proxy = proxyManager.getProxyForObject(eQueue, 
-                                              Ci.nsITalkbackLoaderProxy, 
-                                              this, 
-                                              Ci.nsIProxyObjectManager.INVOKE_SYNC
-                                               + Ci.nsIProxyObjectManager.FORCE_PROXY_CREATION);
-                                              
-	var thread = Cc["@mozilla.org/thread;1"]
-	               .createInstance(Ci.nsIThread);
-	thread.init(this, 0, Ci.nsIThread.PRIORITY_NORMAL,
-	                     Ci.nsIThread.SCOPE_LOCAL,
-	                     Ci.nsIThread.STATE_UNJOINABLE);
-},
-
-// nsITalkbackLoaderProxy
-
-onDatabaseLoaded: function()
-{
-	this.loaded=true;
-		
-	for (var i=0; i<this.listeners.length; i++)
-	{
-		try
-		{
-			this.listeners[i].onDatabaseLoaded();
-		}
-		catch (e)
-		{
-			dump(e+"\n");
-		}
-	}
-	this.listeners = [];
+  if (Cc["@mozilla.org/thread-manager;1"])
+  {
+    var tm = Cc["@mozilla.org/thread-manager;1"]
+               .getService(Ci.nsIThreadManager)
+    var thread = tm.newThread(0);
+    thread.dispatch(this, Ci.nsIEventTarget.DISPATCH_NORMAL);
+  }
+  else
+  {
+    var eQs = Cc["@mozilla.org/event-queue-service;1"]
+                .getService(Ci.nsIEventQueueService);
+    var eQueue = eQs.getSpecialEventQueue(Ci.nsIEventQueueService.UI_THREAD_EVENT_QUEUE);
+    
+    // Creates a proxy for this object that will make calls on the UI event queue.
+    var proxyManager = Cc["@mozilla.org/xpcomproxy;1"]
+                         .getService(Ci.nsIProxyObjectManager);
+    this.proxy = proxyManager.getProxyForObject(eQueue, 
+                                                Ci.nsIRunnable, 
+                                                this.notifier, 
+                                                Ci.nsIProxyObjectManager.INVOKE_SYNC
+                                                 + Ci.nsIProxyObjectManager.FORCE_PROXY_CREATION);
+                                                
+  	var thread = Cc["@mozilla.org/thread;1"]
+  	               .createInstance(Ci.nsIThread);
+  	thread.init(this, 0, Ci.nsIThread.PRIORITY_NORMAL,
+  	                     Ci.nsIThread.SCOPE_LOCAL,
+  	                     Ci.nsIThread.STATE_UNJOINABLE);
+  }
 },
 
 run: function()
@@ -466,7 +482,16 @@ run: function()
 	if (this.talkbackdbdir)
 		this._scanDir(this.talkbackdbdir);
 	
-	this.proxy.onDatabaseLoaded();
+	this.loaded = true;
+	if (this.proxy)
+  	this.proxy.run();
+  else
+  {
+    var tm = Cc["@mozilla.org/thread-manager;1"]
+               .getService(Ci.nsIThreadManager)
+    var thread = tm.mainThread;
+    thread.dispatch(this.notifier, Ci.nsIEventTarget.DISPATCH_NORMAL);
+  }
 },
 
 _scanDir: function(dir)
@@ -913,7 +938,6 @@ QueryInterface: function(iid)
 {
 	if (iid.equals(Ci.nsITalkbackService)
 		|| iid.equals(Ci.nsIRunnable)
-		|| iid.equals(Ci.nsITalkbackLoaderProxy)
 		|| iid.equals(Ci.nsISupports))
 	{
 		return this;
