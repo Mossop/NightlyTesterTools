@@ -27,3 +27,4 @@
 <!ENTITY nightly.talkback.comment "Комментарий">
 <!ENTITY nightly.talkback.label "Запустить Talkback">
 <!ENTITY nightly.talkback.disabled "Talkback не установлен">
+<!ENTITY nightly.talkback.recentlist "Недавние инциденты">
