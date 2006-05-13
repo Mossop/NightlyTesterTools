@@ -49,7 +49,7 @@ function getTopWin()
 
 function submitScreenshot()
 {
-	var data = canvas.toDataURLAs("image/png", "");
+	var data = canvas.toDataURL("image/png");
 	var pos = data.indexOf(";",5);
 	var contenttype = data.substring(5,pos);
 	var npos = data.indexOf(",",pos+1);
@@ -91,7 +91,6 @@ function saveScreenshot()
 	if (result==fp.returnOK || result==fp.returnReplace)
 	{
 		var mimetype = "image/png";
-		var options = "";
 		/*if (fp.filterIndex == 0)
 		{
 			mimetype = "image/jpg";
@@ -104,7 +103,7 @@ function saveScreenshot()
 	  var ioService = Cc["@mozilla.org/network/io-service;1"]
 	                    .getService(Ci.nsIIOService);
 	  
-	  var source = ioService.newURI(canvas.toDataURLAs(mimetype, options), "UTF8", null);
+	  var source = ioService.newURI(canvas.toDataURL(mimetype), "UTF8", null);
 	  var target = ioService.newFileURI(fp.file)
 	  
 	  var persist = Cc["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]

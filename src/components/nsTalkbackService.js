@@ -480,7 +480,12 @@ run: function()
 	this.vendors = [];
 
 	if (this.talkbackdbdir)
-		this._scanDir(this.talkbackdbdir);
+	{
+	  var dir = Cc["@mozilla.org/file/local;1"]
+	              .createInstance(Ci.nsILocalFile);
+	  dir.initWithPath(this.talkbackdbdir);
+		this._scanDir(dir);
+  }
 	
 	this.loaded = true;
 	if (this.proxy)
@@ -669,7 +674,7 @@ _findTalkback: function()
 
 		if (dir.exists())
 		{
-			this.talkbackdbdir=dir;
+			this.talkbackdbdir=dir.path;
 		}
 	}
 	catch (e)
@@ -684,7 +689,7 @@ _findTalkback: function()
 
 		if (check.exists())
 		{
-			this.talkbackdbdir=check;
+			this.talkbackdbdir=check.path;
 		}
 		else
 		{
@@ -693,7 +698,7 @@ _findTalkback: function()
 			dir.append("FullCircle");
 			if (dir.exists())
 			{
-				this.talkbackdbdir=dir;
+				this.talkbackdbdir=dir.path;
 			}
 		}
 	}			

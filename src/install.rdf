@@ -41,8 +41,8 @@
     <em:contributor>Hubo (Slovak localisation)</em:contributor>
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>
-    <em:homepageURL>http://users.blueprintit.co.uk/~dave/web/firefox/buildid/nightly.html</em:homepageURL>
-    <em:updateURL>http://users.blueprintit.co.uk/~dave/web/firefox/update.rdf?guid=%ITEM_ID%&amp;version=%ITEM_VERSION%&amp;app=%APP_ID%&amp;appver=%APP_VERSION%</em:updateURL>
+    <em:homepageURL>http://users.blueprintit.co.uk/~dave/web/firefox/${extension.name}</em:homepageURL>
+    <em:updateURL>http://users.blueprintit.co.uk/~dave/web/firefox/${extension.name}/update.rdf</em:updateURL>
     
   </Description>      
 </RDF>
