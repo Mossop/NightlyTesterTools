@@ -381,6 +381,7 @@ orderedIncidents: [],
 talkbackdir: null,
 talkbackdbdir: null,
 listeners: [],
+_loadTimer: null,
 
 addProgressListener: function(listener)
 {
@@ -408,15 +409,14 @@ _load: function()
     }
     else
     {
-  		this._loadTimer = Components.classes["@mozilla.org/timer;1"]
-                                  .getService(Components.interfaces.nsITimer);
-      this._loadTimer.initWithCallback(this, 200, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
-  
   		var nsIThread = Components.interfaces.nsIThread;
   		var thread = Components.classes["@mozilla.org/thread;1"]
   		                       .createInstance(nsIThread);
   		thread.init(this, 0, nsIThread.PRIORITY_NORMAL, nsIThread.SCOPE_GLOBAL, nsIThread.STATE_JOINABLE);
     }
+		this._loadTimer = Components.classes["@mozilla.org/timer;1"]
+                                .getService(Components.interfaces.nsITimer);
+    this._loadTimer.initWithCallback(this, 200, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
 	}
 },
 
