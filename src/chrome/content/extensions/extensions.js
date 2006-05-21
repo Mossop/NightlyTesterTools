@@ -74,7 +74,7 @@ addInArray: function(menus,item,before,after)
 
 init: function()
 {
-  if (gAddonContextMenus)
+  if (typeof(gAddonContextMenus) != "undefined")
   	gAddonContextMenus=extensionAppEnabler.addInArray(gAddonContextMenus,"menuitem_appenable","menuitem_enable",null);
   else
   {
@@ -90,7 +90,7 @@ load: function()
 	var prefs = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
   
 	var enableb = document.getElementById("enableallButton");
-	enableb.setAttribute("hidden",!prefs.getBoolPref("showEnableAll"));
+	enableb.hidden = !prefs.getBoolPref("showEnableAll");
 	
 	var context = document.getElementById("addonContextMenu");
 	if (!context)

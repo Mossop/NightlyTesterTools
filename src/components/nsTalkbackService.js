@@ -400,6 +400,7 @@ _load: function()
 	if (!this.loading)
 	{
 		this.loading=true;
+  	this._findTalkback();
     if (Components.classes["@mozilla.org/thread-manager;1"])
     {
       var tm = Components.classes["@mozilla.org/thread-manager;1"]
@@ -446,7 +447,6 @@ run: function()
 	this.orderedIncidents = [];
 	this.vendors = [];
 
-	this._findTalkback();
 	this._scanDir(this.talkbackdbdir);
 	
 	this.loaded=true;
