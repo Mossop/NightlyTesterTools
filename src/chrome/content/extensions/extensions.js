@@ -75,7 +75,7 @@ addInArray: function(menus,item,before,after)
 
 init: function()
 {
-  if (gAddonContextMenus)
+  if (typeof(gAddonContextMenus) != "undefined")
   	gAddonContextMenus=extensionAppEnabler.addInArray(gAddonContextMenus,"menuitem_appenable","menuitem_enable",null);
   else
   {
