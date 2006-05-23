@@ -305,11 +305,6 @@ init: function()
 		prefservice.setCharPref("extensions.lastAppVersion", nightly.variables.version);
 	}
 	
-	var scrmenu = document.getElementById("nightly-screenshot");
-	var vc = Cc["@mozilla.org/xpcom/version-comparator;1"]
-	           .createInstance(Ci.nsIVersionComparator);
-	scrmenu.setAttribute("disabled", (vc.compare(nightly.variables.version, "2.0b1")<0));
-
 	nightly.variables.profile = nightly.getProfileName();
 		
 	nightly.loadGfxToolkit();
