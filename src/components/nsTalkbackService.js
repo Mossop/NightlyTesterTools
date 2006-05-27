@@ -436,7 +436,7 @@ loadDatabase: function()
   
     this._loadTimer = Cc["@mozilla.org/timer;1"]
                        .createInstance(Ci.nsITimer);
-    this._loadTimer.initWithCallback(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
+    this._loadTimer.initWithCallback(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
   }
   else
     this.loaded = true;
@@ -449,12 +449,15 @@ notify: function(timer)
 
 run: function()
 {
+  dump("running...\n");
   if (this._dirs.length>0)
   {
+    dump("scanning dir...\n");
     this._scanDir(this._dirs.pop());
   }
   else if (this._databases.length>0)
   {
+    dump("loading database...\n");
     this._loadDatabase(this._databases.pop());
   }
   else
@@ -462,10 +465,13 @@ run: function()
     this.loaded = true;
     if (this._listeners.length == 0)
       return;
+    dump("notifying listener...\n");
     var listener = this._listeners.pop();
     listener.onDatabaseLoaded();
+    if (this._listeners.length == 0)
+      return;
   }
-  this._loadTimer.initWithCallback(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
+  this._loadTimer.initWithCallback(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
 },
 
 _scanDir: function(dir)
