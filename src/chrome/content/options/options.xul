@@ -58,7 +58,6 @@
     <preferences>
       <preference id="idtitle" type="bool" name="nightly.idtitle" onchange="paneTitle.toggled();"/>
       <preference id="title" type="string" name="nightly.templates.title"/>
-      <preference id="compatibility" type="bool" name="nightly.disablecompatibility"/>
     </preferences>
     
   	<script type="application/x-javascript" src="title.js"/>
@@ -94,12 +93,15 @@
   <prefpane id="paneExtensions" label="&nightly.paneExtensions.title;">
   
     <preferences>
-      <preference id="compatibility" type="bool" name="nightly.disablecompatibility"/>
+      <preference id="update-compatibility" type="bool" name="nightly.disablecompatibility"/>
+      <preference id="compatibility" inverted="true" type="bool" name="extensions.checkCompatibility"/>
     </preferences>
     
-    <description style="padding-bottom: 5px">&nightly.paneExtensions.description;</description>
-      
-    <checkbox preference="compatibility" label="&nightly.disablechecking.label;"/>
+    <checkbox preference="compatibility" label="&nightly.disablecompatibility.label;"/>
+		
+		<subpane preference="compatibility" invert="true" action="disable">
+	    <checkbox preference="update-compatibility" label="&nightly.disablechecking.label;"/>
+	  </subpane>
 
   </prefpane>
   

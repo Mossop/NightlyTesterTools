@@ -45,6 +45,7 @@
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const LOAD_DELAY = 50;
 
 Cc["@mozilla.org/moz/jssubscript-loader;1"]
   .getService(Ci.mozIJSSubScriptLoader)
@@ -377,48 +378,25 @@ var nsTalkbackService = {
 
 currentBuild: null,
 
-inited: false,
+_inited: false,
 loaded: false,
-loading: false,
+_loading: false,
+_dirs: [],
+_databases: [],
+_loadTimer: null,
+_listeners: [],
+
+talkbackdir: null,
+talkbackdbdir: null,
 vendors: [],
 incidents: [],
 orderedIncidents: [],
-talkbackdir: null,
-talkbackdbdir: null,
-listeners: [],
-proxy: null,
-notifier: {
-  listeners: [],
-  
-  run: function()
-  {
-  	for (var i=0; i<this.listeners.length; i++)
-  	{
-  		try
-  		{
-  			this.listeners[i].onDatabaseLoaded();
-  		}
-  		catch (e)
-  		{
-  			dump(e+"\n");
-  		}
-  	}
-  	this.listeners = [];
-  },
-
-  QueryInterface: function(iid) {
-    if (iid.equals(Components.interfaces.nsIRunnable) ||
-        iid.equals(Components.interfaces.nsISupports))
-      return this;
-    throw Components.results.NS_ERROR_NO_INTERFACE;
-  },
-},
 
 addProgressListener: function(listener)
 {
 	if (!this.loaded)
 	{
-		this.notifier.listeners.push(listener);
+		this._listeners.push(listener);
 	}
 	else
 	{
@@ -428,75 +406,66 @@ addProgressListener: function(listener)
 
 _init: function()
 {
-	if (this.inited)
+	if (this._inited)
 		return;
 	
-	this.inited=true;
+	this._inited=true;
 
 	this._findTalkback();
+	if (this.talkbackdbdir)
+	  this._dirs.push(this.talkbackdbdir);
+	else
+	{
+	  this.loaded = true;
+	  this._loading = true;
+	}
 },
 
 loadDatabase: function()
 {
-	if (this.loading)
+	if (this._loading)
 		return;
 		
-	this.loading=true;
+	this._loading = true;
 
-  if (Cc["@mozilla.org/thread-manager;1"])
+  if (this.talkbackdbdir)
   {
-    var tm = Cc["@mozilla.org/thread-manager;1"]
-               .getService(Ci.nsIThreadManager)
-    var thread = tm.newThread(0);
-    thread.dispatch(this, Ci.nsIEventTarget.DISPATCH_NORMAL);
+  	this.incidents = [];
+  	this.orderedIncidents = [];
+  	this.vendors = [];
+  
+    this._loadTimer = Cc["@mozilla.org/timer;1"]
+                       .createInstance(Ci.nsITimer);
+    this._loadTimer.initWithCallback(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
   }
   else
-  {
-    var eQs = Cc["@mozilla.org/event-queue-service;1"]
-                .getService(Ci.nsIEventQueueService);
-    var eQueue = eQs.getSpecialEventQueue(Ci.nsIEventQueueService.UI_THREAD_EVENT_QUEUE);
-    
-    // Creates a proxy for this object that will make calls on the UI event queue.
-    var proxyManager = Cc["@mozilla.org/xpcomproxy;1"]
-                         .getService(Ci.nsIProxyObjectManager);
-    this.proxy = proxyManager.getProxyForObject(eQueue, 
-                                                Ci.nsIRunnable, 
-                                                this.notifier, 
-                                                Ci.nsIProxyObjectManager.INVOKE_SYNC
-                                                 + Ci.nsIProxyObjectManager.FORCE_PROXY_CREATION);
-                                                
-  	var thread = Cc["@mozilla.org/thread;1"]
-  	               .createInstance(Ci.nsIThread);
-  	thread.init(this, 0, Ci.nsIThread.PRIORITY_NORMAL,
-  	                     Ci.nsIThread.SCOPE_LOCAL,
-  	                     Ci.nsIThread.STATE_UNJOINABLE);
-  }
+    this.loaded = true;
+},
+
+notify: function(timer)
+{
+	this.run();
 },
 
 run: function()
 {
-	this.incidents = [];
-	this.orderedIncidents = [];
-	this.vendors = [];
-
-	if (this.talkbackdbdir)
-	{
-	  var dir = Cc["@mozilla.org/file/local;1"]
-	              .createInstance(Ci.nsILocalFile);
-	  dir.initWithPath(this.talkbackdbdir);
-		this._scanDir(dir);
+  if (this._dirs.length>0)
+  {
+    this._scanDir(this._dirs.pop());
   }
-	
-	this.loaded = true;
-	if (this.proxy)
-  	this.proxy.run();
+  else if (this._databases.length>0)
+  {
+    this._loadDatabase(this._databases.pop());
+  }
   else
   {
-    var tm = Cc["@mozilla.org/thread-manager;1"]
-               .getService(Ci.nsIThreadManager)
-    var thread = tm.mainThread;
-    thread.dispatch(this.notifier, Ci.nsIEventTarget.DISPATCH_NORMAL);
+    this.loaded = true;
+    if (this._listeners.length == 0)
+      return;
+    var listener = this._listeners.pop();
+    listener.onDatabaseLoaded();
   }
+  this._loadTimer.initWithCallback(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
 },
 
 _scanDir: function(dir)
@@ -506,7 +475,7 @@ _scanDir: function(dir)
 	{
 		var ndir = entries.getNext().QueryInterface(Ci.nsIFile);
 		if (ndir.isDirectory())
-			this._scanDir(ndir);
+			this._dirs.push(ndir);
 	}
 
 	var db = dir.clone();
@@ -515,25 +484,33 @@ _scanDir: function(dir)
 	ini.append("manifest.ini");
 	if ((db.exists())&&(ini.exists()))
 	{
-		var build = this._loadDetails(dir, ini);
-		if (build)
+	  this._databases.push({dir: dir, db: db, ini: ini});
+	}
+},
+
+_loadDatabase: function(database)
+{
+  var dir = database.dir;
+  var db = database.db;
+  var ini = database.ini;
+	var build = this._loadDetails(dir, ini);
+	if (build)
+	{
+		build._loadIncidents(db);
+		if (build.incidents.length==0)
 		{
-			build._loadIncidents(db);
-			if (build.incidents.length==0)
+			var platform = build.platform;
+			platform._removeBuild(build);
+			if (platform.builds.length==0)
 			{
-				var platform = build.platform;
-				platform._removeBuild(build);
-				if (platform.builds.length==0)
+				var product = platform.product;
+				if (product.platforms.length==0)
 				{
-					var product = platform.product;
-					if (product.platforms.length==0)
+					var vendor = product.vendor;
+					vendor._removeProduct(product);
+					if (vendor.products.length==0)
 					{
-						var vendor = product.vendor;
-						vendor._removeProduct(product);
-						if (vendor.products.length==0)
-						{
-							this._removeVendor(vendor);
-						}
+						this._removeVendor(vendor);
 					}
 				}
 			}
@@ -674,7 +651,7 @@ _findTalkback: function()
 
 		if (dir.exists())
 		{
-			this.talkbackdbdir=dir.path;
+			this.talkbackdbdir=dir;
 		}
 	}
 	catch (e)
@@ -689,7 +666,7 @@ _findTalkback: function()
 
 		if (check.exists())
 		{
-			this.talkbackdbdir=check.path;
+			this.talkbackdbdir=check;
 		}
 		else
 		{
@@ -698,7 +675,7 @@ _findTalkback: function()
 			dir.append("FullCircle");
 			if (dir.exists())
 			{
-				this.talkbackdbdir=dir.path;
+				this.talkbackdbdir=dir;
 			}
 		}
 	}			
@@ -942,7 +919,7 @@ getTreeView: function()
 QueryInterface: function(iid)
 {
 	if (iid.equals(Ci.nsITalkbackService)
-		|| iid.equals(Ci.nsIRunnable)
+		|| iid.equals(Ci.nsITimerCallback)
 		|| iid.equals(Ci.nsISupports))
 	{
 		return this;

@@ -17,3 +17,5 @@ pref("nightly.talkback.recentlist.otherbuilds", false);
 
 pref("nightly.talkback.searchurl", "http://talkback-public.mozilla.org/search/start.jsp?search=2&type=iid&id=");
 pref("extensions.{8620c15f-30dc-4dba-a131-7c5d20cf4a29}.description", "chrome://nightly/locale/nightly.properties");
+
+pref("extensions.checkCompatibility", true);

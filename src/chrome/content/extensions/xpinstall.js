@@ -49,8 +49,22 @@ savedAccept: null,
 
 init: function(event)
 {
-	NightlyXPInstall.savedAccept=XPInstallConfirm.onOK;
-	XPInstallConfirm.onOK=NightlyXPInstall.dialogAccept;
+  var checkCompatibility = true;
+	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+							                .getService(Components.interfaces.nsIPrefBranch);
+	try
+	{
+	  checkCompatibility = prefservice.getBoolPref("extensions.checkCompatibility");
+	}
+	catch (e)
+	{
+	}
+	if (checkCompatibility)
+	{
+  	NightlyXPInstall.savedAccept=XPInstallConfirm.onOK;
+  	XPInstallConfirm.onOK=NightlyXPInstall.dialogAccept;
+  	document.getElementById("nightlyoverride").hidden=false;
+  }
 },
 
 dialogAccept: function()

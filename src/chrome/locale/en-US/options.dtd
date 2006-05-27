@@ -14,10 +14,10 @@
 <!ENTITY nightly.variablevalue.label          "Value">
 
 
-<!ENTITY nightly.paneExtensions.title         "Extensions">
-<!ENTITY nightly.paneExtensions.description   "When a new application version is installed, extensions that are not compatible can be forcibly disabled.">
+<!ENTITY nightly.paneExtensions.title         "Add-ons">
 
-<!ENTITY nightly.disablechecking.label        "Disable compatibility checking during application update">
+<!ENTITY nightly.disablecompatibility.label   "Disable add-on compatibility checking">
+<!ENTITY nightly.disablechecking.label        "Disable compatibility overwriting during application update">
 
 
 <!ENTITY nightly.paneTalkback.title           "Talkback">
