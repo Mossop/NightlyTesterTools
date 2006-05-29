@@ -136,8 +136,7 @@ makeCompatible: function(id,app,version)
 	var targappprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#targetApplication");
 	var minprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#minVersion");
 	var maxprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#maxVersion");
-	var appdisprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#appDisabled");
-	var userdisprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#userDisabled");
+	var compatprop = rdfService.GetResource("http://www.mozilla.org/2004/em-rdf#compatible");
 
 	var vc = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
                                .getService(Components.interfaces.nsIVersionComparator);
@@ -168,19 +167,12 @@ makeCompatible: function(id,app,version)
 	}
 	if (changed)
 	{
-		var target = ds.GetTarget(extension, appdisprop, true);
-		if (target)
-			ds.Unassert(extension, appdisprop, target);
-		target = ds.GetTarget(extension, userdisprop, true);
-		var newtarget = rdfService.GetLiteral("true");
-		if (target)
-			ds.Change(extension, userdisprop, target, newtarget);
-		else
-			ds.Assert(extension, userdisprop, newtarget, true);
+	  var truth = rdfService.GetLiteral("true");
+	  ds.Assert(extension, compatprop, truth, true);
+	  ds.Unassert(extension, compatprop, truth);
     ds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
     ds.Flush();
-		em.enableItem(getIDFromResourceURI(id));
-	}
+  }
 	return changed;
 },
 
@@ -232,32 +224,41 @@ appEnable: function()
 	if (extensionAppEnabler.confirmChange())
 	{
     var ev = gExtensionsView;
-		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+		var appinfo = Components.classes['@mozilla.org/xre/app-info;1']
+		                        .getService(Components.interfaces.nsIXULAppInfo);
 		var item = ev.selectedItem;
 		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-							.getService(Components.interfaces.nsIPrefBranch);
+							                  .getService(Components.interfaces.nsIPrefBranch);
 		
-		var version = appinfo.version;
-		try
+		if (extensionAppEnabler.makeCompatible(item.id,appinfo.ID,appinfo.version))
 		{
-			version=prefservice.getCharPref("app.extensions.version");
-			if (!version)
-				version=appinfo.version;
-		}
-		catch (e) { }
-		
-		if (extensionAppEnabler.makeCompatible(item.id,appinfo.ID,version))
-		{
-			ev.selectedItem = document.getElementById(item.id);
+  	  var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+  						                    .getService(Components.interfaces.nsIPrefBranch);
+      var checkCompatibility = true;
+      try
+      {
+        checkCompatibility = prefservice.getBoolPref("extensions.checkCompatibility");
+      }
+      catch (e) { }
+      prefservice.setBoolPref("extensions.checkCompatibility", !checkCompatibility);
+      prefservice.setBoolPref("extensions.checkCompatibility", checkCompatibility);
+			ev.selectedItem = item;
 		}
 	}
 },
 
 enableAll: function()
 {
-	var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
+	var appinfo = Components.classes['@mozilla.org/xre/app-info;1']
+	                        .getService(Components.interfaces.nsIXULAppInfo);
 	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-						.getService(Components.interfaces.nsIPrefBranch);
+						                  .getService(Components.interfaces.nsIPrefBranch);
+	var checkCompatibility = true;
+	try
+	{
+	  checkCompatibility = prefservice.getBoolPref("extensions.checkCompatibility");
+	}
+	catch (e) { }
 	
 	var version = appinfo.version;
 	try
@@ -272,10 +273,10 @@ enableAll: function()
 	
   var ev = gExtensionsView;
   var count = ev.getRowCount();
+  var changed = false;
   for (var i=0; i<count; i++)
   {
     var item = ev.getItemAtIndex(i);
-    dump(item.id+"\n");
     if (!extensionAppEnabler.isCompatible(item.id))
     {
       if (!confirmed)
@@ -284,22 +285,42 @@ enableAll: function()
         if (!confirmed)
           return;
       }
-      extensionAppEnabler.makeCompatible(item.id,appinfo.ID,version);
+      changed = extensionAppEnabler.makeCompatible(item.id,appinfo.ID,appinfo.version)
+                || changed;
     }
   }
+  if (changed)
+  {
+	  var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+						                    .getService(Components.interfaces.nsIPrefBranch);
+    var checkCompatibility = true;
+    try
+    {
+      checkCompatibility = prefservice.getBoolPref("extensions.checkCompatibility");
+    }
+    catch (e) { }
+    prefservice.setBoolPref("extensions.checkCompatibility", !checkCompatibility);
+    prefservice.setBoolPref("extensions.checkCompatibility", checkCompatibility);
+  }
+ 	
  	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
 									.getService(Components.interfaces.nsIStringBundleService);
 	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
 	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                     .getService(Components.interfaces.nsIPromptService);
+  
   var text;
-  if (!confirmed)
+  if ((changed) && (!checkCompatibility))
   {
-    text=bundle.GetStringFromName("nightly.noincompatible.message");
+    text=bundle.formatStringFromName("nightly.updatedcompatible.message", [appinfo.name], 1);
+  }
+  else if (changed)
+  {
+    text=bundle.formatStringFromName("nightly.madecompatible.message", [appinfo.name], 1);
   }
   else
   {
-    text=bundle.GetStringFromName("nightly.madecompatible.message");
+    text=bundle.GetStringFromName("nightly.noincompatible.message");
   }
   promptService.alert(null,"Nightly Tester Tools",text);
 }

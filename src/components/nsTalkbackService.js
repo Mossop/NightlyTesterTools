@@ -377,6 +377,7 @@ QueryInterface: function(iid)
 var nsTalkbackService = {
 
 currentBuild: null,
+talkbackdir: null,
 
 _inited: false,
 loaded: false,
@@ -386,7 +387,6 @@ _databases: [],
 _loadTimer: null,
 _listeners: [],
 
-talkbackdir: null,
 talkbackdbdir: null,
 vendors: [],
 incidents: [],
@@ -449,15 +449,12 @@ notify: function(timer)
 
 run: function()
 {
-  dump("running...\n");
   if (this._dirs.length>0)
   {
-    dump("scanning dir...\n");
     this._scanDir(this._dirs.pop());
   }
   else if (this._databases.length>0)
   {
-    dump("loading database...\n");
     this._loadDatabase(this._databases.pop());
   }
   else
@@ -465,7 +462,6 @@ run: function()
     this.loaded = true;
     if (this._listeners.length == 0)
       return;
-    dump("notifying listener...\n");
     var listener = this._listeners.pop();
     listener.onDatabaseLoaded();
     if (this._listeners.length == 0)
