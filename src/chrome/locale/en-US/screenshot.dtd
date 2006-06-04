@@ -1,7 +1,7 @@
 <!ENTITY screenshot.window.title        "Screenshot Grabber">
 
 <!ENTITY screenshot.save.label          "Save As...">
-<!ENTITY screenshot.submit.label        "Submit to Imageshack...">
+<!ENTITY screenshot.submit.label        "Submit to ImageShack...">
 <!ENTITY screenshot.redraw.label        "Reset">
 <!ENTITY screenshot.zoom.label          "Zoom:">
 <!ENTITY screenshot.window.label        "Window:">
