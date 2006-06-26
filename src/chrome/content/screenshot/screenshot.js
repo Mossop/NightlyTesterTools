@@ -82,6 +82,18 @@ function init(event)
 	winpopup.addEventListener("popupshowing", buildWinPopup, false);
 	
 	bundle = document.getElementById("bundle");
+
+  try
+  {
+    var win = getTopWin();
+    var webnav = win.content.QueryInterface(Ci.nsIInterfaceRequestor)
+                            .getInterface(Ci.nsIWebNavigation);
+    if (webnav.loadURI)
+      document.getElementById("imgsubmit").hidden = false;
+  }
+  catch (e)
+  {
+  }
 }
 
 function getTopWin()
@@ -187,19 +199,22 @@ function buildWinPopup(event)
 	while (wins.hasMoreElements())
 	{
 		var win = wins.getNext().QueryInterface(Ci.nsIDOMWindow);
-		windows[pos] = win;
-		var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
-		if (win.document.title)
-			item.setAttribute("label", win.document.title);
-		else
-			item.setAttribute("label", win.document.location.href);
-		item.setAttribute("value", pos);
-		winpopup.appendChild(item);
-		
-		if (!event && win==shotWindow)
-			winlist.value=pos;
-			
-		pos++;
+		if (win != window)
+		{
+  		windows[pos] = win;
+  		var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
+  		if (win.document.title)
+  			item.setAttribute("label", win.document.title);
+  		else
+  			item.setAttribute("label", win.document.location.href);
+  		item.setAttribute("value", pos);
+  		winpopup.appendChild(item);
+  		
+  		if (!event && win==shotWindow)
+  			winlist.value=pos;
+  			
+  		pos++;
+    }
 	}
 }
 

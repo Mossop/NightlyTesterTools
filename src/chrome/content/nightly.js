@@ -74,21 +74,21 @@ preferences: null,
 
 showAlert: function(id,args)
 {
- 	var sbs = Cc["@mozilla.org/intl/stringbundle;1"]
-									    .getService(Ci.nsIStringBundleService);
+ 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
+									    .getService(Components.interfaces.nsIStringBundleService);
 	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
-	var promptService = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-                                .getService(Ci.nsIPromptService);
+	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                .getService(Components.interfaces.nsIPromptService);
   var text=bundle.formatStringFromName(id,args,args.length);
   promptService.alert(null,"Nightly Tester Tools",text);
 },
 
 getProfileRegistry: function()
 {
-	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
-										               .getService(Ci.nsIProperties);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
 
-	var dir = directoryService.get("DefProfRt",Ci.nsIFile);
+	var dir = directoryService.get("DefProfRt",Components.interfaces.nsIFile);
 	while (dir)
 	{
 		var file = dir.clone();
@@ -102,9 +102,9 @@ getProfileRegistry: function()
 
 getProfileName: function()
 {
-	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
-										               .getService(Ci.nsIProperties);
-	var profd = directoryService.get("ProfD",Ci.nsIFile);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
+	var profd = directoryService.get("ProfD",Components.interfaces.nsIFile);
 	
 	var name = profd.leafName;
 
@@ -112,13 +112,13 @@ getProfileName: function()
 	if (!reg)
 		return name;
 	
-	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
-	                       .createInstance(Ci.nsIFileInputStream);
+	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+	                       .createInstance(Components.interfaces.nsIFileInputStream);
 	stream.init(reg, 1, 0, 0);
-	stream.QueryInterface(Ci.nsILineInputStream);
+	stream.QueryInterface(Components.interfaces.nsILineInputStream);
 	
-	var dir = Cc["@mozilla.org/file/local;1"]
-	                    .createInstance(Ci.nsILocalFile);
+	var dir = Components.classes["@mozilla.org/file/local;1"]
+	                    .createInstance(Components.interfaces.nsILocalFile);
 	var current = "";
 	var relative = "d";
 	var line = {};
@@ -160,13 +160,13 @@ defineFlags: function()
 
 loadGfxToolkit: function()
 {
-	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
-										               .getService(Ci.nsIProperties);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
 
-	var datafile = directoryService.get("AChrom",Ci.nsIFile);
+	var datafile = directoryService.get("AChrom",Components.interfaces.nsIFile);
 	datafile.append("toolkit.jar");
-	var reader = Cc["@mozilla.org/libjar/zip-reader;1"]
-	                       .createInstance(Ci.nsIZipReader);
+	var reader = Components.classes["@mozilla.org/libjar/zip-reader;1"]
+	                       .createInstance(Components.interfaces.nsIZipReader);
 	if (reader.init)
 	{
   	reader.init(datafile);
@@ -175,8 +175,8 @@ loadGfxToolkit: function()
   else
     reader.open(datafile);
 	var stream = reader.getInputStream("content/global/buildconfig.html");
-	var sstream = Cc["@mozilla.org/scriptableinputstream;1"]
-	                        .createInstance(Ci.nsIScriptableInputStream);
+	var sstream = Components.classes["@mozilla.org/scriptableinputstream;1"]
+	                        .createInstance(Components.interfaces.nsIScriptableInputStream);
 	sstream.init(stream);
 	var content = "";
 	var text = sstream.read(1024);
@@ -197,17 +197,17 @@ loadGfxToolkit: function()
 
 loadBuildIDFromFile: function()
 {
-	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
-										     .createInstance(Ci.nsIFileInputStream);
-	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
-										               .getService(Ci.nsIProperties);
+	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+										     .createInstance(Components.interfaces.nsIFileInputStream);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
 
-	var datafile = directoryService.get("ProfD",Ci.nsIFile);
+	var datafile = directoryService.get("ProfD",Components.interfaces.nsIFile);
 	datafile.append("compatibility.ini");
 	if (datafile.exists())
 	{
-		stream.init(datafile,1,384,Ci.nsIFileInputStream.CLOSE_ON_EOF);
-		stream.QueryInterface(Ci.nsILineInputStream);
+		stream.init(datafile,1,384,Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
+		stream.QueryInterface(Components.interfaces.nsILineInputStream);
 	
 		var line = { value: null };
 		while (stream.readLine(line))
@@ -230,14 +230,14 @@ loadBuildIDFromFile: function()
 init: function()
 {	
   window.removeEventListener("load",nightly.init,false);
-	var prefservice = Cc['@mozilla.org/preferences-service;1']
-							                .getService(Ci.nsIPrefService);
-	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Ci.nsIPrefBranchInternal);
-	prefservice=prefservice.QueryInterface(Ci.nsIPrefBranch);
+	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+							                .getService(Components.interfaces.nsIPrefService);
+	nightly.preferences = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+	prefservice=prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
 	
-	if ((Cc['@mozilla.org/xre/app-info;1'])&&(Ci.nsIXULAppInfo))
+	if ((Components.classes['@mozilla.org/xre/app-info;1'])&&(Components.interfaces.nsIXULAppInfo))
 	{
-		var appinfo = Cc['@mozilla.org/xre/app-info;1'].getService(Ci.nsIXULAppInfo);
+		var appinfo = Components.classes['@mozilla.org/xre/app-info;1'].getService(Components.interfaces.nsIXULAppInfo);
 		nightly.variables.appid=appinfo.ID;
 		nightly.variables.vendor=appinfo.vendor;
 		nightly.variables.name=appinfo.name;
@@ -255,9 +255,9 @@ init: function()
 			nightly.variables.geckobuildid=appinfo.geckoBuildID;
 		}
 		
-		if (Ci.nsIXULRuntime)
+		if (Components.interfaces.nsIXULRuntime)
 		{
-  		appinfo=appinfo.QueryInterface(Ci.nsIXULRuntime);
+  		appinfo=appinfo.QueryInterface(Components.interfaces.nsIXULRuntime);
   		nightly.variables.os=appinfo.OS;
   		var bits=appinfo.XPCOMABI.split("-");
   		nightly.variables.processor=bits[0];
@@ -280,7 +280,7 @@ init: function()
 
   try {
     nightly.variables.locale = prefservice.getComplexValue("general.useragent.locale",
-                        Ci.nsIPrefLocalizedString).data;
+                        Components.interfaces.nsIPrefLocalizedString).data;
   }
   catch (e)
   {
@@ -342,8 +342,8 @@ prefChange: function(pref)
 	}
 	else if (pref=="disablecompatibility")
 	{
-		var prefservice = Cc['@mozilla.org/preferences-service;1']
-								                .getService(Ci.nsIPrefBranch);
+		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+								                .getService(Components.interfaces.nsIPrefBranch);
 
 		if (nightly.preferences.getBoolPref(pref))
 		{
@@ -439,8 +439,8 @@ generateText: function(template)
 
 copyText: function(text)
 {
-  var clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"].
-                                         getService(Ci.nsIClipboardHelper);
+  var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].
+                                         getService(Components.interfaces.nsIClipboardHelper);
   clipboard.copyString(text);
 },
 
@@ -508,10 +508,10 @@ insensitiveSort: function(a, b)
 
 getExtensionList: function()
 {
-	var em = Cc["@mozilla.org/extensions/manager;1"]
-										 .getService(Ci.nsIExtensionManager);
+	var em = Components.classes["@mozilla.org/extensions/manager;1"]
+										 .getService(Components.interfaces.nsIExtensionManager);
 										 
-	var items = em.getItemList(Ci.nsIUpdateItem.TYPE_EXTENSION, {});
+	var items = em.getItemList(Components.interfaces.nsIUpdateItem.TYPE_EXTENSION, {});
 
 	if (items.length==0)
 	{
@@ -520,7 +520,7 @@ getExtensionList: function()
 	}
 	else
 	{
-		var rdfS = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
+		var rdfS = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
 		var ds = em.datasource;
 		var disabledResource = rdfS.GetResource("http://www.mozilla.org/2004/em-rdf#disabled");
 		var isDisabledResource = rdfS.GetResource("http://www.mozilla.org/2004/em-rdf#isDisabled");
@@ -534,7 +534,7 @@ getExtensionList: function()
 			  disabled = ds.GetTarget(source, isDisabledResource, true);
 			try
 			{
-				disabled=disabled.QueryInterface(Ci.nsIRDFLiteral);
+				disabled=disabled.QueryInterface(Components.interfaces.nsIRDFLiteral);
 				if (disabled.Value=="true")
 				{
 					text[i]+=" [DISABLED]";
@@ -576,12 +576,12 @@ copyExtensions: function()
 
 installItem: function()
 {
- 	var sbs = Cc["@mozilla.org/intl/stringbundle;1"]
-									    .getService(Ci.nsIStringBundleService);
+ 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
+									    .getService(Components.interfaces.nsIStringBundleService);
 	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
 
-	var fp = Cc["@mozilla.org/filepicker;1"]
-	                   .createInstance(Ci.nsIFilePicker);
+	var fp = Components.classes["@mozilla.org/filepicker;1"]
+	                   .createInstance(Components.interfaces.nsIFilePicker);
 	fp.init(window, bundle.GetStringFromName("nightly.selectaddon.title"), fp.modeOpen);
 	fp.appendFilter(bundle.GetStringFromName("nightly.selectaddon.filteraddons"), "*.xpi;*.jar");
 	fp.appendFilter(bundle.GetStringFromName("nightly.selectaddon.filterextensions"), "*.xpi");
@@ -593,11 +593,11 @@ installItem: function()
 		var item=fp.file;
 		if (item.exists())
 		{
-			var itemURI = Cc["@mozilla.org/network/io-service;1"]
-		                          .getService(Ci.nsIIOService)
+			var itemURI = Components.classes["@mozilla.org/network/io-service;1"]
+		                          .getService(Components.interfaces.nsIIOService)
 		                          .newFileURI(item);
-			var nightlyService = Cc["@blueprintit.co.uk/nightlytools;1"]
-		                                 .getService(Ci.nsINightlyToolsService);
+			var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
+		                                 .getService(Components.interfaces.nsINightlyToolsService);
 		  nightlyService.queueInstall(item.path, itemURI);
 		  nightlyService.performInstalls();
 		}
@@ -606,31 +606,31 @@ installItem: function()
 
 openProfileDir: function()
 {
-	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
-										     .createInstance(Ci.nsIFileInputStream);
-	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
-										               .getService(Ci.nsIProperties);
+	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+										     .createInstance(Components.interfaces.nsIFileInputStream);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										               .getService(Components.interfaces.nsIProperties);
 
-	var profile = directoryService.get("ProfD",Ci.nsILocalFile);
+	var profile = directoryService.get("ProfD",Components.interfaces.nsILocalFile);
   try
   {
     profile.reveal();
   }
   catch (ex)
   {
-	  var uri = Cc["@mozilla.org/network/io-service;1"]
-	                      .getService(Ci.nsIIOService)
+	  var uri = Components.classes["@mozilla.org/network/io-service;1"]
+	                      .getService(Components.interfaces.nsIIOService)
 	                      .newFileURI(profile);
-	  var protocolSvc = Cc["@mozilla.org/uriloader/external-protocol-service;1"]
-	                              .getService(Ci.nsIExternalProtocolService);
+	  var protocolSvc = Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
+	                              .getService(Components.interfaces.nsIExternalProtocolService);
 	  protocolSvc.loadUrl(uri);
   }
 },
 
 launch: function(file, args)
 {
-	var process = Cc["@mozilla.org/process/util;1"]
-										.createInstance(Ci.nsIProcess);
+	var process = Components.classes["@mozilla.org/process/util;1"]
+										.createInstance(Components.interfaces.nsIProcess);
 	process.init(file);
 	if (args)
 	{
@@ -644,10 +644,10 @@ launch: function(file, args)
 
 alertType: function(type)
 {
-	var directoryService = Cc["@mozilla.org/file/directory_service;1"]
-										       .getService(Ci.nsIProperties);
+	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+										       .getService(Components.interfaces.nsIProperties);
 
-	var dir = directoryService.get(type,Ci.nsIFile);
+	var dir = directoryService.get(type,Components.interfaces.nsIFile);
 	window.alert(dir.path);
 },
 
