@@ -122,6 +122,7 @@ function nsTalkbackBuild(name, platform, dir)
 	this.platform=platform;
 	this.dbdir=dir;
 	this.incidents=[];
+	this.wrappedJSObject = this;
 }
 
 nsTalkbackBuild.prototype = {
@@ -459,6 +460,34 @@ run: function()
   }
   else
   {
+  	if (this.talkbackdir)
+  	{
+  		var ini = this.talkbackdir.clone();
+  		ini.append("master.ini");
+  		if (ini.exists())
+  		{
+  			var results = this._readINI(ini);
+  			if (results)
+  			{
+  				var build = this.getVendor(results.vendor);
+  				if (build)
+  				{
+  					build = build.getProduct(results.product);
+  					if (build)
+  					{
+  						build = build.getPlatform(results.platform);
+  						if (build)
+  						{
+  							build = build.getBuild(results.build);
+  							if (build)
+  								this.currentBuild = build;
+  						}
+  					}
+  				}
+  			}
+  		}
+  	}
+  	
     this.loaded = true;
     if (this._listeners.length == 0)
       return;
@@ -520,7 +549,7 @@ _loadDatabase: function(database)
 	}
 },
 
-_loadDetails: function(dir, ini)
+_readINI: function(ini)
 {
 	var stream = Cc["@mozilla.org/network/file-input-stream;1"]
 						 .createInstance(Ci.nsIFileInputStream);
@@ -534,61 +563,72 @@ _loadDetails: function(dir, ini)
   var build = null;
   
 	var fieldcount=0;
+	results = {};
 	var line = { value: null };
 	while ((stream.readLine(line))&&(fieldcount<4))
 	{
 		var bits = line.value.split(" = ");
 		if (bits[0]=="VendorID")
 		{
-			vendor=bits[1].substring(1,bits[1].length-1);
+			results.vendor=bits[1].substring(1,bits[1].length-1);
 			fieldcount++;
 		}
 		else if (bits[0]=="ProductID")
 		{
-			product=bits[1].substring(1,bits[1].length-1);
+			results.product=bits[1].substring(1,bits[1].length-1);
 			fieldcount++;
 		}
 		else if (bits[0]=="PlatformID")
 		{
-			platform=bits[1].substring(1,bits[1].length-1);
+			results.platform=bits[1].substring(1,bits[1].length-1);
 			fieldcount++;
 		}
 		else if (bits[0]=="BuildID")
 		{
-			build=bits[1].substring(1,bits[1].length-1);
+			results.build=bits[1].substring(1,bits[1].length-1);
 			fieldcount++;
 		}
 	}
 	stream.close();
 	
 	if (fieldcount==4)
+		return results;
+	else
+		return null;
+},
+
+_loadDetails: function(dir, ini)
+{
+	var results = this._readINI(ini);
+	
+	if (results)
 	{
 		var item = this;
-		var next = item.getVendor(vendor);
+		var next = item.getVendor(results.vendor);
 		if (!next)
 		{
-			next = new nsTalkbackVendor(vendor, item);
+			next = new nsTalkbackVendor(results.vendor, item);
 			item._addVendor(next);
 		}
 		item=next;
-		var next = item.getProduct(product);
+		var next = item.getProduct(results.product);
 		if (!next)
 		{
-			next = new nsTalkbackProduct(product, item);
+			next = new nsTalkbackProduct(results.product, item);
 			item._addProduct(next);
 		}
 		item=next;
-		var next = item.getPlatform(platform);
+		var next = item.getPlatform(results.platform);
 		if (!next)
 		{
-			next = new nsTalkbackPlatform(platform, item);
+			next = new nsTalkbackPlatform(results.platform, item);
 			item._addPlatform(next);
 		}
 		item=next;
-		var next = item.getBuild(build);
+		var next = item.getBuild(results.build);
 		if (!next)
 		{
-			next = new nsTalkbackBuild(build, item, dir);
+			next = new nsTalkbackBuild(results.build, item, dir);
 			item._addBuild(next);
 		}
 		return next;
@@ -758,6 +798,7 @@ getBuildRecentIncidents: function(build, date)
 	var result = Cc["@mozilla.org/array;1"]
 	               .createInstance(Ci.nsIMutableArray);
 	
+	build = build.wrappedJSObject;
 	for (var i=0; i<this.orderedIncidents.length; i++)
 	{
 		if (this.orderedIncidents[i].date<date)
@@ -780,6 +821,7 @@ getBuildPreviousIncidents: function(build, count)
 	if (count==0)
 		return result;
 	
+	build = build.wrappedJSObject;
 	for (var i=0; i<this.orderedIncidents.length; i++)
 	{
 		if (this.orderedIncidents[i].build!=build)

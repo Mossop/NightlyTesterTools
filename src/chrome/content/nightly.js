@@ -574,36 +574,6 @@ copyExtensions: function()
 		nightly.copyText(text);
 },
 
-installItem: function()
-{
- 	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
-									    .getService(Components.interfaces.nsIStringBundleService);
-	var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
-
-	var fp = Components.classes["@mozilla.org/filepicker;1"]
-	                   .createInstance(Components.interfaces.nsIFilePicker);
-	fp.init(window, bundle.GetStringFromName("nightly.selectaddon.title"), fp.modeOpen);
-	fp.appendFilter(bundle.GetStringFromName("nightly.selectaddon.filteraddons"), "*.xpi;*.jar");
-	fp.appendFilter(bundle.GetStringFromName("nightly.selectaddon.filterextensions"), "*.xpi");
-	fp.appendFilter(bundle.GetStringFromName("nightly.selectaddon.filterthemes"), "*.jar");
-	fp.appendFilter(bundle.GetStringFromName("nightly.selectaddon.filterall"), "*.*");
-		
-	if (fp.show() == fp.returnOK)
-	{
-		var item=fp.file;
-		if (item.exists())
-		{
-			var itemURI = Components.classes["@mozilla.org/network/io-service;1"]
-		                          .getService(Components.interfaces.nsIIOService)
-		                          .newFileURI(item);
-			var nightlyService = Components.classes["@blueprintit.co.uk/nightlytools;1"]
-		                                 .getService(Components.interfaces.nsINightlyToolsService);
-		  nightlyService.queueInstall(item.path, itemURI);
-		  nightlyService.performInstalls();
-		}
-	}
-},
-
 openProfileDir: function()
 {
 	var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]

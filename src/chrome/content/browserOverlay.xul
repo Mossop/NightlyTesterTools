@@ -101,8 +101,6 @@
         <menuseparator/>
         <menuitem label="&nightly.screenshot.full.label;" oncommand="nightly.getScreenshot();"/>
         <menuseparator/>
-        <menuitem label="&nightly.extensions.install.label;" oncommand="nightly.installItem();"/>
-        <menuseparator/>
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
         <menuseparator/>
         <menu label="&nightly.talkback.recentlist;" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
