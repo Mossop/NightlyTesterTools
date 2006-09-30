@@ -61,7 +61,7 @@
   
 	<toolbox>
 		<toolbar>
-			<toolbarbutton label="&screenshot.save.label;" oncommand="saveScreenshot(); window.close();"/>
+			<toolbarbutton label="&screenshot.save.label;" oncommand="saveScreenshot()"/>
 			<toolbarbutton label="&screenshot.copy.label;" oncommand="startCopyScreenshot()"/>
 			<toolbarbutton id="imgsubmit" hidden="true" label="&screenshot.submit.label;" oncommand="submitScreenshot(); window.close();"/>
 			<toolbaritem align="center">
@@ -85,6 +85,7 @@
 				</menulist>
 			</toolbaritem>
 			<toolbarbutton label="&screenshot.redraw.label;" oncommand="resetScreenshot();"/>
+			<toolbarbutton id="timerbtn" label="&screenshot.timer.label;" oncommand="timedCapture();"/>
 		</toolbar>
 	</toolbox>
 	

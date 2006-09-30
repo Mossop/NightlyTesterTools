@@ -45,6 +45,8 @@
 
 var extensionAppEnabler = {
 
+prefs: null,
+
 addInArray: function(menus,item,before,after)
 {
 	var temp = [];
@@ -75,28 +77,53 @@ addInArray: function(menus,item,before,after)
 
 init: function()
 {
-  if (typeof(gAddonContextMenus) != "undefined")
-  	gAddonContextMenus=extensionAppEnabler.addInArray(gAddonContextMenus,"menuitem_appenable","menuitem_enable",null);
-  else
-  {
-  	gExtensionContextMenus=extensionAppEnabler.addInArray(gExtensionContextMenus,"menuitem_appenable","menuseparator_2",null);
-  	gThemeContextMenus=extensionAppEnabler.addInArray(gThemeContextMenus,"menuitem_appenable",null,"menuitem_enable");
-  }
+  gAddonContextMenus=extensionAppEnabler.addInArray(gAddonContextMenus,"menuitem_appenable","menuitem_enable",null);
+},
+
+initView: function()
+{
+	var enableb = document.getElementById("enableallButton");
+	
+	if (!extensionAppEnabler.prefs.getBoolPref("showEnableAll"))
+		enableb.hidden = true;
+	else
+	{
+		var parent = document.getElementById("viewGroup");
+		var node = parent.firstChild;
+		while (node != null)
+		{
+			if (node.selected)
+			{
+				switch (node.id)
+				{
+					case "extensions-view":
+					case "themes-view":
+					case "locales-view":
+						enableb.hidden = false;
+						break;
+					default:
+						enableb.hidden = true;
+				}
+				return;
+			}
+			node = node.nextSibling;
+		}
+	}
+	enableb.hidden = true;
 },
 
 load: function()
 {
 	var prefservice = Components.classes['@mozilla.org/preferences-service;1']
 							.getService(Components.interfaces.nsIPrefService);
-	var prefs = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+	extensionAppEnabler.prefs = prefservice.getBranch("nightly.").QueryInterface(Components.interfaces.nsIPrefBranchInternal);
   
-	var enableb = document.getElementById("enableallButton");
-	enableb.setAttribute("hidden",!prefs.getBoolPref("showEnableAll"));
-	
 	var context = document.getElementById("addonContextMenu");
-	if (!context)
-	  context = document.getElementById("extensionContextMenu");
 	context.addEventListener("popupshowing",extensionAppEnabler.popupShowing,false);
+	
+	var radios = document.getElementById("viewGroup");
+	radios.addEventListener("select", extensionAppEnabler.initView, false);
+	extensionAppEnabler.initView();
 },
 
 isCompatible: function(id)

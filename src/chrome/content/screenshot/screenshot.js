@@ -49,6 +49,7 @@ const Cc = Components.classes;
 var shotWindow = window.opener;
 
 var zoom = 1;
+var timer = 0;
 
 var canvas = null;
 var bundle = null;
@@ -101,6 +102,34 @@ function getTopWin()
   var windowManager = Cc['@mozilla.org/appshell/window-mediator;1']
                         .getService(Ci.nsIWindowMediator);
   return windowManager.getMostRecentWindow("navigator:browser");
+}
+
+function timedCapture()
+{
+	if (timer==0)
+	{
+		timer = 5;
+		var button = document.getElementById("timerbtn");
+		button.checked = true;
+		window.setTimeout(captureTimer, 1000);
+	}
+}
+
+function captureTimer()
+{
+	var button = document.getElementById("timerbtn");
+	timer--;
+	if (timer==0)
+	{
+		resetScreenshot();
+		button.setAttribute("label", bundle.getFormattedString("screenshot.timer.label", [5]));
+		button.checked = false;
+	}
+	else
+	{
+		button.setAttribute("label", bundle.getFormattedString("screenshot.timer.label", [timer]));
+		window.setTimeout(captureTimer, 1000);
+	}
 }
 
 function submitScreenshot()

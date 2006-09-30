@@ -3,6 +3,7 @@ window {
 
 scrollbox {
 	overflow: auto;
+	border: 2px solid black;
 }
 
 #areaselect {
