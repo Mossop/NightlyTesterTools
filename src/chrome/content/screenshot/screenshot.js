@@ -48,14 +48,11 @@ const Cc = Components.classes;
 
 var shotWindow = window.opener;
 
-var zoom = 1;
 var timer = 0;
 
 var canvas = null;
 var bundle = null;
 
-var cropX = 0;
-var cropY = 0;
 var cropWidth = 0;
 var cropHeight = 0;
 
@@ -67,12 +64,8 @@ var windows = [];
 function init(event)
 {
 	canvas = document.getElementById("canvas");
-	resetScreenshot();
+	drawScreenshot();
 	canvas.parentNode.addEventListener("mousedown", startAreaSelect, true);
-	
-	var zoomlist = document.getElementById("zoomlist");
-	zoomlist.value = zoom;
-	zoomlist.addEventListener("ValueChange", zoomChange, false);
 	
 	buildWinPopup()
 		
@@ -121,7 +114,7 @@ function captureTimer()
 	timer--;
 	if (timer==0)
 	{
-		resetScreenshot();
+		drawScreenshot();
 		button.setAttribute("label", bundle.getFormattedString("screenshot.timer.label", [5]));
 		button.checked = false;
 	}
@@ -206,34 +199,15 @@ function saveScreenshot()
 	}
 }
 
-function startCopyScreenshot()
-{
-	var image = document.getElementById("clipboardImage");
-	var url = canvas.toDataURL();
-	image.height = cropHeight;
-	image.width = cropWidth;
-	image.src = url;
-	image.addEventListener("load", copyScreenshot, true);
-}
-
 function copyScreenshot()
 {
-	var image = document.getElementById("clipboardImage");
+	var image = document.getElementById("previewImage");
 	var docshell = window.QueryInterface(Ci.nsIInterfaceRequestor)
                        .getInterface(Ci.nsIWebNavigation)
                        .QueryInterface(Ci.nsIDocShell);
   var edit = docshell.contentViewer.QueryInterface(Ci.nsIContentViewerEdit);
   document.popupNode = image;
   edit.copyImage(Ci.nsIContentViewerEdit.COPY_IMAGE_DATA);
-}
-
-function resetScreenshot()
-{
-	cropX = 0;
-	cropY = 0;
-	cropWidth = shotWindow.innerWidth;
-	cropHeight = shotWindow.innerHeight;
-	drawScreenshot();
 }
 
 function buildWinPopup(event)
@@ -278,26 +252,13 @@ function winChange(event)
 	resetScreenshot();
 }
 
-function zoomChange(event)
-{
-	var menulist = document.getElementById("zoomlist");
-	zoom = menulist.value;
-
-	canvas.style.width = (cropWidth*zoom)+"px";
-	canvas.style.minWidth = (cropWidth*zoom)+"px";
-	canvas.style.maxWidth = (cropWidth*zoom)+"px";
-	canvas.style.height = (cropHeight*zoom)+"px";
-	canvas.style.minHeight = (cropHeight*zoom)+"px";
-	canvas.style.maxHeight = (cropHeight*zoom)+"px";
-}
-
 function startAreaSelect(event)
 {
 	var box = document.getElementById("areaselect");
 	box.hidden=false;
 
-	areax = Math.round(event.layerX/zoom)*zoom;
-	areay = Math.round(event.layerY/zoom)*zoom;
+	areax = Math.round(event.layerX);
+	areay = Math.round(event.layerY);
 	
 	box.parentNode.addEventListener("mousemove", updateAreaSelect, true);
 	box.parentNode.addEventListener("mouseup", completeAreaSelect, true);
@@ -308,8 +269,8 @@ function updateAreaSelect(event)
 {
 	var box = document.getElementById("areaselect");
 
-	var newx = Math.round(event.layerX/zoom)*zoom;
-	var newy = Math.round(event.layerY/zoom)*zoom;
+	var newx = Math.round(event.layerX);
+	var newy = Math.round(event.layerY);
 	
 	box.top = Math.min(newy, areay);
 	box.left = Math.min(newx, areax);
@@ -321,6 +282,10 @@ function updateAreaSelect(event)
 function completeAreaSelect(event)
 {
 	var box = document.getElementById("areaselect");
+
+	var cropX = box.boxObject.x;
+	var cropY = box.boxObject.y;
+
 	box.hidden=true;
 	box.top=0;
 	box.left=0;
@@ -329,31 +294,56 @@ function completeAreaSelect(event)
 	box.parentNode.removeEventListener("mousemove", updateAreaSelect, true);
 	box.parentNode.removeEventListener("mouseup", completeAreaSelect, true);
 
-	var newx = Math.round(event.layerX/zoom)*zoom;
-	var newy = Math.round(event.layerY/zoom)*zoom;
+	var newx = Math.round(event.layerX);
+	var newy = Math.round(event.layerY);
 
-	cropY += Math.min(newy, areay)/zoom;
-	cropX += Math.min(newx, areax)/zoom;
+	if ((newx == areax) || (newy == areay))
+		return;
+		
+	cropWidth = Math.abs(newx-areax);
+	cropHeight = Math.abs(newy-areay);
+
+	canvas.width = cropWidth;
+	canvas.height = cropHeight;
+
+	var ctx = canvas.getContext("2d");
 	
-	cropWidth = Math.abs(newx-areax)/zoom;
-	cropHeight = Math.abs(newy-areay)/zoom;
+	try
+	{
+		ctx.drawWindow(window, cropX, cropY, cropWidth, cropHeight, "rgba(255,255,255,255)");
+	}
+	catch (e)
+	{
+	}
 
-	drawScreenshot();
+	canvas.style.width = cropWidth+"px";
+	canvas.style.minWidth = cropWidth+"px";
+	canvas.style.maxWidth = cropWidth+"px";
+	canvas.style.height = cropHeight+"px";
+	canvas.style.minHeight = cropHeight+"px";
+	canvas.style.maxHeight = cropHeight+"px";
+
+	var url = canvas.toDataURL();
+	var image = document.getElementById("previewImage");
+	image.width = cropWidth+"px";
+	image.height = cropHeight+"px";
+	image.src = url;
 }
 
 function drawScreenshot()
 {
+	cropWidth = shotWindow.innerWidth;
+	cropHeight = shotWindow.innerHeight;
 	canvas.width = cropWidth;
 	canvas.height = cropHeight;
-	canvas.style.width = (cropWidth*zoom)+"px";
-	canvas.style.minWidth = (cropWidth*zoom)+"px";
-	canvas.style.maxWidth = (cropWidth*zoom)+"px";
-	canvas.style.height = (cropHeight*zoom)+"px";
-	canvas.style.minHeight = (cropHeight*zoom)+"px";
-	canvas.style.maxHeight = (cropHeight*zoom)+"px";
+	canvas.style.width = cropWidth+"px";
+	canvas.style.minWidth = cropWidth+"px";
+	canvas.style.maxWidth = cropWidth+"px";
+	canvas.style.height = cropHeight+"px";
+	canvas.style.minHeight = cropHeight+"px";
+	canvas.style.maxHeight = cropHeight+"px";
 
 	var ctx = canvas.getContext("2d");
-	ctx.translate(-cropX, -cropY);
 	
   var winbo = shotWindow.document.getBoxObjectFor(shotWindow.document.documentElement);
   var winx = winbo.screenX;
@@ -402,6 +392,11 @@ function drawScreenshot()
 		{
 		}
 	}
+	var url = canvas.toDataURL();
+	var image = document.getElementById("previewImage");
+	image.width = cropWidth+"px";
+	image.height = cropHeight+"px";
+	image.src = url;
 }
 
 window.addEventListener("load", init, false);

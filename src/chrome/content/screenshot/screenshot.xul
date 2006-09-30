@@ -62,21 +62,8 @@
 	<toolbox>
 		<toolbar>
 			<toolbarbutton label="&screenshot.save.label;" oncommand="saveScreenshot()"/>
-			<toolbarbutton label="&screenshot.copy.label;" oncommand="startCopyScreenshot()"/>
+			<toolbarbutton label="&screenshot.copy.label;" oncommand="copyScreenshot()"/>
 			<toolbarbutton id="imgsubmit" hidden="true" label="&screenshot.submit.label;" oncommand="submitScreenshot(); window.close();"/>
-			<toolbaritem align="center">
-				<label control="zoomlist" value="&screenshot.zoom.label;"/>
-				<menulist id="zoomlist">
-					<menupopup>
-						<menuitem label="25%" value="0.25"/>
-						<menuitem label="50%" value="0.5"/>
-						<menuitem label="75%" value="0.75"/>
-						<menuitem label="100%" value="1"/>
-						<menuitem label="150%" value="1.5"/>
-						<menuitem label="200%" value="2"/>
-					</menupopup>
-				</menulist>
-			</toolbaritem>
 			<toolbaritem align="center">
 				<label control="winlist" value="&screenshot.window.label;"/>
 				<menulist id="winlist">
@@ -84,15 +71,15 @@
 					</menupopup>
 				</menulist>
 			</toolbaritem>
-			<toolbarbutton label="&screenshot.redraw.label;" oncommand="resetScreenshot();"/>
+			<toolbarbutton label="&screenshot.redraw.label;" oncommand="drawScreenshot();"/>
 			<toolbarbutton id="timerbtn" label="&screenshot.timer.label;" oncommand="timedCapture();"/>
 		</toolbar>
 	</toolbox>
 	
 	<scrollbox flex="1">
 		<stack>
-			<xhtml:img id="clipboardImage"/>
-			<xhtml:canvas id="canvas"/>
+			<xhtml:canvas id="canvas" style="visibility: hidden"/>
+			<xhtml:img id="previewImage"/>
 			<box id="areaselect" hidden="true"/>
 		</stack>
 	</scrollbox>
