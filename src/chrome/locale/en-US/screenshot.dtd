@@ -2,6 +2,7 @@
 
 <!ENTITY screenshot.save.label          "Save As...">
 <!ENTITY screenshot.submit.label        "Submit to ImageShack...">
+<!ENTITY screenshot.copy.label        "Copy to Clipboard">
 <!ENTITY screenshot.redraw.label        "Reset">
 <!ENTITY screenshot.zoom.label          "Zoom:">
 <!ENTITY screenshot.window.label        "Window:">

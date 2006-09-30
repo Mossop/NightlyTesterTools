@@ -177,6 +177,27 @@ function saveScreenshot()
 	}
 }
 
+function startCopyScreenshot()
+{
+	var image = document.getElementById("clipboardImage");
+	var url = canvas.toDataURL();
+	image.height = cropHeight;
+	image.width = cropWidth;
+	image.src = url;
+	image.addEventListener("load", copyScreenshot, true);
+}
+
+function copyScreenshot()
+{
+	var image = document.getElementById("clipboardImage");
+	var docshell = window.QueryInterface(Ci.nsIInterfaceRequestor)
+                       .getInterface(Ci.nsIWebNavigation)
+                       .QueryInterface(Ci.nsIDocShell);
+  var edit = docshell.contentViewer.QueryInterface(Ci.nsIContentViewerEdit);
+  document.popupNode = image;
+  edit.copyImage(Ci.nsIContentViewerEdit.COPY_IMAGE_DATA);
+}
+
 function resetScreenshot()
 {
 	cropX = 0;

@@ -4,12 +4,9 @@
 <!ENTITY nightly.id.insert.label              "Insert Build ID into Textbox">
 <!ENTITY nightly.id.insert.tooltip            "Inserts the build identifier into the current text box.">
 
-<!ENTITY nightly.extensions.install.label     "Install Extension or Theme...">
-
 <!ENTITY nightly.extensions.copy.label        "Copy List of Extensions to Clipboard">
 <!ENTITY nightly.extensions.insert.label      "Insert List of Extensions into Textbox">
 <!ENTITY nightly.appenable.label              "Make compatible">
-<!ENTITY nightly.xpinstall.checkbox		        "Install using Nightly Tester Tools to override compatibility.">
 <!ENTITY nightly.enableall.label              "Make all compatible">
 
 <!ENTITY nightly.leakreporter.label           "Analyse Leak Log">

@@ -62,6 +62,7 @@
 	<toolbox>
 		<toolbar>
 			<toolbarbutton label="&screenshot.save.label;" oncommand="saveScreenshot(); window.close();"/>
+			<toolbarbutton label="&screenshot.copy.label;" oncommand="startCopyScreenshot()"/>
 			<toolbarbutton id="imgsubmit" hidden="true" label="&screenshot.submit.label;" oncommand="submitScreenshot(); window.close();"/>
 			<toolbaritem align="center">
 				<label control="zoomlist" value="&screenshot.zoom.label;"/>
@@ -89,6 +90,7 @@
 	
 	<scrollbox flex="1">
 		<stack>
+			<xhtml:img id="clipboardImage"/>
 			<xhtml:canvas id="canvas"/>
 			<box id="areaselect" hidden="true"/>
 		</stack>
