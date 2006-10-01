@@ -40,15 +40,6 @@
     <em:creator>Mossop</em:creator>
     <em:contributor>Peter van der Woude (original idea)</em:contributor>
     <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
-#ifdef ${extension.branch}
-    <em:contributor>Unghost (Russian localisation)</em:contributor>
-    <em:contributor>Vladimír (Czech localisation)</em:contributor>
-    <em:contributor>Luana - MatrixIsAllOver (Italian localisation)</em:contributor>
-    <em:contributor>Teo (Polish localisation)</em:contributor>
-    <em:contributor>SION (Japanese localisation)</em:contributor>
-    <em:contributor>Pedsann (Brazilian Portuguese localisation)</em:contributor>
-    <em:contributor>Hubo (Slovak localisation)</em:contributor>
-#endif
 
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>

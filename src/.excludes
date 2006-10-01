@@ -1,9 +1,0 @@
-#ifndef ${extension.branch}
-chrome/locale/cs-CZ/**
-chrome/locale/it-IT/**
-chrome/locale/ja/**
-chrome/locale/pl-PL/**
-chrome/locale/pt-BR/**
-chrome/locale/ru-RU/**
-chrome/locale/sk-SK/**
-#endif
