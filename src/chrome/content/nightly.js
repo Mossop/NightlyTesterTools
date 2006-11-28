@@ -150,7 +150,7 @@ getProfileName: function()
 defineFlags: function()
 {
 	var flags = "";
-	if (nightly.variables.toolkit && nightly.variables.toolkit.substr(0,6)=="cairo-")
+	if (Components.classes["@mozilla.org/gfx/region/nsThebes;1"])
 	{
 		flags+=" [cairo]";
 	}

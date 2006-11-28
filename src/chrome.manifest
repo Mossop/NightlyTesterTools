@@ -3,15 +3,6 @@ content			nightly-platform																		${extension.chromebase}/content/plat
 skin				nightly					classic/1.0													${extension.chromebase}/skin/
 
 locale			nightly					en-US																${extension.chromebase}/locale/en-US/
-#ifdef ${extension.branch}
-locale			nightly					cs-CZ																${extension.chromebase}/locale/cs-CZ/
-locale			nightly					it-IT																${extension.chromebase}/locale/it-IT/
-locale			nightly					ja  																${extension.chromebase}/locale/ja/
-locale			nightly					pl-PL																${extension.chromebase}/locale/pl-PL/
-locale			nightly					pt-BR																${extension.chromebase}/locale/pt-BR/
-locale			nightly					ru-RU																${extension.chromebase}/locale/ru-RU/
-locale			nightly					sk-SK  															${extension.chromebase}/locale/sk-SK/
-#endif
 
 # Firefox chrome
 overlay			chrome://browser/content/browser.xul								chrome://nightly/content/browserOverlay.xul	                    application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
