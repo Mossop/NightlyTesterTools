@@ -150,7 +150,7 @@ getProfileName: function()
 defineFlags: function()
 {
 	var flags = "";
-	if (Components.classes["@mozilla.org/gfx/region/nsThebes;1"])
+	if (nightly.variables.toolkit && nightly.variables.toolkit == "cairo")
 	{
 		flags+=" [cairo]";
 	}
@@ -160,39 +160,46 @@ defineFlags: function()
 
 loadGfxToolkit: function()
 {
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-										               .getService(Components.interfaces.nsIProperties);
-
-	var datafile = directoryService.get("AChrom",Components.interfaces.nsIFile);
-	datafile.append("toolkit.jar");
-	var reader = Components.classes["@mozilla.org/libjar/zip-reader;1"]
-	                       .createInstance(Components.interfaces.nsIZipReader);
-	if (reader.init)
+	if (Components.classes["@mozilla.org/gfx/region/nsThebes;1"])
 	{
-  	reader.init(datafile);
-  	reader.open();
-  }
-  else
-    reader.open(datafile);
-	var stream = reader.getInputStream("content/global/buildconfig.html");
-	var sstream = Components.classes["@mozilla.org/scriptableinputstream;1"]
-	                        .createInstance(Components.interfaces.nsIScriptableInputStream);
-	sstream.init(stream);
-	var content = "";
-	var text = sstream.read(1024);
-	while (text.length>0)
-	{
-		content+=text;
-		text = sstream.read(1024);
+		nightly.variables.toolkit = "cairo";
 	}
-	var result = content.match(/--enable-default-toolkit=(\S+)/);
-	if (result)
+	else
 	{
-		nightly.variables.toolkit = result[1];
+		var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
+											               .getService(Components.interfaces.nsIProperties);
+	
+		var datafile = directoryService.get("AChrom",Components.interfaces.nsIFile);
+		datafile.append("toolkit.jar");
+		var reader = Components.classes["@mozilla.org/libjar/zip-reader;1"]
+		                       .createInstance(Components.interfaces.nsIZipReader);
+		if (reader.init)
+		{
+	  	reader.init(datafile);
+	  	reader.open();
+	  }
+	  else
+	    reader.open(datafile);
+		var stream = reader.getInputStream("content/global/buildconfig.html");
+		var sstream = Components.classes["@mozilla.org/scriptableinputstream;1"]
+		                        .createInstance(Components.interfaces.nsIScriptableInputStream);
+		sstream.init(stream);
+		var content = "";
+		var text = sstream.read(1024);
+		while (text.length>0)
+		{
+			content+=text;
+			text = sstream.read(1024);
+		}
+		var result = content.match(/--enable-default-toolkit=(\S+)/);
+		if (result)
+		{
+			nightly.variables.toolkit = result[1];
+		}
+		sstream.close();
+		stream.close();
+		reader.close();
 	}
-	sstream.close();
-	stream.close();
-	reader.close();
 },
 
 loadBuildIDFromFile: function()
