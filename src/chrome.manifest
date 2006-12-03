@@ -30,4 +30,5 @@ overlay			chrome://mozapps/content/extensions/extensions.xul	chrome://nightly/co
 style 			chrome://browser/content/browser.xul 								chrome://nightly/skin/browser.css
 style 			chrome://messenger/content/messenger.xul 						chrome://nightly/skin/browser.css
 style 			chrome://navigator/content/navigator.xul 						chrome://nightly/skin/browser.css
+style 			chrome://calendar/content/calendar.xul 							chrome://nightly/skin/browser.css
 style 			chrome://global/content/customizeToolbar.xul 				chrome://nightly/skin/browser.css
