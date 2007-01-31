@@ -52,8 +52,8 @@
 
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>
-    <em:homepageURL>http://users.blueprintit.co.uk/~dave/web/firefox/${extension.name}</em:homepageURL>
-    <em:updateURL>http://users.blueprintit.co.uk/~dave/web/firefox/${extension.name}/update.rdf</em:updateURL>
+    <em:homepageURL>http://www.oxymoronical.com/web/firefox/${extension.name}</em:homepageURL>
+    <em:updateURL>http://www.oxymoronical.com/web/firefox/${extension.name}/update.rdf</em:updateURL>
     
   </Description>      
 </RDF>
