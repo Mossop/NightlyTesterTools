@@ -141,7 +141,7 @@ ZipFileHeader.prototype = {
 	writeDate: function(stream)
 	{
 		var time = this.date.getSeconds()/2 + (this.date.getMinutes() << 5) + (this.date.getHours() << 11);
-		var date = this.date.getDate() + ((this.date.getMonth+1) << 5) + ((this.date.getFullYear()-1980) << 9);
+		var date = this.date.getDate() + ((this.date.getMonth()+1) << 5) + ((this.date.getFullYear()-1980) << 9);
 		stream.write16(time);
 		stream.write16(date);
 	},
@@ -288,20 +288,23 @@ create: function(file)
 	this.comment = "";
 },
 
-addDirectoryEntry: function(path)
+addDirectoryEntry: function(path, modtime)
 {
 	if (!this.stream)
 		throw Components.results.NS_ERROR_NOT_INITIALIZED;
 	if (this.busy)
 		throw Components.results.NS_ERROR_FAILURE;
+	
+	if (path.substr(-1) != "/")
+		path += "/";
 		
-	var header = new ZipFileHeader(path, new Date(), 16, this.offset);
+	var header = new ZipFileHeader(path, new Date(modtime), 16, this.offset);
 	this.header.writeFileHeader(this.bstream);
 	this.offset += header.getFileHeaderLength();
 	this.headers.push(header);
 },
 
-addFileEntry: function(path)
+addFileEntry: function(path, modtime)
 {
 	if (!this.stream)
 		throw Components.results.NS_ERROR_NOT_INITIALIZED;
@@ -309,7 +312,7 @@ addFileEntry: function(path)
 		throw Components.results.NS_ERROR_FAILURE;
 		
 	this.busy = true;
-	var header = new ZipFileHeader(path, new Date(), 0, this.offset);
+	var header = new ZipFileHeader(path, new Date(modtime), 0, this.offset);
 	header.writeFileHeader(this.bstream);
 	return new ZipOutputStream(this, header, this.stream);
 },
