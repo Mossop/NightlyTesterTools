@@ -35,10 +35,10 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/src/components/nttMultipartFormData.js $
- * $LastChangedBy: dave $
- * $Date: 2006-05-01 14:58:48 +0100 (Mon, 01 May 2006) $
- * $Revision: 660 $
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Date$
+ * $Revision$
  *
  */
 
