@@ -226,16 +226,17 @@ write: function(buf, count)
 		this.crc = CRC_TABLE[(this.crc ^ buf.charCodeAt(n)) & 0xFF] ^ ((this.crc >> 8) & 0xFFFFFF);
 		
 	this.size += count;
+	return count;
 },
 
 writeFrom: function(stream, count)
 {
-	throw Components.errors.NS_ERROR_NOT_IMPLEMENTED;
+	throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
 },
 
 isNonBlocking: function()
 {
-	return false;
+	return this.stream.isNonBlocking();
 },
 
 flush: function()
@@ -245,11 +246,19 @@ flush: function()
 
 close: function()
 {
-	LOG("ZipOutputStream closing");
-	this.header.crc = this.crc ^ 0xffffffff;
-	this.header.csize = this.size;
-	this.header.usize = this.size;
-	this.writer.onFileEntryFinished(this.header);
+	try
+	{
+		LOG("ZipOutputStream closing");
+		this.header.crc = this.crc ^ 0xffffffff;
+		this.header.csize = this.size;
+		this.header.usize = this.size;
+		this.writer.onFileEntryFinished(this.header);
+	}
+	catch (e)
+	{
+		LOG(e);
+		throw e;
+	}
 },
 
 QueryInterface: function(iid)
@@ -321,8 +330,6 @@ addDirectoryEntry: function(path, modtime)
 		
 	var header = new ZipFileHeader(path, new Date(modtime), 16, this.offset);
 	header.writeFileHeader(this.bstream);
-	this.offset += header.getFileHeaderLength();
-	this.headers.push(header);
 	
 	this.onEntryFinished(header);
 },
@@ -392,15 +399,22 @@ beginProcessing: function(path, file)
 		this.processInputStream.init(file, -1, 0, 0);
 		var ostream = this.addFileEntry(path, file.lastModifiedTime);
 		
-		var pump = Cc["@mozilla.org/network/async-stream-copier;1"]
-		            .createInstance(Ci.nsIAsyncStreamCopier);
 		this.processOutputStream = Cc["@mozilla.org/network/buffered-output-stream;1"]
                                 .createInstance(Ci.nsIBufferedOutputStream);
 		this.processOutputStream.init(ostream, 0x8000);
 		
-		pump.init(this.processInputStream, this.processOutputStream, null, false, true, 0x8000);
+		// make a stream pump and a stream listener to read from the input stream for us
+		var pump = Cc["@mozilla.org/network/input-stream-pump;1"]
+		            .createInstance(Ci.nsIInputStreamPump);
+		pump.init(this.processInputStream, -1, -1, 0, 0, true);
 		
-		pump.asyncCopy(this, null);
+		// make a simple stream listener to do the writing to output stream for us
+		var listener = Cc["@mozilla.org/network/simple-stream-listener;1"]
+		                .createInstance(Ci.nsISimpleStreamListener);
+		listener.init(this.processOutputStream, this);
+		
+		// start the copying
+		pump.asyncRead(listener, null);
 	}
 },
 
