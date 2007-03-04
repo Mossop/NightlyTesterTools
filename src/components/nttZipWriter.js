@@ -45,6 +45,13 @@
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 
+function LOG(string)
+{
+	var gConsole = Cc["@mozilla.org/consoleservice;1"]
+                  .getService(Ci.nsIConsoleService);
+	gConsole.logStringMessage(string);
+}
+
 var CRC_TABLE = [
 0x00000000,0x77073096,0xEE0E612C,0x990951BA,0x076DC419,0x706AF48F,0xE963A535,0x9E6495A3,
 0x0EDB8832,0x79DCB8A4,0xE0D5E91E,0x97D2D988,0x09B64C2B,0x7EB17CBD,0xE7B82D07,0x90BF1D91,
@@ -216,11 +223,7 @@ write: function(buf, count)
 	count = this.stream.write(buf, count);
 
 	for (var n = 0; n < count; n++)
-	{
-		dump(this.crc+"\n");
 		this.crc = CRC_TABLE[(this.crc ^ buf.charCodeAt(n)) & 0xFF] ^ ((this.crc >> 8) & 0xFFFFFF);
-	}
-	dump(this.crc+"\n");
 		
 	this.size += count;
 },
@@ -242,10 +245,11 @@ flush: function()
 
 close: function()
 {
+	LOG("ZipOutputStream closing");
 	this.header.crc = this.crc ^ 0xffffffff;
 	this.header.csize = this.size;
 	this.header.usize = this.size;
-	this.writer.onStreamClosed(this.header);
+	this.writer.onFileEntryFinished(this.header);
 },
 
 QueryInterface: function(iid)
@@ -276,8 +280,10 @@ comment: null,
 
 busy: null,
 queue: null,
+processing: null,
 processOutputStream: null,
 processInputStream: null,
+processObserver: null,
 
 isBusy: function()
 {
@@ -296,6 +302,7 @@ create: function(file)
 	this.bstream = new InverseBinaryOutputStream(this.stream);
 	this.headers = [];
 	this.busy = false;
+	this.processing = false;
 	this.queue = [];
 	this.offset = 0;
 	this.comment = "";
@@ -308,13 +315,16 @@ addDirectoryEntry: function(path, modtime)
 	if (this.busy)
 		throw Components.results.NS_ERROR_FAILURE;
 	
+	this.busy = true;
 	if (path.substr(-1) != "/")
 		path += "/";
 		
 	var header = new ZipFileHeader(path, new Date(modtime), 16, this.offset);
-	this.header.writeFileHeader(this.bstream);
+	header.writeFileHeader(this.bstream);
 	this.offset += header.getFileHeaderLength();
 	this.headers.push(header);
+	
+	this.onEntryFinished(header);
 },
 
 addFileEntry: function(path, modtime)
@@ -330,31 +340,50 @@ addFileEntry: function(path, modtime)
 	return new ZipOutputStream(this, header, this.stream);
 },
 
-onStreamClosed: function(header)
+onFileEntryFinished: function(header)
 {
 	this.stream.flush();
 	this.stream.seek(Ci.nsISeekableStream.NS_SEEK_CUR, -(header.csize + header.getFileHeaderLength()));
 	header.writeFileHeader(this.bstream);
 	this.stream.flush();
 	this.stream.seek(Ci.nsISeekableStream.NS_SEEK_CUR, header.csize);
-	this.offset += header.csize + header.getFileHeaderLength();
-	this.headers.push(header);
-	if (this.queue.length>0)
-	{
-		var next = this.queue.shift();
-		this.beginProcessing(next.path, next.file, next.observer);
-	}
-	else
-		this.busy = false;
+	this.onEntryFinished(header);
 },
 
-beginProcessing: function(path, file, observer)
+onEntryFinished: function(header)
 {
+	this.offset += header.csize + header.getFileHeaderLength();
+	this.headers.push(header);
+	this.busy = false;
+	
+	if (this.processing)
+	{
+		if (this.queue.length == 0)
+		{
+			if (this.processObserver)
+				this.processObserver.onStopRequest(null, this, Components.results.NS_OK);
+			this.processing = false;
+			this.processObserver = null;
+		}
+		else
+		{
+			var next = this.queue.shift();
+			this.beginProcessing(next.path, next.file);
+		}
+	}
+	else if (this.processObserver)
+	{
+		this.processObserver.onStopRequest(null, this, Components.results.NS_OK);
+		this.processObserver = null;
+	}
+},
+
+beginProcessing: function(path, file)
+{
+	LOG("Processing "+path+" from "+file.path);
 	if (file.isDirectory())
 	{
-		observer.onStartRequest(null, this);
 		this.addDirectoryEntry(path, file.lastModifiedTime);
-		observer.onStopRequest(null, this, Components.results.NS_OK);
 	}
 	else
 	{
@@ -371,7 +400,7 @@ beginProcessing: function(path, file, observer)
 		
 		pump.init(this.processInputStream, this.processOutputStream, null, false, true, 0x8000);
 		
-		pump.asyncCopy(this, observer);
+		pump.asyncCopy(this, null);
 	}
 },
 
@@ -379,11 +408,38 @@ addFile: function(path, file, observer)
 {
 	if (!this.stream)
 		throw Components.results.NS_ERROR_NOT_INITIALIZED;
-	
 	if (this.busy)
-		this.queue.push({ path: path, file: file, observer: observer});
-	else
-		this.beginProcessing(path, file, observer);
+		throw Components.results.NS_ERROR_FAILURE;
+	
+	if (observer)
+		observer.onStartRequest(null, this);
+	this.processObserver = observer;
+	this.beginProcessing(path, file);
+},
+
+queueFile: function(path, file)
+{
+	this.queue.push({ path: path, file: file });
+},
+
+processQueue: function(observer)
+{
+	if (!this.stream)
+		throw Components.results.NS_ERROR_NOT_INITIALIZED;
+	if (this.busy)
+		throw Components.results.NS_ERROR_FAILURE;
+	
+	if (observer)
+		observer.onStartRequest(null, this);
+	if (this.queue.length > 0)
+	{
+		this.processObserver = observer;
+		this.processing = true;
+		var next = this.queue.shift();
+		this.beginProcessing(next.path, next.file);
+	}
+	else if (observer)
+		observer.onStopRequest(null, this, Components.results.NS_OK);
 },
 
 setComment: function(comment)
@@ -397,7 +453,8 @@ close: function()
 		throw Components.results.NS_ERROR_NOT_INITIALIZED;
 	if (this.busy)
 		throw Components.results.NS_ERROR_FAILURE;
-		
+	
+	LOG("ZipWriter closing");
 	var size = 0;
 	for (var i = 0; i < this.headers.length; i++)
 	{
@@ -425,17 +482,12 @@ close: function()
 
 onStartRequest: function(aRequest, aContext)
 {
-	if (aContext && aContext instanceof Ci.nsIRequestObserver)
-		aContext.onStartRequest(null, this);
 },
 
 onStopRequest: function(aRequest, aContext, aStatusCode)
 {
 	this.processInputStream.close();
 	this.processOutputStream.close();
-
-	if (aContext && aContext instanceof Ci.nsIRequestObserver)
-		aContext.onStopRequest(null, this, aStatusCode);
 },
 
 QueryInterface: function(iid)

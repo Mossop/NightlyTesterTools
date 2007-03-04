@@ -60,6 +60,10 @@ interface nttIZipWriter : nsISupports
 	
 	void addFile(in AString path, in nsIFile file, in nsIRequestObserver obs);
 	
+	void queueFile(in AString path, in nsIFile file);
+	
+	void processQueue(in nsIRequestObserver obs);
+	
 	void setComment(in AString comment);
 	
 	void close();
