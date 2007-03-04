@@ -271,12 +271,24 @@ ZipWriter.prototype = {
 bstream: null,
 stream: null,
 headers: null,
-busy: null,
 offset: null,
 comment: null,
 
+busy: null,
+queue: null,
+processOutputStream: null,
+processInputStream: null,
+
+isBusy: function()
+{
+	return this.busy;
+},
+
 create: function(file)
 {
+	if (this.stream)
+		throw Components.results.NS_ERROR_ALREADY_INITIALIZED;
+
 	this.stream = Cc["@mozilla.org/network/file-output-stream;1"]
 	               .createInstance(Ci.nsIFileOutputStream);
 	this.stream.init(file, 0x02 | 0x08 | 0x20, 0664, 0);
@@ -284,6 +296,7 @@ create: function(file)
 	this.bstream = new InverseBinaryOutputStream(this.stream);
 	this.headers = [];
 	this.busy = false;
+	this.queue = [];
 	this.offset = 0;
 	this.comment = "";
 },
@@ -326,13 +339,51 @@ onStreamClosed: function(header)
 	this.stream.seek(Ci.nsISeekableStream.NS_SEEK_CUR, header.csize);
 	this.offset += header.csize + header.getFileHeaderLength();
 	this.headers.push(header);
-	this.busy = false;
+	if (this.queue.length>0)
+	{
+		var next = this.queue.shift();
+		this.beginProcessing(next.path, next.file, next.observer);
+	}
+	else
+		this.busy = false;
+},
+
+beginProcessing: function(path, file, observer)
+{
+	if (file.isDirectory())
+	{
+		observer.onStartRequest(null, this);
+		this.addDirectoryEntry(path, file.lastModifiedTime);
+		observer.onStopRequest(null, this, Components.results.NS_OK);
+	}
+	else
+	{
+		this.processInputStream = Cc["@mozilla.org/network/file-input-stream;1"]
+                               .createInstance(Ci.nsIFileInputStream);
+		this.processInputStream.init(file, -1, 0, 0);
+		var ostream = this.addFileEntry(path, file.lastModifiedTime);
+		
+		var pump = Cc["@mozilla.org/network/async-stream-copier;1"]
+		            .createInstance(Ci.nsIAsyncStreamCopier);
+		this.processOutputStream = Cc["@mozilla.org/network/buffered-output-stream;1"]
+                                .createInstance(Ci.nsIBufferedOutputStream);
+		this.processOutputStream.init(ostream, 0x8000);
+		
+		pump.init(this.processInputStream, this.processOutputStream, null, false, true, 0x8000);
+		
+		pump.asyncCopy(this, observer);
+	}
 },
 
 addFile: function(path, file, observer)
 {
 	if (!this.stream)
 		throw Components.results.NS_ERROR_NOT_INITIALIZED;
+	
+	if (this.busy)
+		this.queue.push({ path: path, file: file, observer: observer});
+	else
+		this.beginProcessing(path, file, observer);
 },
 
 setComment: function(comment)
@@ -370,9 +421,27 @@ close: function()
 	this.bstream = null;
 },
 
+// nsIRequestObserver implementation
+
+onStartRequest: function(aRequest, aContext)
+{
+	if (aContext && aContext instanceof Ci.nsIRequestObserver)
+		aContext.onStartRequest(null, this);
+},
+
+onStopRequest: function(aRequest, aContext, aStatusCode)
+{
+	this.processInputStream.close();
+	this.processOutputStream.close();
+
+	if (aContext && aContext instanceof Ci.nsIRequestObserver)
+		aContext.onStopRequest(null, this, aStatusCode);
+},
+
 QueryInterface: function(iid)
 {
 	if (iid.equals(Ci.nttIZipWriter)
+		|| iid.equals(Ci.nsIRequestObserver)
 		|| iid.equals(Ci.nsISupports))
 	{
 		return this;

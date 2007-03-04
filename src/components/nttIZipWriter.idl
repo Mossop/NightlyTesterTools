@@ -50,6 +50,8 @@
 [scriptable, uuid(98e40e77-2a94-46cc-bac0-deab758066be)]
 interface nttIZipWriter : nsISupports
 {
+	boolean isBusy();
+	
 	void create(in nsIFile file);
 	
 	void addDirectoryEntry(in AString path, in PRInt64 modtime);
