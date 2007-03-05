@@ -35,10 +35,10 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/FindBar/trunk/components/src/fbTextExtractor.cpp $
- * $LastChangedBy: dave $
- * $Date: 2006-10-28 23:31:36 +0100 (Sat, 28 Oct 2006) $
- * $Revision: 858 $
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Date$
+ * $Revision$
  *
  */
 

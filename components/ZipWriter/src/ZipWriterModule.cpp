@@ -35,10 +35,10 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/FindBar/trunk/components/src/FindBarModule.cpp $
- * $LastChangedBy: dave $
- * $Date: 2006-10-27 00:28:51 +0100 (Fri, 27 Oct 2006) $
- * $Revision: 852 $
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Date$
+ * $Revision$
  *
  */
 
