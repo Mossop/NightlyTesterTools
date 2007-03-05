@@ -47,14 +47,14 @@
 
 NS_IMPL_THREADSAFE_ISUPPORTS1(nttZipOutputStream, nsIOutputStream)
 
-nsresult nttZipOutputStream::Init(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader)
+nttZipOutputStream::nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader)
 {
 		mWriter = aWriter;
 		mStream = aStream;
 		mHeader = aHeader;
 		mSize = 0;
 		mCRC = 0xffffffff;
-		return NS_OK;
+		mClosed = false;
 }
 
 /* void close (); */
@@ -63,18 +63,25 @@ NS_IMETHODIMP nttZipOutputStream::Close()
 		mHeader.mCRC = mCRC ^ 0xffffffff;
 		mHeader.mCSize = mSize;
 		mHeader.mUSize = mSize;
+		mClosed = true;
 		return mWriter->OnFileEntryComplete(mHeader);
 }
 
 /* void flush (); */
 NS_IMETHODIMP nttZipOutputStream::Flush()
 {
+		if (mClosed)
+			return NS_ERROR_FAILURE;
+			
     return mStream->Flush();
 }
 
 /* unsigned long write (in string aBuf, in unsigned long aCount); */
 NS_IMETHODIMP nttZipOutputStream::Write(const char *aBuf, PRUint32 aCount, PRUint32 *_retval)
 {
+		if (mClosed)
+			return NS_ERROR_FAILURE;
+			
 		nsresult rv;
 		
 		rv = mStream->Write(aBuf, aCount, _retval);
@@ -103,5 +110,8 @@ NS_IMETHODIMP nttZipOutputStream::WriteSegments(nsReadSegmentFun aReader, void *
 /* boolean isNonBlocking (); */
 NS_IMETHODIMP nttZipOutputStream::IsNonBlocking(PRBool *_retval)
 {
+		if (mClosed)
+			return NS_ERROR_FAILURE;
+			
     return mStream->IsNonBlocking(_retval);
 }

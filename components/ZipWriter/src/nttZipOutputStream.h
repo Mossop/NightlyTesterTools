@@ -54,11 +54,7 @@ public:
 		NS_DECL_ISUPPORTS
 		NS_DECL_NSIOUTPUTSTREAM
 
-		nttZipOutputStream()
-		{
-		}
-		
-		nsresult Init(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader);
+		nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader);
 
 private:
 
@@ -67,10 +63,12 @@ private:
 		nttZipHeader mHeader;
 		PRUint32 mCRC;
 		PRUint32 mSize;
+		PRBool mClosed;
 		
 		~nttZipOutputStream()
 		{
-				Close();
+				if (!mClosed)
+						Close();
 		}
 };
 

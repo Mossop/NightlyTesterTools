@@ -53,12 +53,12 @@ NS_IMPL_ISUPPORTS1(nttZipWriter, nttIZipWriter)
 
 nttZipWriter::nttZipWriter()
 {
-  /* member initializers and constructor code */
 }
 
 nttZipWriter::~nttZipWriter()
 {
-  /* destructor code */
+  	if (mStream && !mBusy)
+  			Close();
 }
 
 /* boolean isBusy (); */
@@ -128,9 +128,8 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime
 		rv = header.WriteFileHeader(mBStream);
 		if (NS_FAILED(rv)) return rv;
 		
-		nttZipOutputStream *stream = new nttZipOutputStream();
+		nttZipOutputStream *stream = new nttZipOutputStream(this, mStream, header);
 		NS_ADDREF(stream);
-		stream->Init(this, mStream, header);
 		*_retval = stream;
 		
 		return NS_OK;
@@ -232,7 +231,7 @@ nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
 		mStream->Flush();
 		nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
 		
-		seekable->Seek(nsISeekableStream::NS_SEEK_CUR, -(header.mCSize + header.GetFileHeaderLength()));
+		seekable->Seek(nsISeekableStream::NS_SEEK_SET, mOffset);
 		header.WriteFileHeader(mBStream);
 		mStream->Flush();
 		seekable->Seek(nsISeekableStream::NS_SEEK_CUR, header.mCSize);
