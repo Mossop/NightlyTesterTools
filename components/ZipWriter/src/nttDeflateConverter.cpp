@@ -44,6 +44,7 @@
  */
 
 #include "nttDeflateConverter.h"
+#include "nsIInputStreamPump.h"
 #include "nsComponentManagerUtils.h"
 #include "nspr.h"
 
@@ -56,26 +57,16 @@ nsresult gZlibInit(z_stream *zs)
 		return NS_OK;
 }
 
-/* nsIInputStream convert (in nsIInputStream aFromStream, in string aFromType, in string aToType, in nsISupports aCtxt); */
-NS_IMETHODIMP nttDeflateConverter::Convert(nsIInputStream *aFromStream, const char *aFromType, const char *aToType, nsISupports *aCtxt, nsIInputStream **_retval)
+nsresult nttDeflateConverter::Init()
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-/* void asyncConvertData (in string aFromType, in string aToType, in nsIStreamListener aListener, in nsISupports aCtxt); */
-NS_IMETHODIMP nttDeflateConverter::AsyncConvertData(const char *aFromType, const char *aToType, nsIStreamListener *aListener, nsISupports *aCtxt)
-{
-		nsresult rv;
 		int zerr;
 		
 		mOffset = 0;
-    mListener = aListener;
     mPipe = do_CreateInstance("@mozilla.org/pipe;1");
 		mDeflate = (DeflateStruct*) PR_Malloc(sizeof(DeflateStruct));
 		NS_ENSURE_TRUE(mDeflate, NS_ERROR_OUT_OF_MEMORY);
 
-		rv = gZlibInit(&(mDeflate->mZs));
-		NS_ENSURE_SUCCESS(rv, NS_ERROR_OUT_OF_MEMORY);
+		gZlibInit(&(mDeflate->mZs));
 		zerr = deflateInit2(&mDeflate->mZs,
 				                -1,
 				                Z_DEFLATED,
@@ -86,7 +77,34 @@ NS_IMETHODIMP nttDeflateConverter::AsyncConvertData(const char *aFromType, const
 
 		mDeflate->mZs.next_out = mDeflate->mWriteBuf;
 		mDeflate->mZs.avail_out = ZIP_BUFLEN;
-    return NS_OK;
+		
+		return NS_OK;
+}
+
+/* nsIInputStream convert (in nsIInputStream aFromStream, in string aFromType, in string aToType, in nsISupports aCtxt); */
+NS_IMETHODIMP nttDeflateConverter::Convert(nsIInputStream *aFromStream, const char *aFromType, const char *aToType, nsISupports *aCtxt, nsIInputStream **_retval)
+{
+		nsresult rv;
+		
+		nsCOMPtr<nsIInputStreamPump> pump = do_CreateInstance("@mozilla.org/network/input-stream-pump;1");
+		
+		rv = Init();
+		if (NS_FAILED(rv)) return rv;
+		
+		nsCOMPtr<nsIAsyncInputStream> in;
+		mPipe->GetInputStream(getter_AddRefs(in));
+		*_retval = in;
+		
+		rv = pump->Init(aFromStream, -1, -1, 0, 0, PR_FALSE);
+		if (NS_FAILED(rv)) return rv;
+    return pump->AsyncRead(this, aCtxt);
+}
+
+/* void asyncConvertData (in string aFromType, in string aToType, in nsIStreamListener aListener, in nsISupports aCtxt); */
+NS_IMETHODIMP nttDeflateConverter::AsyncConvertData(const char *aFromType, const char *aToType, nsIStreamListener *aListener, nsISupports *aCtxt)
+{
+    mListener = aListener;
+    return Init();
 }
 
 /* void onDataAvailable (in nsIRequest aRequest, in nsISupports aContext, in nsIInputStream aInputStream, in unsigned long aOffset, in unsigned long aCount); */
@@ -128,7 +146,8 @@ NS_IMETHODIMP nttDeflateConverter::OnDataAvailable(nsIRequest *aRequest, nsISupp
 /* void onStartRequest (in nsIRequest aRequest, in nsISupports aContext); */
 NS_IMETHODIMP nttDeflateConverter::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 {
-    return mListener->OnStartRequest(aRequest, aContext);
+		if (mListener)
+		    return mListener->OnStartRequest(aRequest, aContext);
 }
 
 /* void onStopRequest (in nsIRequest aRequest, in nsISupports aContext, in nsresult aStatusCode); */
@@ -148,7 +167,10 @@ NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISuppor
 
 		PR_FREEIF(mDeflate);
 
-    return mListener->OnStopRequest(aRequest, aContext, aStatusCode);
+		if (mListener)
+	    	return mListener->OnStopRequest(aRequest, aContext, aStatusCode);
+	  
+	  return NS_OK;
 }
 
 nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupports *aContext)
@@ -172,7 +194,8 @@ nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupport
 		mDeflate->mZs.next_out = mDeflate->mWriteBuf;
 		mDeflate->mZs.avail_out = ZIP_BUFLEN;
 		
-		rv = mListener->OnDataAvailable(aRequest, aContext, in, mOffset, bytesWritten);
+		if (mListener)
+				rv = mListener->OnDataAvailable(aRequest, aContext, in, mOffset, bytesWritten);
 		mOffset += bytesWritten;
 		return rv;
 }

@@ -86,6 +86,7 @@ private:
 		};
 		struct DeflateStruct* mDeflate;
 		
+		nsresult Init();
 		nsresult PushAvailableData(nsIRequest *aRequest, nsISupports *aContext);
 };
 
