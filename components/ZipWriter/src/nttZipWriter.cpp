@@ -48,7 +48,6 @@
 #include "nsIInputStreamPump.h"
 #include "nsISimpleStreamListener.h"
 #include "nsComponentManagerUtils.h"
-#include "stdio.h"
 
 NS_IMPL_ISUPPORTS2(nttZipWriter, nttIZipWriter, nsIRequestObserver)
 
@@ -104,8 +103,6 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
 		if (mBusy)
 				return NS_ERROR_FAILURE;
 		
-		printf("Adding directory entry %s\n", ToNewUTF8String(path));
-		
 		nsresult rv;
 		mBusy = PR_TRUE;
 			
@@ -123,8 +120,6 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime
 				return NS_ERROR_NOT_INITIALIZED;
 		if (mBusy)
 				return NS_ERROR_FAILURE;
-		
-		printf("Adding file entry %s\n", ToNewUTF8String(path));
 		
 		nsresult rv;
 		mBusy = PR_TRUE;
@@ -206,7 +201,6 @@ NS_IMETHODIMP nttZipWriter::Close()
 		if (mBusy)
 				return NS_ERROR_FAILURE;
 		
-		printf("ZipWriter close\n");
 		PRUint32 size = 0;
 		for (PRUint32 i = 0; i < mHeaders.Length(); i++)
 		{
@@ -235,13 +229,17 @@ NS_IMETHODIMP nttZipWriter::Close()
 /* void onStartRequest (in nsIRequest aRequest, in nsISupports aContext); */
 NS_IMETHODIMP nttZipWriter::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 {
+		return NS_OK;
 }
 
 /* void onStopRequest (in nsIRequest aRequest, in nsISupports aContext, in nsresult aStatusCode); */
 NS_IMETHODIMP nttZipWriter::OnStopRequest(nsIRequest *aRequest, nsISupports *aContext, nsresult aStatusCode)
 {
 		mProcessInputStream->Close();
+		mProcessInputStream = nsnull;
 		mProcessOutputStream->Close();
+		mProcessOutputStream = nsnull;
+		return NS_OK;
 }
 
 nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
@@ -264,7 +262,6 @@ nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
 
 nsresult nttZipWriter::OnEntryComplete(nttZipHeader header)
 {
-		printf("Entry complete\n");
 		mOffset += header.mCSize + header.GetFileHeaderLength();
 		mHeaders.AppendElement(header);
 		mBusy = PR_FALSE;
