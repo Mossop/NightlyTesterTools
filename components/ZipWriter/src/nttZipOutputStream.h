@@ -63,11 +63,10 @@ private:
 		nttZipHeader mHeader;
 		PRUint32 mCRC;
 		PRUint32 mSize;
-		PRBool mClosed;
 		
 		~nttZipOutputStream()
 		{
-				if (!mClosed)
+				if (mStream)
 						Close();
 		}
 };
