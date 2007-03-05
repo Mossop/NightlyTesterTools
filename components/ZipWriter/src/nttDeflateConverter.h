@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *      Lan Qiang <jameslan@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -42,27 +43,50 @@
  *
  */
 
-#include "nsIGenericFactory.h"
-#include "nttDeflateConverter.h"
-#include "nttZipWriter.h"
+#ifndef _nttDeflateConverter_h_
+#define _nttDeflateConverter_h_
 
-NS_GENERIC_FACTORY_CONSTRUCTOR(nttDeflateConverter)
-NS_GENERIC_FACTORY_CONSTRUCTOR(nttZipWriter)
+#include "nsIStreamConverter.h"
+#include "nsCOMPtr.h"
+#include "nsIPipe.h"
+#include "zlib.h"
 
-static nsModuleComponentInfo components[] =
+#define DEFLATECONVERTER_CONTRACTID "@mozilla.org/streamconv;1?from=uncompressed&to=deflate"
+#define DEFLATECONVERTER_CLASSNAME "Deflate converter"
+#define DEFLATECONVERTER_CID { 0x0ed5d497, 0xf13d, 0x4382, { 0x82, 0x05, 0x3e, 0x32, 0xb9, 0xca, 0x3a, 0x1c } }
+
+#define NBUCKETS 6
+#define BY4ALLOC_ITEMS 320
+#define ZIP_BUFLEN    (4 * 1024 - 1)
+
+class nttDeflateConverter : public nsIStreamConverter
 {
-	{
-		DEFLATECONVERTER_CLASSNAME,
-		DEFLATECONVERTER_CID,
-		DEFLATECONVERTER_CONTRACTID,
-		nttDeflateConverterConstructor,
-	},
-	{
-		ZIPWRITER_CLASSNAME,
-		ZIPWRITER_CID,
-		ZIPWRITER_CONTRACTID,
-		nttZipWriterConstructor,
-	}
+public:
+	  NS_DECL_ISUPPORTS
+    NS_DECL_NSIREQUESTOBSERVER
+    NS_DECL_NSISTREAMLISTENER
+ 	  NS_DECL_NSISTREAMCONVERTER
+	  
+	  nttDeflateConverter()
+	  {
+	  }
+	
+private:
+
+	  ~nttDeflateConverter()
+	  {
+	  }
+	  
+	  nsCOMPtr<nsIPipe> mPipe;
+	  nsCOMPtr<nsIStreamListener> mListener;
+	  PRUint32 mOffset;
+		struct DeflateStruct {
+				z_stream         mZs;
+				unsigned char    mWriteBuf[ZIP_BUFLEN];
+		};
+		struct DeflateStruct* mDeflate;
+		
+		nsresult PushAvailableData(nsIRequest *aRequest, nsISupports *aContext);
 };
 
-NS_IMPL_NSGETMODULE("ZipWriterModule", components)
+#endif

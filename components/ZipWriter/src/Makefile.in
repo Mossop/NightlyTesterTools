@@ -56,9 +56,12 @@ XPI_NAME              = zipwriter
 REQUIRES = xpcom \
            string \
            necko \
+           jar \
+           $(ZLIB_REQUIRES) \
            $(NULL)
 
-CPPSRCS = nttZipHeader.cpp \
+CPPSRCS = nttDeflateConverter.cpp \
+          nttZipHeader.cpp \
           nttZipOutputStream.cpp \
           nttZipWriter.cpp \
           ZipWriterModule.cpp \
@@ -76,4 +79,5 @@ endif
 
 EXTRA_DSO_LDOPTS += $(XPCOM_GLUE_LDOPTS) \
                     $(NSPR_LIBS) \
+                    $(ZLIB_LIBS) \
                     $(NULL)
