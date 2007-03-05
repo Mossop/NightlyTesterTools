@@ -35,36 +35,17 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL$
- * $LastChangedBy$
- * $Date$
- * $Revision$
+ * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/components/nsNightlyToolsService.js $
+ * $LastChangedBy: dave $
+ * $Date: 2005-09-10 19:52:42 +0100 (Sat, 10 Sep 2005) $
+ * $Revision: 152 $
  *
  */
 
 #include "nsISupports.idl"
-#include "nsIOutputStream.idl"
-#include "nsIRequestObserver.idl"
-#include "nsIFile.idl"
 
-[scriptable, uuid(98e40e77-2a94-46cc-bac0-deab758066be)]
-interface nttIZipWriter : nsISupports
+[scriptable, uuid(52c4b99e-8bf9-4fe6-8165-2b026c689b7b)]
+interface nttIAddonMonitorService : nsISupports
 {
-	boolean isBusy();
-	
-	void create(in nsIFile file);
-	
-	void addDirectoryEntry(in AString path, in PRInt64 modtime);
-	
-	nsIOutputStream addFileEntry(in AString path, in PRInt64 modtime);
-	
-	void addFile(in AString path, in nsIFile file, in nsIRequestObserver obs);
-	
-	void queueFile(in AString path, in nsIFile file);
-	
-	void processQueue(in nsIRequestObserver obs);
-	
-	void setComment(in AString comment);
-	
-	void close();
+	void monitorInstall(in AString url);
 };

@@ -544,7 +544,7 @@ QueryInterface: function(iid)
 var initModule =
 {
 	ServiceCID: Components.ID("{5147eddd-e4cc-483b-a3c5-bd38177ffc1a}"),
-	ServiceContractID: "@blueprintit.co.uk/zipwriter;1",
+	ServiceContractID: "@blueprintit.co.uk/fallback/zipwriter;1",
 	ServiceName: "Nightly Tester Zip Writer",
 	
 	registerSelf: function (compMgr, fileSpec, location, type)
