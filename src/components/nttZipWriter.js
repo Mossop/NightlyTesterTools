@@ -205,131 +205,63 @@ ZipFileHeader.prototype = {
 function ZipOutputStream(writer, header, stream)
 {
 	this.writer = writer;
-
-	/* nsIOutputStream sucks, we can't implement it correctly in JS
-	 * so... we have to do some tricks:
-	 *
-	 *  < output stream consumer >
-	 *              |
-	 *       /nsIOuputStream \
-	 *              |
-	 *         [ nsIPipe ]
-	 *              |
-	 *    \nsIAsyncInputStream/    (this.instream)
-	 *              |
-	 *         < JS glue >
-	 *              |
-	 *     / nsIStreamListener \   (this.streamlistener)
-	 *              |
-	 *    [ nsIStreamListenerTee ] ---------------+
-	 *              |                             |
-	 *     / nsIStreamListener \         / nsIOutputStream \
-	 *              |                             |
-	 *  [ nsISimpleStreamListener ]          [ nsIPipe ]
-	 *              |                             |
-	 *      / nsIOutputStrean \          \ nsIInputStream /
-	 *              |                             |
-	 *  [ nsIBufferedOutputStream ]    [ nsIBinaryInputStream ] (this.crcstream)
-	 *              | (this.bufstream)            |
-	 *      / nsIOutputStream \          < CRC calculator >
-	 *              |
-	 *  < underlying output stream > (this.basestream)
-	 *
-	 * When the output stream gets written to, the pipe notifies us of the
-	 * write; we then have the stream listener tee read from the pipe,
-	 * putting it in the underlying output stream.  It also goes into the
-	 * second pipe, which is read from to calculate the CRC.
-	 *
-	 * This would have been much simpler if nsIInputStreamTee could be
-	 * created from script.. alas, we can't.
-	 */
-
-  this.crcstream = Cc["@mozilla.org/binaryinputstream;1"]
-                    .createInstance(Ci.nsIBinaryInputStream);
   var pipe = Cc["@mozilla.org/pipe;1"]
               .createInstance(Ci.nsIPipe);
   pipe.init(false, false, 0x8000, 0, null);
-  this.crcstream.setInputStream(pipe.inputStream);
-
-	this.basestream = stream;
-  var bufout = Cc["@mozilla.org/network/buffered-output-stream;1"]
-                .createInstance(Ci.nsIBufferedOutputStream);
-  bufout.init(this.basestream, 0x8000);
-  this.bufstream = bufout;
-  
-  var sslistener = Cc["@mozilla.org/network/simple-stream-listener;1"]
-                    .createInstance(Ci.nsISimpleStreamListener);
-  sslistener.init(bufout, null);
-  
-  this.streamlistener = Cc["@mozilla.org/network/stream-listener-tee;1"]
-                         .createInstance(Ci.nsIStreamListenerTee);
-  this.streamlistener.init(sslistener, pipe.outputStream);
-  
-  pipe = Cc["@mozilla.org/pipe;1"]
-              .createInstance(Ci.nsIPipe);
-  pipe.init(false, /* input stream is blocking */
-            this.basestream.isNonBlocking(), /* output stream blocking? */
-            0x8000, /* segment size */
-            0, /* default segment count */
-            null); /* default allocator */
-  var outstream = pipe.outputStream;
-  this.instream = pipe.inputStream;
+  this.instream = Cc["@mozilla.org/binaryinputstream;1"]
+                    .createInstance(Ci.nsIBinaryInputStream);
+  this.instream.setInputStream(pipe.inputStream);
+  this.outstream = Cc["@mozilla.org/binaryoutputstream;1"]
+                    .createInstance(Ci.nsIBinaryOutputStream);
+  this.outstream.setOutputStream(stream);
         
 	this.header = header;
 	this.crc = 0xffffffff;
 	this.size = 0;
         
-  this.instream.asyncWait(this, 0, 0, null);
-  outstream.asyncWait(this, 1, 0, null); // triggered only on close
+  pipe.inputStream.asyncWait(this, 0, 0, null);
+  pipe.outputStream.asyncWait(this, 1, 0, null); // triggered only on close
   
-  return outstream;
+  return pipe.outputStream;
 }
 
 ZipOutputStream.prototype = {
 
 instream: null,
-streamlistener: null,
-bufstream: null,
-crcstream: null,
+outstream: null,
 writer: null,
 crc: null,
-basestream: null,
 size: null,
 
 onInputStreamReady: function(aStream)
 {
-	var count = aStream.available();
-	LOG("Writing " + count + " bytes at offset " + this.size);
+  var count = this.instream.available();
+  LOG("Writing " + count + " bytes at offset " + this.size);
 
-	/* make the stream listener read from the pipe */
-	this.streamlistener.onDataAvailable(null,
-                                      null,
-                                      aStream,
-                                      this.size,
-                                      count);
+  /* read from the input stream */
+  var bytes = this.instream.readByteArray(count);
+  
+  /* calculate CRC */
+  for (var n = 0; n < bytes.length; n++)
+    this.crc = CRC_TABLE[(this.crc ^ bytes[n]) & 0xFF] ^ ((this.crc >> 8) & 0xFFFFFF);
+  
+  /* and write */
+  this.outstream.writeByteArray(bytes, bytes.length);
+
+	this.size += bytes.length;
+
+  aStream.asyncWait(this, 0, 0, null);
         
-  /* and read from the CRC stream */
-  for (var n = 0; n < count; n++)
-  {
-		var b = this.crcstream.read8();
-    this.crc = CRC_TABLE[(this.crc ^ b) & 0xFF] ^ ((this.crc >> 8) & 0xFFFFFF);
-  }
-
-	this.size += count;
-
-	aStream.asyncWait(this, 0, 0, null);
-        
-	/* probably would be useful to have some sort of status feedback */
+  /* probably would be useful to have some sort of status feedback */
 },
 
 onOutputStreamReady: function(aStream)
 {
-	// this is only called when the output stream had been closed.
-	// when that is the case, we need to flush everything and close.
-	// the stream is closed
-	this.instream.close();
-	this.bufstream.flush();
-	this.close();
+  // this is only called when the output stream had been closed.
+  // when that is the case, we need to flush everything and close.
+  // the stream is closed
+  this.instream.close();
+  this.close();
 },
 
 close: function()
