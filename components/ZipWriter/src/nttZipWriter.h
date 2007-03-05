@@ -64,10 +64,12 @@ public:
 };
 
 class nttZipWriter : public nttIZipWriter
+                   , public nsIRequestObserver
 {
 public:
 	  NS_DECL_ISUPPORTS
 	  NS_DECL_NTTIZIPWRITER
+	  NS_DECL_NSIREQUESTOBSERVER
 	
 	  nttZipWriter();
 		nsresult OnFileEntryComplete(nttZipHeader header);

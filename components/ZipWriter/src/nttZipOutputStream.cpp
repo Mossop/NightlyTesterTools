@@ -44,12 +44,14 @@
 
 #include "crctable.h"
 #include "nttZipOutputStream.h"
+#include "stdio.h"
 
 NS_IMPL_THREADSAFE_ISUPPORTS1(nttZipOutputStream, nsIOutputStream)
 
 nttZipOutputStream::nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader)
 {
 		mWriter = aWriter;
+		NS_ADDREF(mWriter);
 		mStream = aStream;
 		mHeader = aHeader;
 		mSize = 0;
@@ -59,11 +61,13 @@ nttZipOutputStream::nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *a
 /* void close (); */
 NS_IMETHODIMP nttZipOutputStream::Close()
 {
+		printf("ZipOutputStream close\n");
 		mHeader.mCRC = mCRC ^ 0xffffffff;
 		mHeader.mCSize = mSize;
 		mHeader.mUSize = mSize;
 		mStream = nsnull;
 		nsresult rv = mWriter->OnFileEntryComplete(mHeader);
+		NS_RELEASE(mWriter);
 		mWriter = nsnull;
 
 		return rv;

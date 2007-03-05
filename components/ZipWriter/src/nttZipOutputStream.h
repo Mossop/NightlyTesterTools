@@ -58,7 +58,7 @@ public:
 
 private:
 
-		nsCOMPtr<nttZipWriter> mWriter;
+		nttZipWriter* mWriter;
 		nsCOMPtr<nsIOutputStream> mStream;
 		nttZipHeader mHeader;
 		PRUint32 mCRC;

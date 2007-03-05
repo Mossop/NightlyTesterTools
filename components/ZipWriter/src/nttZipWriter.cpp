@@ -48,8 +48,9 @@
 #include "nsIInputStreamPump.h"
 #include "nsISimpleStreamListener.h"
 #include "nsComponentManagerUtils.h"
+#include "stdio.h"
 
-NS_IMPL_ISUPPORTS1(nttZipWriter, nttIZipWriter)
+NS_IMPL_ISUPPORTS2(nttZipWriter, nttIZipWriter, nsIRequestObserver)
 
 nttZipWriter::nttZipWriter()
 {
@@ -103,6 +104,8 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
 		if (mBusy)
 				return NS_ERROR_FAILURE;
 		
+		printf("Adding directory entry %s\n", ToNewUTF8String(path));
+		
 		nsresult rv;
 		mBusy = PR_TRUE;
 			
@@ -120,6 +123,8 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime
 				return NS_ERROR_NOT_INITIALIZED;
 		if (mBusy)
 				return NS_ERROR_FAILURE;
+		
+		printf("Adding file entry %s\n", ToNewUTF8String(path));
 		
 		nsresult rv;
 		mBusy = PR_TRUE;
@@ -144,7 +149,7 @@ NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file, nsIRe
 				return NS_ERROR_FAILURE;
 		
 		if (obs)
-				obs->OnStartRequest(nsnull, this);
+				obs->OnStartRequest(nsnull, NS_ISUPPORTS_CAST(nttIZipWriter*, this));
 		mProcessObserver = obs;
 		return BeginProcessing(path, file);
 }
@@ -172,7 +177,7 @@ NS_IMETHODIMP nttZipWriter::ProcessQueue(nsIRequestObserver *obs)
 				return NS_ERROR_FAILURE;
 		
 		if (obs)
-				obs->OnStartRequest(nsnull, this);
+				obs->OnStartRequest(nsnull, NS_ISUPPORTS_CAST(nttIZipWriter*, this));
 		if (!mQueue.IsEmpty())
 		{
 				mProcessObserver = obs;
@@ -182,7 +187,7 @@ NS_IMETHODIMP nttZipWriter::ProcessQueue(nsIRequestObserver *obs)
 				return BeginProcessing(next.mPath, next.mFile);
 		}
 		else if (obs)
-				obs->OnStopRequest(nsnull, this, NS_OK);
+				obs->OnStopRequest(nsnull, NS_ISUPPORTS_CAST(nttIZipWriter*, this), NS_OK);
 		return NS_OK;
 }
 
@@ -201,6 +206,7 @@ NS_IMETHODIMP nttZipWriter::Close()
 		if (mBusy)
 				return NS_ERROR_FAILURE;
 		
+		printf("ZipWriter close\n");
 		PRUint32 size = 0;
 		for (PRUint32 i = 0; i < mHeaders.Length(); i++)
 		{
@@ -226,21 +232,39 @@ NS_IMETHODIMP nttZipWriter::Close()
 		return NS_OK;
 }
 
+/* void onStartRequest (in nsIRequest aRequest, in nsISupports aContext); */
+NS_IMETHODIMP nttZipWriter::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
+{
+}
+
+/* void onStopRequest (in nsIRequest aRequest, in nsISupports aContext, in nsresult aStatusCode); */
+NS_IMETHODIMP nttZipWriter::OnStopRequest(nsIRequest *aRequest, nsISupports *aContext, nsresult aStatusCode)
+{
+		mProcessInputStream->Close();
+		mProcessOutputStream->Close();
+}
+
 nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
 {
+		nsresult rv;
 		mStream->Flush();
 		nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
 		
-		seekable->Seek(nsISeekableStream::NS_SEEK_SET, mOffset);
-		header.WriteFileHeader(mBStream);
-		mStream->Flush();
-		seekable->Seek(nsISeekableStream::NS_SEEK_CUR, header.mCSize);
+		rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mOffset);
+		if (NS_FAILED(rv)) return rv;
+		rv = header.WriteFileHeader(mBStream);
+		if (NS_FAILED(rv)) return rv;
+		rv = mStream->Flush();
+		if (NS_FAILED(rv)) return rv;
+		rv = seekable->Seek(nsISeekableStream::NS_SEEK_CUR, header.mCSize);
+		if (NS_FAILED(rv)) return rv;
 		
 		return OnEntryComplete(header);
 }
 
 nsresult nttZipWriter::OnEntryComplete(nttZipHeader header)
 {
+		printf("Entry complete\n");
 		mOffset += header.mCSize + header.GetFileHeaderLength();
 		mHeaders.AppendElement(header);
 		mBusy = PR_FALSE;
@@ -250,7 +274,7 @@ nsresult nttZipWriter::OnEntryComplete(nttZipHeader header)
 				if (mQueue.IsEmpty())
 				{
 						if (mProcessObserver)
-								mProcessObserver->OnStopRequest(nsnull, this, NS_OK);
+								mProcessObserver->OnStopRequest(nsnull, NS_ISUPPORTS_CAST(nttIZipWriter*, this), NS_OK);
 						mProcessing = PR_FALSE;
 						mProcessObserver = nsnull;
 				}
@@ -263,7 +287,7 @@ nsresult nttZipWriter::OnEntryComplete(nttZipHeader header)
 		}
 		else if (mProcessObserver)
 		{
-				mProcessObserver->OnStopRequest(nsnull, this, NS_OK);
+				mProcessObserver->OnStopRequest(nsnull, NS_ISUPPORTS_CAST(nttIZipWriter*, this), NS_OK);
 				mProcessObserver = nsnull;
 		}
 		return NS_OK;
@@ -306,8 +330,7 @@ nsresult nttZipWriter::BeginProcessing(const nsAString & path, nsIFile *file)
 				// make a simple stream listener to do the writing to output stream for us
 				nsCOMPtr<nsISimpleStreamListener> listener = do_CreateInstance("@mozilla.org/network/simple-stream-listener;1", &rv);
 				if (NS_FAILED(rv)) return rv;
-				nsCOMPtr<nsIRequestObserver> ro = do_QueryInterface(this);
-				listener->Init(mProcessOutputStream, ro);
+				listener->Init(mProcessOutputStream, this);
 				if (NS_FAILED(rv)) return rv;
 				
 				// start the copying
