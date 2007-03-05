@@ -72,23 +72,6 @@ templates: {
 
 preferences: null,
 
-testZip: function()
-{
-	var directoryService = Components.classes["@mozilla.org/file/directory_service;1"]
-										               .getService(Components.interfaces.nsIProperties);
-
-	var dir = directoryService.get("Home",Components.interfaces.nsIFile);
-	var zip = dir.clone();
-	zip.append("test.zip");
-	var writer = Components.classes["@blueprintit.co.uk/zipwriter;1"]
-	                       .createInstance(Components.interfaces.nttIZipWriter);
-	writer.create(zip);
-	var stream = writer.addFileEntry("test.txt", Date.now());
-	stream.write("Hello", 5);
-	stream.close();
-	writer.close();
-},
-
 showAlert: function(id,args)
 {
  	var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
