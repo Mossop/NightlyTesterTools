@@ -47,7 +47,7 @@
 
 NS_IMPL_THREADSAFE_ISUPPORTS1(nttZipOutputStream, nsIOutputStream)
 
-nsresult nttZipOutputStream::Init(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader *aHeader)
+nsresult nttZipOutputStream::Init(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader)
 {
 		mWriter = aWriter;
 		mStream = aStream;
@@ -60,9 +60,9 @@ nsresult nttZipOutputStream::Init(nttZipWriter *aWriter, nsIOutputStream *aStrea
 /* void close (); */
 NS_IMETHODIMP nttZipOutputStream::Close()
 {
-		mHeader->mCRC = mCRC ^ 0xffffffff;
-		mHeader->mCSize = mSize;
-		mHeader->mUSize = mSize;
+		mHeader.mCRC = mCRC ^ 0xffffffff;
+		mHeader.mCSize = mSize;
+		mHeader.mUSize = mSize;
 		return mWriter->OnFileEntryComplete(mHeader);
 }
 

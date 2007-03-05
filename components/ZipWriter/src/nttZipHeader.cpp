@@ -44,22 +44,61 @@
 
 #include "nttZipHeader.h"
  
-PRUint32 GetFileHeaderLength()
+PRUint32 nttZipHeader::GetFileHeaderLength()
 {
-	return 4+2+2+2+2+2+4+4+4+2+2+mName.Length();
+		return 4+2+2+2+2+2+4+4+4+2+2+mName.Length();
 }
 
-nsresult WriteFileHeader(nsIBinaryOutputStream *stream)
+nsresult nttZipHeader::WriteFileHeader(nsIBinaryOutputStream *stream)
 {
-	return NS_OK;
+		WRITE32(stream, 0x04034b50);
+		WRITE16(stream, mVersionNeeded);
+		WRITE16(stream, mFlags);
+		WRITE16(stream, mMethod);
+		WRITE16(stream, mTime);
+		WRITE16(stream, mDate);
+		WRITE32(stream, mCRC);
+		WRITE32(stream, mCSize);
+		WRITE32(stream, mUSize);
+		WRITE16(stream, mName.Length());
+		WRITE16(stream, 0);
+
+		for (PRUint32 i = 0; i<mName.Length(); i++)
+				WRITE8(stream, mName[i]);
+
+		return NS_OK;
 }
 
-PRUint32 GetCDSHeaderLength()
+PRUint32 nttZipHeader::GetCDSHeaderLength()
 {
-	return 4+2+2+2+2+2+2+4+4+4+2+2+2+2+2+4+4+mName.Length()+mComment.Length();
+		return 4+2+2+2+2+2+2+4+4+4+2+2+2+2+2+4+4+mName.Length()+mComment.Length();
 }
 
-nsresult WriteCDSHeader(nsIBinaryOutputStream *stream)
+nsresult nttZipHeader::WriteCDSHeader(nsIBinaryOutputStream *stream)
 {
-	return NS_OK;
+		WRITE32(stream, 0x02014b50);
+		WRITE16(stream, mVersionMade);
+		WRITE16(stream, mVersionNeeded);
+		WRITE16(stream, mFlags);
+		WRITE16(stream, mMethod);
+		WRITE16(stream, mTime);
+		WRITE16(stream, mDate);
+		WRITE32(stream, mCRC);
+		WRITE32(stream, mCSize);
+		WRITE32(stream, mUSize);
+		WRITE16(stream, mName.Length());
+		WRITE16(stream, 0);
+		WRITE16(stream, mComment.Length());
+		WRITE16(stream, mDisk);
+		WRITE16(stream, mIAttr);
+		WRITE32(stream, mEAttr);
+		WRITE32(stream, mOffset);
+
+		for (PRUint32 i = 0; i<mName.Length(); i++)
+				WRITE8(stream, mName[i]);
+
+		for (PRUint32 i = 0; i<mComment.Length(); i++)
+				WRITE8(stream, mComment[i]);
+
+		return NS_OK;
 }

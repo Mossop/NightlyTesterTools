@@ -47,6 +47,7 @@
 
 #include "nttIZipWriter.h"
 #include "nsIFileStreams.h"
+#include "nsIBufferedStreams.h"
 #include "nttZipHeader.h"
 #include "nsCOMPtr.h"
 #include "nsTArray.h"
@@ -55,6 +56,13 @@
 #define ZIPWRITER_CLASSNAME "Nightly Tester Tools Zip Writer"
 #define ZIPWRITER_CID { 0x5f57d36a, 0x3732, 0x40c6, { 0x9a, 0xb2, 0x5d, 0x39, 0xfd, 0x47, 0x12, 0xbc } }
 
+class nttZipQueueItem
+{
+public:
+	nsString mPath;
+  nsCOMPtr<nsIFile> mFile;
+};
+
 class nttZipWriter : public nttIZipWriter
 {
 public:
@@ -62,8 +70,8 @@ public:
 	  NS_DECL_NTTIZIPWRITER
 	
 	  nttZipWriter();
-		NS_IMETHOD OnFileEntryComplete(nttZipHeader *header);
-		NS_IMETHOD OnEntryComplete(nttZipHeader *header);
+		nsresult OnFileEntryComplete(nttZipHeader header);
+		nsresult OnEntryComplete(nttZipHeader header);
 	
 private:
 	  ~nttZipWriter();
@@ -75,9 +83,12 @@ private:
 		
 		PRBool mBusy;
 		PRBool mProcessing;
-		nsCOMPtr<nsIOutputStream> mProcessOutputStream;
-		nsCOMPtr<nsIInputStream> mProcessInputStream;
+		nsTArray<nttZipQueueItem> mQueue;
+		nsCOMPtr<nsIBufferedOutputStream> mProcessOutputStream;
+		nsCOMPtr<nsIFileInputStream> mProcessInputStream;
 		nsCOMPtr<nsIRequestObserver> mProcessObserver;
+		
+		nsresult BeginProcessing(const nsAString & path, nsIFile *file);
 };
 
 #endif

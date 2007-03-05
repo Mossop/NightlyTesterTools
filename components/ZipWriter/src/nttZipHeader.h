@@ -48,9 +48,17 @@
 #include "nsStringAPI.h"
 #include "nsIBinaryOutputStream.h"
 
+#define WRITE8(str,val) str->Write8(val)
+#define WRITE16(str,val) str->Write8(val & 0xFF); str->Write8(val >> 8)
+#define WRITE32(str,val) str->Write8(val & 0xFF); str->Write8((val >> 8) & 0xFF); str->Write8((val >> 16) & 0xFF); str->Write8(val >> 24)
+
 class nttZipHeader
 {
 public:
+		nttZipHeader()
+		{
+		}
+		
 		nttZipHeader(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset) :
 				mVersionMade(20),
 				mVersionNeeded(20),
@@ -81,9 +89,6 @@ public:
 		PRUint32 mCRC;
 		PRUint32 mCSize;
 		PRUint32 mUSize;
-		PRUint16 mNameLength;
-		PRUint16 mExtraLength;
-		PRUint16 mCommentLength;
 		PRUint16 mDisk;
 		PRUint16 mIAttr;
 		PRUint32 mEAttr;

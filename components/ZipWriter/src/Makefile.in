@@ -58,7 +58,8 @@ REQUIRES = xpcom \
            necko \
            $(NULL)
 
-CPPSRCS = nttZipOutputStream.cpp \
+CPPSRCS = nttZipHeader.cpp \
+          nttZipOutputStream.cpp \
           nttZipWriter.cpp \
           ZipWriterModule.cpp \
           $(NULL)

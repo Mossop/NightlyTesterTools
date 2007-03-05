@@ -43,6 +43,10 @@
  */
 
 #include "nttZipWriter.h"
+#include "nttZipOutputStream.h"
+#include "nsISeekableStream.h"
+#include "nsIInputStreamPump.h"
+#include "nsISimpleStreamListener.h"
 #include "nsComponentManagerUtils.h"
 
 NS_IMPL_ISUPPORTS1(nttZipWriter, nttIZipWriter)
@@ -100,10 +104,10 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
 				return NS_ERROR_FAILURE;
 		
 		nsresult rv;
-		mBusy = true;
+		mBusy = PR_TRUE;
 			
-		nttZipHeader *header = new nttZipHeader(path, modtime, 16, mOffset);
-		rv = header->WriteFileHeader(mBStream);
+		nttZipHeader header(path, modtime, 16, mOffset);
+		rv = header.WriteFileHeader(mBStream);
 		if (NS_FAILED(rv)) return rv;
 		
 		return OnEntryComplete(header);
@@ -112,45 +116,202 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
 /* nsIOutputStream addFileEntry (in AString path, in PRInt64 modtime); */
 NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime, nsIOutputStream **_retval)
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
+		if (!mStream)
+				return NS_ERROR_NOT_INITIALIZED;
+		if (mBusy)
+				return NS_ERROR_FAILURE;
+		
+		nsresult rv;
+		mBusy = PR_TRUE;
+		
+		nttZipHeader header(path, modtime, 0, mOffset);
+		rv = header.WriteFileHeader(mBStream);
+		if (NS_FAILED(rv)) return rv;
+		
+		nttZipOutputStream *stream = new nttZipOutputStream();
+		NS_ADDREF(stream);
+		stream->Init(this, mStream, header);
+		*_retval = stream;
+		
+		return NS_OK;
 }
 
 /* void addFile (in AString path, in nsIFile file, in nsIRequestObserver obs); */
 NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file, nsIRequestObserver *obs)
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
+		if (!mStream)
+				return NS_ERROR_NOT_INITIALIZED;
+		if (mBusy)
+				return NS_ERROR_FAILURE;
+		
+		if (obs)
+				obs->OnStartRequest(nsnull, this);
+		mProcessObserver = obs;
+		return BeginProcessing(path, file);
 }
 
 /* void queueFile (in AString path, in nsIFile file); */
 NS_IMETHODIMP nttZipWriter::QueueFile(const nsAString & path, nsIFile *file)
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
+		if (!mStream)
+				return NS_ERROR_NOT_INITIALIZED;
+
+		nttZipQueueItem item;
+		item.mFile = file;
+		item.mPath = path;
+		mQueue.AppendElement(item);
+		
+    return NS_OK;
 }
 
 /* void processQueue (in nsIRequestObserver obs); */
 NS_IMETHODIMP nttZipWriter::ProcessQueue(nsIRequestObserver *obs)
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
+		if (!mStream)
+				return NS_ERROR_NOT_INITIALIZED;
+		if (mBusy)
+				return NS_ERROR_FAILURE;
+		
+		if (obs)
+				obs->OnStartRequest(nsnull, this);
+		if (!mQueue.IsEmpty())
+		{
+				mProcessObserver = obs;
+				mProcessing = PR_TRUE;
+				nttZipQueueItem next = mQueue[0];
+				mQueue.RemoveElementAt(0);
+				return BeginProcessing(next.mPath, next.mFile);
+		}
+		else if (obs)
+				obs->OnStopRequest(nsnull, this, NS_OK);
+		return NS_OK;
 }
 
 /* void setComment (in AString comment); */
 NS_IMETHODIMP nttZipWriter::SetComment(const nsAString & comment)
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
+		mComment = comment;
+    return NS_OK;
 }
 
 /* void close (); */
 NS_IMETHODIMP nttZipWriter::Close()
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
+		if (!mStream)
+				return NS_ERROR_NOT_INITIALIZED;
+		if (mBusy)
+				return NS_ERROR_FAILURE;
+		
+		PRUint32 size = 0;
+		for (PRUint32 i = 0; i < mHeaders.Length(); i++)
+		{
+				mHeaders[i].WriteCDSHeader(mBStream);
+				size += mHeaders[i].GetCDSHeaderLength();
+		}
+		
+		WRITE32(mBStream, 0x06054b50);
+		WRITE16(mBStream, 0);
+		WRITE16(mBStream, 0);
+		WRITE16(mBStream, mHeaders.Length());
+		WRITE16(mBStream, mHeaders.Length());
+		WRITE32(mBStream, size);
+		WRITE32(mBStream, mOffset);
+		WRITE16(mBStream, mComment.Length());
+		for (PRUint32 i = 0; i < mComment.Length(); i++)
+			WRITE8(mBStream, mComment[i]);
+		
+		mStream->Close();
+		mStream = nsnull;
+		mBStream = nsnull;
+		
+		return NS_OK;
 }
 
-NS_IMETHODIMP OnFileEntryComplete(nttZipHeader *header)
+nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
 {
-	return NS_OK;
+		mStream->Flush();
+		nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
+		
+		seekable->Seek(nsISeekableStream::NS_SEEK_CUR, -(header.mCSize + header.GetFileHeaderLength()));
+		header.WriteFileHeader(mBStream);
+		mStream->Flush();
+		seekable->Seek(nsISeekableStream::NS_SEEK_CUR, header.mCSize);
+		
+		return OnEntryComplete(header);
 }
 
-nsresult OnEntryComplete(nttZipHeader *header)
+nsresult nttZipWriter::OnEntryComplete(nttZipHeader header)
 {
-	return NS_OK;
+		mOffset += header.mCSize + header.GetFileHeaderLength();
+		mHeaders.AppendElement(header);
+		mBusy = PR_FALSE;
+		
+		if (mProcessing)
+		{
+				if (mQueue.IsEmpty())
+				{
+						if (mProcessObserver)
+								mProcessObserver->OnStopRequest(nsnull, this, NS_OK);
+						mProcessing = PR_FALSE;
+						mProcessObserver = nsnull;
+				}
+				else
+				{
+						nttZipQueueItem next = mQueue[0];
+						mQueue.RemoveElementAt(0);
+						return BeginProcessing(next.mPath, next.mFile);
+				}
+		}
+		else if (mProcessObserver)
+		{
+				mProcessObserver->OnStopRequest(nsnull, this, NS_OK);
+				mProcessObserver = nsnull;
+		}
+		return NS_OK;
+}
+
+nsresult nttZipWriter::BeginProcessing(const nsAString & path, nsIFile *file)
+{
+		PRBool isdir;
+		file->IsDirectory(&isdir);
+		PRInt64 modtime;
+		file->GetLastModifiedTime(&modtime);
+		if (isdir)
+		{
+				return AddDirectoryEntry(path, modtime);
+		}
+		else
+		{
+				nsresult rv;
+				
+				mProcessInputStream = do_CreateInstance("@mozilla.org/network/file-input-stream;1", &rv);
+				if (NS_FAILED(rv)) return rv;
+				mProcessInputStream->Init(file, -1, 0, 0);
+				if (NS_FAILED(rv)) return rv;
+				
+				nsCOMPtr<nsIOutputStream> ostream;
+				rv = AddFileEntry(path, modtime, getter_AddRefs(ostream));
+				if (NS_FAILED(rv)) return rv;
+				
+				mProcessOutputStream = do_CreateInstance("@mozilla.org/network/buffered-output-stream;1", &rv);
+				if (NS_FAILED(rv)) return rv;
+				rv = mProcessOutputStream->Init(ostream, 0x8000);
+				if (NS_FAILED(rv)) return rv;
+				
+				// make a stream pump and a stream listener to read from the input stream for us
+				nsCOMPtr<nsIInputStreamPump> pump = do_CreateInstance("@mozilla.org/network/input-stream-pump;1", &rv);
+				if (NS_FAILED(rv)) return rv;
+				rv = pump->Init(mProcessInputStream, -1, -1, 0, 0, PR_TRUE);
+				if (NS_FAILED(rv)) return rv;
+				
+				// make a simple stream listener to do the writing to output stream for us
+				nsCOMPtr<nsISimpleStreamListener> listener = do_CreateInstance("@mozilla.org/network/simple-stream-listener;1", &rv);
+				if (NS_FAILED(rv)) return rv;
+				nsCOMPtr<nsIRequestObserver> ro = do_QueryInterface(this);
+				listener->Init(mProcessOutputStream, ro);
+				if (NS_FAILED(rv)) return rv;
+				
+				// start the copying
+				return pump->AsyncRead(listener, nsnull);
+		}
 }

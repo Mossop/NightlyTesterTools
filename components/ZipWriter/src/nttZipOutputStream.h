@@ -58,13 +58,13 @@ public:
 		{
 		}
 		
-		nsresult Init(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader *aHeader);
+		nsresult Init(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader);
 
 private:
 
 		nsCOMPtr<nttZipWriter> mWriter;
 		nsCOMPtr<nsIOutputStream> mStream;
-		nttZipHeader* mHeader;
+		nttZipHeader mHeader;
 		PRUint32 mCRC;
 		PRUint32 mSize;
 		
