@@ -52,6 +52,8 @@ interface nttIZipWriter : nsISupports
 {
 	boolean isBusy();
 	
+	void open(in nsIFile file);
+	
 	void create(in nsIFile file);
 	
 	void addDirectoryEntry(in AString path, in PRInt64 modtime);

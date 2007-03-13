@@ -80,7 +80,8 @@ private:
 		nsCOMPtr<nsIBinaryOutputStream> mBStream;
 		nsCOMPtr<nsIFileOutputStream> mStream;
 		nsTArray<nttZipHeader> mHeaders;
-		PRUint32 mOffset;
+		PRUint32 mCDSOffset;
+		PRBool mCDSDirty;
 		nsString mComment;
 		
 		PRBool mBusy;

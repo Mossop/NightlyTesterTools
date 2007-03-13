@@ -68,6 +68,20 @@ NS_IMETHODIMP nttZipWriter::IsBusy(PRBool *_retval)
     return NS_OK;
 }
 
+/* void open (in nsIFile file); */
+NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
+{
+		if (mStream)
+				return NS_ERROR_ALREADY_INITIALIZED;
+		
+		PRBool exists;
+		file->Exists(&exists);
+		if (!exists)
+				return NS_ERROR_FAILURE;
+
+		mCDSDirty = PR_FALSE;
+}
+	
 /* void create (in nsIFile file); */
 NS_IMETHODIMP nttZipWriter::Create(nsIFile *file)
 {
@@ -89,8 +103,9 @@ NS_IMETHODIMP nttZipWriter::Create(nsIFile *file)
 
 		mBusy = PR_FALSE;
 		mProcessing = PR_FALSE;
-		mOffset = 0;
+		mCDSOffset = 0;
 		mComment = NS_LITERAL_STRING("");
+		mCDSDirty = PR_TRUE;
 
     return NS_OK;
 }
@@ -106,7 +121,7 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
 		nsresult rv;
 		mBusy = PR_TRUE;
 			
-		nttZipHeader header(path, modtime, 16, mOffset);
+		nttZipHeader header(path, modtime, 16, mCDSOffset);
 		rv = header.WriteFileHeader(mBStream);
 		if (NS_FAILED(rv)) return rv;
 		
@@ -124,7 +139,7 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime
 		nsresult rv;
 		mBusy = PR_TRUE;
 		
-		nttZipHeader header(path, modtime, 0, mOffset);
+		nttZipHeader header(path, modtime, 0, mCDSOffset);
 		rv = header.WriteFileHeader(mBStream);
 		if (NS_FAILED(rv)) return rv;
 		
@@ -154,6 +169,11 @@ NS_IMETHODIMP nttZipWriter::QueueFile(const nsAString & path, nsIFile *file)
 {
 		if (!mStream)
 				return NS_ERROR_NOT_INITIALIZED;
+
+		PRBool exists;
+		file->Exists(&exists);
+		if (!exists)
+				return NS_ERROR_FAILURE;
 
 		nttZipQueueItem item;
 		item.mFile = file;
@@ -201,23 +221,26 @@ NS_IMETHODIMP nttZipWriter::Close()
 		if (mBusy)
 				return NS_ERROR_FAILURE;
 		
-		PRUint32 size = 0;
-		for (PRUint32 i = 0; i < mHeaders.Length(); i++)
+		if (mCDSDirty)
 		{
-				mHeaders[i].WriteCDSHeader(mBStream);
-				size += mHeaders[i].GetCDSHeaderLength();
+				PRUint32 size = 0;
+				for (PRUint32 i = 0; i < mHeaders.Length(); i++)
+				{
+						mHeaders[i].WriteCDSHeader(mBStream);
+						size += mHeaders[i].GetCDSHeaderLength();
+				}
+				
+				WRITE32(mBStream, 0x06054b50);
+				WRITE16(mBStream, 0);
+				WRITE16(mBStream, 0);
+				WRITE16(mBStream, mHeaders.Length());
+				WRITE16(mBStream, mHeaders.Length());
+				WRITE32(mBStream, size);
+				WRITE32(mBStream, mCDSOffset);
+				WRITE16(mBStream, mComment.Length());
+				for (PRUint32 i = 0; i < mComment.Length(); i++)
+					WRITE8(mBStream, mComment[i]);
 		}
-		
-		WRITE32(mBStream, 0x06054b50);
-		WRITE16(mBStream, 0);
-		WRITE16(mBStream, 0);
-		WRITE16(mBStream, mHeaders.Length());
-		WRITE16(mBStream, mHeaders.Length());
-		WRITE32(mBStream, size);
-		WRITE32(mBStream, mOffset);
-		WRITE16(mBStream, mComment.Length());
-		for (PRUint32 i = 0; i < mComment.Length(); i++)
-			WRITE8(mBStream, mComment[i]);
 		
 		mStream->Close();
 		mStream = nsnull;
@@ -248,7 +271,7 @@ nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
 		mStream->Flush();
 		nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
 		
-		rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mOffset);
+		rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
 		if (NS_FAILED(rv)) return rv;
 		rv = header.WriteFileHeader(mBStream);
 		if (NS_FAILED(rv)) return rv;
@@ -262,7 +285,8 @@ nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
 
 nsresult nttZipWriter::OnEntryComplete(nttZipHeader header)
 {
-		mOffset += header.mCSize + header.GetFileHeaderLength();
+		mCDSDirty = PR_TRUE;
+		mCDSOffset += header.mCSize + header.GetFileHeaderLength();
 		mHeaders.AppendElement(header);
 		mBusy = PR_FALSE;
 		
