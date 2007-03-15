@@ -79,7 +79,80 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 		if (!exists)
 				return NS_ERROR_FAILURE;
 
-		mCDSDirty = PR_FALSE;
+		nsCOMPtr<nsIFileInputStream> stream = do_CreateInstance("@mozilla.org/network/file-input-stream;1");
+		stream->Init(file, 1, 0, 0);
+		
+		PRInt64 size;
+		file->GetFileSize(&size);
+		
+		char buf[1024];
+		PRUint64 seek = size-1024;
+		PRUint32 length = 1024;
+		
+		if (seek <= 0)
+		{
+				length += seek;
+				seek = 0;
+		}
+		
+		PRUint32 pos = length-22;
+		PRUint32 sig = 0;
+		PRUint32 count = 0;
+		nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(stream);
+
+		while (true)
+		{
+				seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek);
+				stream->Read(buf, length, &count);
+				if (count < length)
+					return NS_ERROR_FAILURE;
+				
+				pos = length - 22;       // We know it's at least this far from the end
+				sig = READ32(buf, pos);
+				while (pos >=0)
+				{
+						if (sig == 0x06054b50)
+						{
+								mCDSOffset = READ32(buf, pos+16);
+								mCDSDirty = PR_FALSE;
+								stream->Close();
+
+								nsresult rv;
+								mStream = do_CreateInstance("@mozilla.org/network/file-output-stream;1");
+								rv = mStream->Init(file, 0x02 | 0x08, 0664, 0);
+								if (NS_FAILED(rv)) return rv;
+						
+								mBStream = do_CreateInstance("@mozilla.org/binaryoutputstream;1");
+								mBStream->SetOutputStream(mStream);
+								
+								seekable = do_QueryInterface(mStream);
+								seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
+								
+								mBusy = PR_FALSE;
+								mProcessing = PR_FALSE;
+								mComment = NS_LITERAL_STRING("");
+
+								return NS_OK;
+						}
+						sig = sig << 8;
+						sig += buf[--pos];
+				}
+				
+				if (seek == 0)           // Out of room, this zip is damaged
+				{
+						stream->Close();
+						return NS_ERROR_FAILURE;
+				}
+					
+				seek -= (1024 - 22);     // Overlap by the size of the end of cdr
+				if (seek < 0)
+				{
+						length += seek;
+						seek = 0;
+				}
+		}
+		
+		return NS_ERROR_FAILURE;
 }
 	
 /* void create (in nsIFile file); */
@@ -89,17 +162,12 @@ NS_IMETHODIMP nttZipWriter::Create(nsIFile *file)
 				return NS_ERROR_ALREADY_INITIALIZED;
 	
 		nsresult rv;
-		mStream = do_CreateInstance("@mozilla.org/network/file-output-stream;1", &rv);
-		if (NS_FAILED(rv)) return rv;
-		
+		mStream = do_CreateInstance("@mozilla.org/network/file-output-stream;1");
 		rv = mStream->Init(file, 0x02 | 0x08 | 0x20, 0664, 0);
 		if (NS_FAILED(rv)) return rv;
 
-		mBStream = do_CreateInstance("@mozilla.org/binaryoutputstream;1", &rv);
-		if (NS_FAILED(rv)) return rv;
-		
-		rv = mBStream->SetOutputStream(mStream);
-		if (NS_FAILED(rv)) return rv;
+		mBStream = do_CreateInstance("@mozilla.org/binaryoutputstream;1");
+		mBStream->SetOutputStream(mStream);
 
 		mBusy = PR_FALSE;
 		mProcessing = PR_FALSE;
@@ -150,6 +218,12 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime
 		return NS_OK;
 }
 
+/* void removeEntry (in AString path); */
+NS_IMETHODIMP nttZipWriter::RemoveEntry(const nsAString & path)
+{
+		return NS_OK;
+}
+
 /* void addFile (in AString path, in nsIFile file, in nsIRequestObserver obs); */
 NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file, nsIRequestObserver *obs)
 {
@@ -158,6 +232,11 @@ NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file, nsIRe
 		if (mBusy)
 				return NS_ERROR_FAILURE;
 		
+		PRBool exists;
+		file->Exists(&exists);
+		if (!exists)
+				return NS_ERROR_FAILURE;
+
 		if (obs)
 				obs->OnStartRequest(nsnull, NS_ISUPPORTS_CAST(nttIZipWriter*, this));
 		mProcessObserver = obs;
@@ -181,6 +260,19 @@ NS_IMETHODIMP nttZipWriter::QueueFile(const nsAString & path, nsIFile *file)
 		mQueue.AppendElement(item);
 		
     return NS_OK;
+}
+
+/* void queueRemoval (in AString path); */
+NS_IMETHODIMP nttZipWriter::QueueRemoval(const nsAString & path)
+{
+		if (!mStream)
+				return NS_ERROR_NOT_INITIALIZED;
+
+		nttZipQueueItem item;
+		item.mPath = path;
+		mQueue.AppendElement(item);
+
+		return NS_OK;
 }
 
 /* void processQueue (in nsIRequestObserver obs); */
@@ -240,6 +332,9 @@ NS_IMETHODIMP nttZipWriter::Close()
 				WRITE16(mBStream, mComment.Length());
 				for (PRUint32 i = 0; i < mComment.Length(); i++)
 					WRITE8(mBStream, mComment[i]);
+
+				nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
+				seekable->SetEOF();
 		}
 		
 		mStream->Close();

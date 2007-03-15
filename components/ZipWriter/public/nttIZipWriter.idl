@@ -60,9 +60,13 @@ interface nttIZipWriter : nsISupports
 	
 	nsIOutputStream addFileEntry(in AString path, in PRInt64 modtime);
 	
+	void removeEntry(in AString path);
+	
 	void addFile(in AString path, in nsIFile file, in nsIRequestObserver obs);
 	
 	void queueFile(in AString path, in nsIFile file);
+	
+	void queueRemoval(in AString path);
 	
 	void processQueue(in nsIRequestObserver obs);
 	
