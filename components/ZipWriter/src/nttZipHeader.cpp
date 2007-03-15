@@ -43,7 +43,15 @@
  */
 
 #include "nttZipHeader.h"
- 
+
+void nttZipHeader::Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset)
+{
+		mEAttr = aAttr;
+		mOffset = aOffset;
+		mName = aPath;
+		mComment = NS_LITERAL_STRING("");
+}
+
 PRUint32 nttZipHeader::GetFileHeaderLength()
 {
 		return 4+2+2+2+2+2+4+4+4+2+2+mName.Length();
@@ -100,5 +108,54 @@ nsresult nttZipHeader::WriteCDSHeader(nsIBinaryOutputStream *stream)
 		for (PRUint32 i = 0; i<mComment.Length(); i++)
 				WRITE8(stream, mComment[i]);
 
+		return NS_OK;
+}
+
+nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
+{
+		char buf[46];
+		
+		PRUint32 count;
+		stream->Read(buf, 46, &count);
+		if (count < 46)
+				return NS_ERROR_FAILURE;
+			
+		mVersionMade           = READ16(buf, 4);
+		mVersionNeeded         = READ16(buf, 6);
+		mFlags                 = READ16(buf, 8);
+		mMethod                = READ16(buf, 10);
+		mTime                  = READ16(buf, 12);
+		mDate                  = READ16(buf, 14);
+		mCRC                   = READ32(buf, 16);
+		mCSize                 = READ32(buf, 20);
+		mUSize                 = READ32(buf, 24);
+		PRUint32 namelength    = READ16(buf, 28);
+		PRUint32 fieldlength   = READ16(buf, 30);
+		PRUint32 commentlength = READ16(buf, 32);
+		mDisk                  = READ16(buf, 34);
+		mIAttr                 = READ16(buf, 36);
+		mEAttr                 = READ32(buf, 38);
+		mOffset                = READ32(buf, 42);
+		
+		char *field = (char*)NS_Alloc(namelength);
+		stream->Read(field, namelength, &count);
+		if (count < namelength)
+			return NS_ERROR_FAILURE;
+		mName = NS_ConvertUTF8toUTF16(field, namelength);
+		NS_Free(field);
+		
+		field = (char*)NS_Alloc(fieldlength);
+		stream->Read(field, fieldlength, &count);
+		if (count < fieldlength)
+			return NS_ERROR_FAILURE;
+		NS_Free(field);
+		
+		field = (char*)NS_Alloc(commentlength);
+		stream->Read(field, commentlength, &count);
+		if (count < commentlength)
+			return NS_ERROR_FAILURE;
+		mComment = NS_ConvertUTF8toUTF16(field, commentlength);
+		NS_Free(field);
+		
 		return NS_OK;
 }

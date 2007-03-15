@@ -105,7 +105,7 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 				seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek);
 				stream->Read(buf, length, &count);
 				if (count < length)
-					return NS_ERROR_FAILURE;
+						return NS_ERROR_FAILURE;
 				
 				pos = length - 22;       // We know it's at least this far from the end
 				sig = READ32(buf, pos);
@@ -113,11 +113,22 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 				{
 						if (sig == 0x06054b50)
 						{
+								nsresult rv;
+								
 								mCDSOffset = READ32(buf, pos+16);
+								PRUint32 entries = READ16(buf, pos+10);
 								mCDSDirty = PR_FALSE;
+								seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
+								for (PRUint32 entry = 0; entry < entries; entry++)
+								{
+										nttZipHeader header;
+										rv = header.ReadCDSHeader(stream);
+										if (NS_FAILED(rv)) return rv;
+										mHeaders.AppendElement(header);
+								}
+
 								stream->Close();
 
-								nsresult rv;
 								mStream = do_CreateInstance("@mozilla.org/network/file-output-stream;1");
 								rv = mStream->Init(file, 0x02 | 0x08, 0664, 0);
 								if (NS_FAILED(rv)) return rv;
@@ -189,7 +200,8 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
 		nsresult rv;
 		mBusy = PR_TRUE;
 			
-		nttZipHeader header(path, modtime, 16, mCDSOffset);
+		nttZipHeader header;
+		header.Init(path, modtime, 16, mCDSOffset);
 		rv = header.WriteFileHeader(mBStream);
 		if (NS_FAILED(rv)) return rv;
 		
@@ -207,7 +219,8 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime
 		nsresult rv;
 		mBusy = PR_TRUE;
 		
-		nttZipHeader header(path, modtime, 0, mCDSOffset);
+		nttZipHeader header;
+		header.Init(path, modtime, 0, mCDSOffset);
 		rv = header.WriteFileHeader(mBStream);
 		if (NS_FAILED(rv)) return rv;
 		
