@@ -53,9 +53,9 @@
 #define WRITE16(str,val) str->Write8(val & 0xFF); str->Write8(val >> 8)
 #define WRITE32(str,val) str->Write8(val & 0xFF); str->Write8((val >> 8) & 0xFF); str->Write8((val >> 16) & 0xFF); str->Write8(val >> 24)
 
-#define READ8(buf, off) buf[off]
-#define READ16(buf, off) buf[off] + (buf[off+1] << 8)
-#define READ32(buf, off) buf[off] + (buf[off+1] << 8) + (buf[off+1] << 16) + (buf[off+1] << 24)
+#define READ8(buf, off) (PRUint8)buf[off]
+#define READ16(buf, off) (PRUint16)buf[off] + ((PRUint16)buf[off+1] << 8)
+#define READ32(buf, off) (PRUint32)buf[off] + ((PRUint32)buf[off+1] << 8) + ((PRUint32)buf[off+2] << 16) + ((PRUint32)buf[off+3] << 24)
 
 class nttZipHeader
 {
