@@ -87,11 +87,13 @@ private:
 		PRBool mBusy;
 		PRBool mProcessing;
 		nsTArray<nttZipQueueItem> mQueue;
+		nsCOMPtr<nsIFile> mFile;
 		nsCOMPtr<nsIBufferedOutputStream> mProcessOutputStream;
 		nsCOMPtr<nsIFileInputStream> mProcessInputStream;
 		nsCOMPtr<nsIRequestObserver> mProcessObserver;
 		
 		nsresult BeginProcessing(const nsAString & path, nsIFile *file);
+		PRInt32 FindEntry(const nsAString & path);
 };
 
 #endif

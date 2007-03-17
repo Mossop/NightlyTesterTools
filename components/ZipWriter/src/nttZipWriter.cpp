@@ -48,6 +48,7 @@
 #include "nsIInputStreamPump.h"
 #include "nsISimpleStreamListener.h"
 #include "nsComponentManagerUtils.h"
+#include "stdio.h"
 
 NS_IMPL_ISUPPORTS2(nttZipWriter, nttIZipWriter, nsIRequestObserver)
 
@@ -74,13 +75,23 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 		if (mStream)
 				return NS_ERROR_ALREADY_INITIALIZED;
 		
+		if (!file)
+				return NS_ERROR_INVALID_ARG;
+		
+		nsresult rv;
+		
 		PRBool exists;
 		file->Exists(&exists);
 		if (!exists)
-				return NS_ERROR_FAILURE;
+				return NS_ERROR_FILE_NOT_FOUND;
 
+		printf("File exists\n");
+		
+		mFile = file;
+		
 		nsCOMPtr<nsIFileInputStream> stream = do_CreateInstance("@mozilla.org/network/file-input-stream;1");
-		stream->Init(file, 1, 0, 0);
+		rv = stream->Init(file, 1, 0, 0);
+		if (NS_FAILED(rv)) return NS_ERROR_FAILURE;
 		
 		PRInt64 size;
 		file->GetFileSize(&size);
@@ -102,6 +113,7 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 
 		while (true)
 		{
+				printf("Reading from %lld\n", seek);
 				seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek);
 				stream->Read(buf, length, &count);
 				if (count < length)
@@ -111,19 +123,23 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 				sig = READ32(buf, pos);
 				while (pos >=0)
 				{
+						printf("Checking at %u\n", pos);
 						if (sig == 0x06054b50)
 						{
-								nsresult rv;
+								printf("Found signature\n");
 								
 								mCDSOffset = READ32(buf, pos+16);
 								PRUint32 entries = READ16(buf, pos+10);
 								mCDSDirty = PR_FALSE;
-								seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
+								printf("CDS at %u, %u entries\n", mCDSOffset, entries);
+								rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
+								if (NS_FAILED(rv)) return rv;
 								for (PRUint32 entry = 0; entry < entries; entry++)
 								{
 										nttZipHeader header;
 										rv = header.ReadCDSHeader(stream);
 										if (NS_FAILED(rv)) return rv;
+										printf("Read %s\n", NS_LossyConvertUTF16toASCII(header.mName).get());
 										mHeaders.AppendElement(header);
 								}
 
@@ -151,6 +167,7 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 				
 				if (seek == 0)           // Out of room, this zip is damaged
 				{
+						printf("Signature never found\n");
 						stream->Close();
 						return NS_ERROR_FAILURE;
 				}
@@ -162,6 +179,7 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 						seek = 0;
 				}
 		}
+		// Should never reach here
 		
 		return NS_ERROR_FAILURE;
 }
@@ -176,6 +194,8 @@ NS_IMETHODIMP nttZipWriter::Create(nsIFile *file)
 		mStream = do_CreateInstance("@mozilla.org/network/file-output-stream;1");
 		rv = mStream->Init(file, 0x02 | 0x08 | 0x20, 0664, 0);
 		if (NS_FAILED(rv)) return rv;
+		
+		mFile = file;
 
 		mBStream = do_CreateInstance("@mozilla.org/binaryoutputstream;1");
 		mBStream->SetOutputStream(mStream);
@@ -234,6 +254,57 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime
 /* void removeEntry (in AString path); */
 NS_IMETHODIMP nttZipWriter::RemoveEntry(const nsAString & path)
 {
+		PRInt32 pos = FindEntry(path);
+		if (pos >= 0)
+		{
+				nsresult rv;
+				
+				if ((pos+1) < mHeaders.Length())
+				{
+						nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
+						rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mHeaders[pos].mOffset);
+						if (NS_FAILED(rv)) return rv;
+						
+						nsCOMPtr<nsIFileInputStream> reader = do_CreateInstance("@mozilla.org/network/file-input-stream;1");
+						reader->Init(mFile, 1, 0, 0);
+						seekable = do_QueryInterface(reader);
+						rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mHeaders[pos+1].mOffset);
+						if (NS_FAILED(rv)) return rv;
+						
+						PRUint32 count = mCDSOffset - mHeaders[pos+1].mOffset;
+						PRUint32 read = 0;
+						char buf[4096];
+						while (count > 0)
+						{
+								if (count < 4096)
+									read = count;
+								else
+									read = 4096;
+
+								rv = reader->Read(buf, read, &read);
+								if (NS_FAILED(rv)) return rv;
+								
+								rv = mStream->Write(buf, read, &read);
+								if (NS_FAILED(rv)) return rv;
+								
+								count -= read;
+						}
+						reader->Close();
+						
+						mCDSOffset -= (mHeaders[pos+1].mOffset - mHeaders[pos].mOffset);
+				}
+				else
+				{
+						mCDSOffset = mHeaders[pos].mOffset;
+						nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
+						rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
+						if (NS_FAILED(rv)) return rv;
+				}
+				
+				mHeaders.RemoveElementAt(pos);
+				mCDSDirty = PR_TRUE;
+		}
+		
 		return NS_OK;
 }
 
@@ -465,4 +536,14 @@ nsresult nttZipWriter::BeginProcessing(const nsAString & path, nsIFile *file)
 				// start the copying
 				return pump->AsyncRead(listener, nsnull);
 		}
+}
+
+PRInt32 nttZipWriter::FindEntry(const nsAString & path)
+{
+		for (PRUint32 pos = 0; pos < mHeaders.Length(); pos++)
+		{
+				if (mHeaders[pos].mName.Equals(path))
+						return pos;
+		}
+		return -1;
 }
