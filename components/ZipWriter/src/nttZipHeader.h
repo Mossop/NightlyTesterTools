@@ -105,6 +105,8 @@ public:
 		PRUint32 GetCDSHeaderLength();
 		nsresult WriteCDSHeader(nsIBinaryOutputStream *stream);
 		nsresult ReadCDSHeader(nsIInputStream *stream);
+		PRUint32 GetStringLength(const nsAString & string);
+		void WriteString(const nsAString & string, nsIBinaryOutputStream *stream);
 };
 
 #endif

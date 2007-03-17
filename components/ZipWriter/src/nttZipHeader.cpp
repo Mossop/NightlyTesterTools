@@ -50,11 +50,14 @@ void nttZipHeader::Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr,
 		mOffset = aOffset;
 		mName = aPath;
 		mComment = NS_LITERAL_STRING("");
+		nsCAutoString str = NS_ConvertUTF16toUTF8(aPath);
+		if (str.Length() != aPath.Length())
+				mFlags = mFlags | 0x800;
 }
 
 PRUint32 nttZipHeader::GetFileHeaderLength()
 {
-		return 4+2+2+2+2+2+4+4+4+2+2+mName.Length();
+		return 4+2+2+2+2+2+4+4+4+2+2+GetStringLength(mName);
 }
 
 nsresult nttZipHeader::WriteFileHeader(nsIBinaryOutputStream *stream)
@@ -68,18 +71,17 @@ nsresult nttZipHeader::WriteFileHeader(nsIBinaryOutputStream *stream)
 		WRITE32(stream, mCRC);
 		WRITE32(stream, mCSize);
 		WRITE32(stream, mUSize);
-		WRITE16(stream, mName.Length());
+		WRITE16(stream, GetStringLength(mName));
 		WRITE16(stream, 0);
 
-		for (PRUint32 i = 0; i<mName.Length(); i++)
-				WRITE8(stream, mName[i]);
+		WriteString(mName, stream);
 
 		return NS_OK;
 }
 
 PRUint32 nttZipHeader::GetCDSHeaderLength()
 {
-		return 4+2+2+2+2+2+2+4+4+4+2+2+2+2+2+4+4+mName.Length()+mComment.Length();
+		return 4+2+2+2+2+2+2+4+4+4+2+2+2+2+2+4+4+GetStringLength(mName)+GetStringLength(mComment);
 }
 
 nsresult nttZipHeader::WriteCDSHeader(nsIBinaryOutputStream *stream)
@@ -94,19 +96,16 @@ nsresult nttZipHeader::WriteCDSHeader(nsIBinaryOutputStream *stream)
 		WRITE32(stream, mCRC);
 		WRITE32(stream, mCSize);
 		WRITE32(stream, mUSize);
-		WRITE16(stream, mName.Length());
+		WRITE16(stream, GetStringLength(mName));
 		WRITE16(stream, 0);
-		WRITE16(stream, mComment.Length());
+		WRITE16(stream, GetStringLength(mComment));
 		WRITE16(stream, mDisk);
 		WRITE16(stream, mIAttr);
 		WRITE32(stream, mEAttr);
 		WRITE32(stream, mOffset);
 
-		for (PRUint32 i = 0; i<mName.Length(); i++)
-				WRITE8(stream, mName[i]);
-
-		for (PRUint32 i = 0; i<mComment.Length(); i++)
-				WRITE8(stream, mComment[i]);
+		WriteString(mName, stream);		
+		WriteString(mComment, stream);
 
 		return NS_OK;
 }
@@ -119,7 +118,11 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		stream->Read(buf, 46, &count);
 		if (count < 46)
 				return NS_ERROR_FAILURE;
-			
+		
+		PRUint32 signature     = READ32(buf, 0);
+		if (signature != 0x02014b50)
+				return NS_ERROR_FAILURE;
+				
 		mVersionMade           = READ16(buf, 4);
 		mVersionNeeded         = READ16(buf, 6);
 		mFlags                 = READ16(buf, 8);
@@ -141,7 +144,10 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		stream->Read(field, namelength, &count);
 		if (count < namelength)
 			return NS_ERROR_FAILURE;
-		mName = NS_ConvertASCIItoUTF16(field, namelength);
+		if (mFlags & 0x800)
+				mName = NS_ConvertUTF8toUTF16(field, namelength);
+		else
+				mName = NS_ConvertASCIItoUTF16(field, namelength);
 		NS_Free(field);
 		
 		field = (char*)NS_Alloc(fieldlength);
@@ -154,8 +160,39 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		stream->Read(field, commentlength, &count);
 		if (count < commentlength)
 			return NS_ERROR_FAILURE;
-		mComment = NS_ConvertASCIItoUTF16(field, commentlength);
+		if (mFlags & 0x800)
+				mComment = NS_ConvertUTF8toUTF16(field, commentlength);
+		else
+				mComment = NS_ConvertASCIItoUTF16(field, commentlength);
 		NS_Free(field);
 		
 		return NS_OK;
+}
+
+PRUint32 nttZipHeader::GetStringLength(const nsAString & string)
+{
+		if (mFlags & 0x800)
+		{
+				nsCAutoString str = NS_ConvertUTF16toUTF8(string);
+				return str.Length();
+		}
+		else
+		{
+				return string.Length();
+		}
+}
+
+void nttZipHeader::WriteString(const nsAString & string, nsIBinaryOutputStream *stream)
+{
+		if (mFlags & 0x800)
+		{
+				nsCAutoString str = NS_ConvertUTF16toUTF8(string);
+				for (PRUint32 i = 0; i<str.Length(); i++)
+						WRITE8(stream, str[i]);
+		}
+		else
+		{
+				for (PRUint32 i = 0; i<mName.Length(); i++)
+						WRITE8(stream, mName[i] & 0xff);
+		}
 }
