@@ -129,9 +129,9 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		mCRC                   = READ32(buf, 16);
 		mCSize                 = READ32(buf, 20);
 		mUSize                 = READ32(buf, 24);
-		PRUint32 namelength    = READ16(buf, 28);
-		PRUint32 fieldlength   = READ16(buf, 30);
-		PRUint32 commentlength = READ16(buf, 32);
+		PRUint16 namelength    = READ16(buf, 28);
+		PRUint16 fieldlength   = READ16(buf, 30);
+		PRUint16 commentlength = READ16(buf, 32);
 		mDisk                  = READ16(buf, 34);
 		mIAttr                 = READ16(buf, 36);
 		mEAttr                 = READ32(buf, 38);
@@ -141,7 +141,7 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		stream->Read(field, namelength, &count);
 		if (count < namelength)
 			return NS_ERROR_FAILURE;
-		mName = NS_ConvertUTF8toUTF16(field, namelength);
+		mName = NS_ConvertASCIItoUTF16(field, namelength);
 		NS_Free(field);
 		
 		field = (char*)NS_Alloc(fieldlength);
@@ -154,7 +154,7 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		stream->Read(field, commentlength, &count);
 		if (count < commentlength)
 			return NS_ERROR_FAILURE;
-		mComment = NS_ConvertUTF8toUTF16(field, commentlength);
+		mComment = NS_ConvertASCIItoUTF16(field, commentlength);
 		NS_Free(field);
 		
 		return NS_OK;
