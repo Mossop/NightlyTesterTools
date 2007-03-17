@@ -291,7 +291,14 @@ NS_IMETHODIMP nttZipWriter::RemoveEntry(const nsAString & path)
 						}
 						reader->Close();
 						
-						mCDSOffset -= (mHeaders[pos+1].mOffset - mHeaders[pos].mOffset);
+						PRUint32 shift = (mHeaders[pos+1].mOffset - mHeaders[pos].mOffset);
+						mCDSOffset -= shift;
+						PRUint32 pos2 = pos+1;
+						while (pos2 < mHeaders.Length())
+						{
+								mHeaders[pos2].mOffset -= shift;
+								pos2++;
+						}
 				}
 				else
 				{
@@ -303,9 +310,11 @@ NS_IMETHODIMP nttZipWriter::RemoveEntry(const nsAString & path)
 				
 				mHeaders.RemoveElementAt(pos);
 				mCDSDirty = PR_TRUE;
+				
+				return NS_OK;
 		}
 		
-		return NS_OK;
+		return NS_ERROR_FILE_NOT_FOUND;
 }
 
 /* void addFile (in AString path, in nsIFile file, in nsIRequestObserver obs); */
