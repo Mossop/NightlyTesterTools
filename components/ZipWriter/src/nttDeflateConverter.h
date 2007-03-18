@@ -78,6 +78,7 @@ private:
 	  }
 	  
 	  nsCOMPtr<nsIStreamListener> mListener;
+	  nsCOMPtr<nsISupports> mContext;
 	  PRUint32 mOffset;
 		struct DeflateStruct {
 				z_stream         mZs;

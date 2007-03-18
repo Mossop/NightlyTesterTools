@@ -50,7 +50,9 @@
 [scriptable, uuid(98e40e77-2a94-46cc-bac0-deab758066be)]
 interface nttIZipWriter : nsISupports
 {
-	boolean isBusy();
+	attribute AString comment;
+	
+	readonly attribute boolean busy;
 	
 	void open(in nsIFile file);
 	
@@ -62,15 +64,11 @@ interface nttIZipWriter : nsISupports
 	
 	void removeEntry(in AString path);
 	
-	void addFile(in AString path, in nsIFile file, in nsIRequestObserver obs);
-	
 	void queueFile(in AString path, in nsIFile file);
 	
 	void queueRemoval(in AString path);
 	
-	void processQueue(in nsIRequestObserver obs);
-	
-	void setComment(in AString comment);
+	void processQueue(in nsIRequestObserver observer, in nsISupports ctxt);
 	
 	void close();
 };

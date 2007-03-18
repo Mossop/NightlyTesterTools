@@ -59,8 +59,8 @@
 class nttZipQueueItem
 {
 public:
-	nsString mPath;
-  nsCOMPtr<nsIFile> mFile;
+		nsString mPath;
+  	nsCOMPtr<nsIFile> mFile;
 };
 
 class nttZipWriter : public nttIZipWriter
@@ -73,12 +73,11 @@ public:
 	
 	  nttZipWriter();
 		nsresult OnFileEntryComplete(nttZipHeader header);
-		nsresult OnEntryComplete(nttZipHeader header);
 	
 private:
 	  ~nttZipWriter();
 		nsCOMPtr<nsIBinaryOutputStream> mBStream;
-		nsCOMPtr<nsIFileOutputStream> mStream;
+		nsCOMPtr<nsIBufferedOutputStream> mStream;
 		nsTArray<nttZipHeader> mHeaders;
 		PRUint32 mCDSOffset;
 		PRBool mCDSDirty;
@@ -89,10 +88,11 @@ private:
 		nsTArray<nttZipQueueItem> mQueue;
 		nsCOMPtr<nsIFile> mFile;
 		nsCOMPtr<nsIBufferedOutputStream> mProcessOutputStream;
-		nsCOMPtr<nsIFileInputStream> mProcessInputStream;
 		nsCOMPtr<nsIRequestObserver> mProcessObserver;
+		nsCOMPtr<nsISupports> mProcessContext;
 		
-		nsresult BeginProcessing(const nsAString & path, nsIFile *file);
+		void BeginProcessingNextItem();
+		void FinishQueue(nsresult status);
 		PRInt32 FindEntry(const nsAString & path);
 };
 

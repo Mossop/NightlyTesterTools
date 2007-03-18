@@ -92,6 +92,7 @@ NS_IMETHODIMP nttDeflateConverter::Convert(nsIInputStream *aFromStream, const ch
 NS_IMETHODIMP nttDeflateConverter::AsyncConvertData(const char *aFromType, const char *aToType, nsIStreamListener *aListener, nsISupports *aCtxt)
 {
     mListener = aListener;
+    mContext = aCtxt;
     return Init();
 }
 
@@ -140,7 +141,7 @@ NS_IMETHODIMP nttDeflateConverter::OnDataAvailable(nsIRequest *aRequest, nsISupp
 NS_IMETHODIMP nttDeflateConverter::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 {
 		if (mListener)
-		    return mListener->OnStartRequest(aRequest, aContext);
+		    return mListener->OnStartRequest(aRequest, mContext);
 		return NS_OK;
 }
 
@@ -164,7 +165,7 @@ NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISuppor
 		PR_FREEIF(mDeflate);
 
 		if (mListener)
-	    	return mListener->OnStopRequest(aRequest, aContext, aStatusCode);
+	    	return mListener->OnStopRequest(aRequest, mContext, aStatusCode);
 	  
 	  return NS_OK;
 }
@@ -179,7 +180,7 @@ nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupport
 		nsCOMPtr<nsIStringInputStream> stream = do_CreateInstance("@mozilla.org/io/string-input-stream;1");
 		stream->ShareData((char*)mDeflate->mWriteBuf, bytesToWrite);
 		if (mListener)
-				rv = mListener->OnDataAvailable(aRequest, aContext, stream, mOffset, bytesToWrite);
+				rv = mListener->OnDataAvailable(aRequest, mContext, stream, mOffset, bytesToWrite);
 
 		// now set the state for 'deflate'
 		mDeflate->mZs.next_out = mDeflate->mWriteBuf;
