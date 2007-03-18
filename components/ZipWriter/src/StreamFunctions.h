@@ -35,10 +35,10 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/components/ZipWriter/src/nttZipHeader.h $
- * $LastChangedBy: dave $
- * $Date: 2007-03-17 23:23:09 +0000 (Sat, 17 Mar 2007) $
- * $Revision: 998 $
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Date$
+ * $Revision$
  *
  */
 
