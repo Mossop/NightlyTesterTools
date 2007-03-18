@@ -44,9 +44,16 @@
 
 #include "StreamFunctions.h"
 #include "nttZipHeader.h"
+#include "time.h"
 
 void nttZipHeader::Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset)
 {
+		aDate /= 1000;
+		time_t timeval = (time_t)aDate;
+		struct tm *time = localtime(&timeval);
+		mTime = time->tm_sec/2 + (time->tm_min << 5) + (time->tm_hour << 11);
+		mDate = time->tm_mday + ((time->tm_mon+1) << 5) + ((time->tm_year-80) << 9);
+				
 		mEAttr = aAttr;
 		mOffset = aOffset;
 		mName = aPath;
@@ -116,7 +123,6 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		char buf[46];
 		nsresult rv;
 		
-		PRUint32 count;
 		rv = NTT_ReadData(stream, buf, 46);
 		if (NS_FAILED(rv)) return rv;
 		
