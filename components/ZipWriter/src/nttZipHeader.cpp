@@ -44,6 +44,7 @@
 
 #include "StreamFunctions.h"
 #include "nttZipHeader.h"
+#include "nsMemory.h"
 #include "time.h"
 
 #define ZIP_FILE_HEADER_SIGNATURE 0x04034b50
@@ -64,14 +65,14 @@ void nttZipHeader::Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr,
 		mOffset = aOffset;
 		mName = aPath;
 		mComment = NS_LITERAL_STRING("");
-		nsCAutoString str = NS_ConvertUTF16toUTF8(aPath);
+		nsCString str = NS_ConvertUTF16toUTF8(aPath);
 		if (str.Length() != aPath.Length())
 				mFlags = mFlags | 0x800;
 }
 
 PRUint32 nttZipHeader::GetFileHeaderLength()
 {
-		nsCAutoString name;
+		nsCString name;
 		GetCodedString(mName, name);
 		return ZIP_FILE_HEADER_SIZE+name.Length();
 }
@@ -80,7 +81,7 @@ nsresult nttZipHeader::WriteFileHeader(nsIOutputStream *stream)
 {
 		nsresult rv;
 		
-		nsCAutoString name;
+		nsCString name;
 		GetCodedString(mName, name);
 
 		char buf[ZIP_FILE_HEADER_SIZE];
@@ -105,9 +106,9 @@ nsresult nttZipHeader::WriteFileHeader(nsIOutputStream *stream)
 
 PRUint32 nttZipHeader::GetCDSHeaderLength()
 {
-		nsCAutoString name;
+		nsCString name;
 		GetCodedString(mName, name);
-		nsCAutoString comment;
+		nsCString comment;
 		GetCodedString(mComment, comment);
 		return 4+2+2+2+2+2+2+4+4+4+2+2+2+2+2+4+4+name.Length()+comment.Length();
 }
@@ -116,9 +117,9 @@ nsresult nttZipHeader::WriteCDSHeader(nsIOutputStream *stream)
 {
 		nsresult rv;
 		
-		nsCAutoString name;
+		nsCString name;
 		GetCodedString(mName, name);
-		nsCAutoString comment;
+		nsCString comment;
 		GetCodedString(mComment, comment);
 		
 		char buf[ZIP_CDS_HEADER_SIZE];
@@ -224,8 +225,10 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 
 void nttZipHeader::GetCodedString(const nsAString & string, nsACString & retval)
 {
+		nsCString str;
 		if (mFlags & 0x800)
-				LossyCopyUTF16toASCII(string, retval);
+				str = NS_ConvertUTF16toUTF8(string);
 		else
-				LossyCopyUTF16toASCII(string, retval);
+				str = NS_LossyConvertUTF16toASCII(string);
+		retval = str;
 }

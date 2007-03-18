@@ -45,9 +45,10 @@
 #include "crctable.h"
 #include "StreamFunctions.h"
 #include "nttZipOutputStream.h"
+#include "nttStringInputStream.h"
 #include "nttDeflateConverter.h"
-#include "nsIStringStream.h"
 #include "nsComponentManagerUtils.h"
+#include "nsMemory.h"
 
 NS_IMPL_THREADSAFE_ISUPPORTS2(nttZipOutputStream, nsIOutputStream, nsIStreamListener)
 
@@ -103,8 +104,7 @@ NS_IMETHODIMP nttZipOutputStream::Write(const char *aBuf, PRUint32 aCount, PRUin
 			
 		if (mConverter)
 		{
-				nsCOMPtr<nsIStringInputStream> stream = do_CreateInstance("@mozilla.org/io/string-input-stream;1");
-				stream->ShareData(aBuf, aCount);
+				nsCOMPtr<nsIInputStream> stream = new nttStringInputStream(aBuf, aCount);
 				rv = mConverter->OnDataAvailable(nsnull, nsnull, stream, mHeader.mUSize, aCount);
 		}
 		else

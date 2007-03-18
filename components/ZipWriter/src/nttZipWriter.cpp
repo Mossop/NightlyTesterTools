@@ -49,6 +49,7 @@
 #include "nsIInputStreamPump.h"
 #include "nsISimpleStreamListener.h"
 #include "nsComponentManagerUtils.h"
+#include "nsMemory.h"
 #include "stdio.h"
 
 #define ZIP_EOCDR_HEADER_SIZE 22
@@ -487,7 +488,7 @@ NS_IMETHODIMP nttZipWriter::Close()
 						size += mHeaders[i].GetCDSHeaderLength();
 				}
 				
-				nsCAutoString comment = NS_LossyConvertUTF16toASCII(mComment);
+				nsCString comment = NS_LossyConvertUTF16toASCII(mComment);
 
 				char buf[ZIP_EOCDR_HEADER_SIZE];
 				PRUint32 pos = 0;

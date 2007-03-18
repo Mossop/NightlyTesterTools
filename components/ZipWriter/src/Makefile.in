@@ -61,6 +61,7 @@ REQUIRES = xpcom \
            $(NULL)
 
 CPPSRCS = StreamFunctions.cpp \
+          nttStringInputStream.cpp \
           nttDeflateConverter.cpp \
           nttZipHeader.cpp \
           nttZipOutputStream.cpp \

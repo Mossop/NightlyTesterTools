@@ -45,9 +45,10 @@
 
 #include "StreamFunctions.h"
 #include "nttDeflateConverter.h"
+#include "nttStringInputStream.h"
 #include "nsIInputStreamPump.h"
-#include "nsIStringStream.h"
 #include "nsComponentManagerUtils.h"
+#include "nsMemory.h"
 #include "nspr.h"
 
 NS_IMPL_ISUPPORTS1(nttDeflateConverter, nsIStreamConverter)
@@ -176,11 +177,12 @@ nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupport
 		
 		PRUint32 bytesToWrite = ZIP_BUFLEN - mDeflate->mZs.avail_out;
 
-		printf("Pushing %u bytes of data\n", bytesToWrite);
-		nsCOMPtr<nsIStringInputStream> stream = do_CreateInstance("@mozilla.org/io/string-input-stream;1");
-		stream->ShareData((char*)mDeflate->mWriteBuf, bytesToWrite);
 		if (mListener)
+		{
+				printf("Pushing %u bytes of data\n", bytesToWrite);
+				nsCOMPtr<nsIInputStream> stream = new nttStringInputStream((char*)mDeflate->mWriteBuf, bytesToWrite);
 				rv = mListener->OnDataAvailable(aRequest, mContext, stream, mOffset, bytesToWrite);
+		}
 
 		// now set the state for 'deflate'
 		mDeflate->mZs.next_out = mDeflate->mWriteBuf;
