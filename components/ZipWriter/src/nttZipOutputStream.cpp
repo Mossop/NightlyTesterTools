@@ -70,9 +70,13 @@ nttZipOutputStream::nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *a
 /* void close (); */
 NS_IMETHODIMP nttZipOutputStream::Close()
 {
+		if (!mStream)
+				return NS_ERROR_NOT_INITIALIZED;
+				
 		if (mConverter)
 				mConverter->OnStopRequest(nsnull, nsnull, NS_OK);
-
+		mConverter = nsnull;
+		
 		mHeader.mCRC = mHeader.mCRC ^ 0xffffffff;
 		mStream = nsnull;
 		nsresult rv = mWriter->OnFileEntryComplete(mHeader);

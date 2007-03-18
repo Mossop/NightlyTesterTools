@@ -100,6 +100,8 @@ NS_IMETHODIMP nttDeflateConverter::AsyncConvertData(const char *aFromType, const
 /* void onDataAvailable (in nsIRequest aRequest, in nsISupports aContext, in nsIInputStream aInputStream, in unsigned long aOffset, in unsigned long aCount); */
 NS_IMETHODIMP nttDeflateConverter::OnDataAvailable(nsIRequest *aRequest, nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset, PRUint32 aCount)
 {
+		NS_ASSERTION(mDeflate, "Not initialized");
+		
 		nsresult rv;
 		
 		printf("Data Available %u\n", aCount);
@@ -149,6 +151,8 @@ NS_IMETHODIMP nttDeflateConverter::OnStartRequest(nsIRequest *aRequest, nsISuppo
 /* void onStopRequest (in nsIRequest aRequest, in nsISupports aContext, in nsresult aStatusCode); */
 NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISupports *aContext, nsresult aStatusCode)
 {
+		NS_ASSERTION(mDeflate, "Not initialized");
+		
 		nsresult rv;
 	
 		int zerr;
@@ -173,6 +177,8 @@ NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISuppor
 
 nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupports *aContext)
 {
+		NS_ASSERTION(mDeflate, "Not initialized");
+		
 		nsresult rv = NS_OK;
 		
 		PRUint32 bytesToWrite = ZIP_BUFLEN - mDeflate->mZs.avail_out;

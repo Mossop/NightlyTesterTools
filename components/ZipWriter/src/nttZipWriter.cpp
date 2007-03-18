@@ -530,8 +530,10 @@ NS_IMETHODIMP nttZipWriter::OnStopRequest(nsIRequest *aRequest, nsISupports *aCo
 		if (mProcessOutputStream)
 		{
 				// We were adding a file, just close and let that clean up
-				mProcessOutputStream->Close();
+				// Closing the stream may end the queue or start a new file so clear the member stream first
+				nsCOMPtr<nsIOutputStream> stream = do_QueryInterface(mProcessOutputStream);
 				mProcessOutputStream = nsnull;
+				stream->Close();
 		}
 		else
 		{
@@ -577,6 +579,11 @@ nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
 
 void nttZipWriter::BeginProcessingNextItem()
 {
+		NS_ASSERTION(!mProcessOutputStream, "Hanging output stream");
+		
+		if (!mProcessing)
+				return;
+				
 		if (mQueue.IsEmpty())
 		{
 				FinishQueue(NS_OK);
@@ -636,6 +643,7 @@ void nttZipWriter::BeginProcessingNextItem()
 						rv = mProcessOutputStream->Init(ostream, 0x8000);
 						if (NS_FAILED(rv))
 						{
+								mProcessOutputStream = nsnull;
 								FinishQueue(rv);
 								return;
 						}
@@ -645,6 +653,7 @@ void nttZipWriter::BeginProcessingNextItem()
 						rv = pump->Init(inputStream, -1, -1, 0, 0, PR_TRUE);
 						if (NS_FAILED(rv))
 						{
+								mProcessOutputStream = nsnull;
 								FinishQueue(rv);
 								return;
 						}
@@ -654,6 +663,7 @@ void nttZipWriter::BeginProcessingNextItem()
 						listener->Init(mProcessOutputStream, this);
 						if (NS_FAILED(rv))
 						{
+								mProcessOutputStream = nsnull;
 								FinishQueue(rv);
 								return;
 						}
@@ -662,6 +672,7 @@ void nttZipWriter::BeginProcessingNextItem()
 						rv = pump->AsyncRead(listener, nsnull);
 						if (NS_FAILED(rv))
 						{
+								mProcessOutputStream = nsnull;
 								FinishQueue(rv);
 								return;
 						}
@@ -754,6 +765,8 @@ void nttZipWriter::BeginProcessingNextItem()
 
 void nttZipWriter::FinishQueue(nsresult status)
 {
+		NS_ASSERTION(!mProcessOutputStream, "Hanging output stream");
+		
 		if (mProcessObserver)
 				mProcessObserver->OnStopRequest(nsnull, mProcessContext, status);
 		mProcessing = PR_FALSE;
