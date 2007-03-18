@@ -139,7 +139,12 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 								mCDSOffset = READ32(buf, pos+16);
 								PRUint32 entries = READ16(buf, pos+10);
 								PRUint32 commentlen = READ16(buf, pos+20);
-								if (pos+22+commentlen <= length)
+								
+								if (commentlen == 0)
+								{
+										mComment = NS_LITERAL_STRING("");
+								}
+								else if (pos+22+commentlen <= length)
 								{
 										mComment = NS_ConvertASCIItoUTF16(buf+pos+22, commentlen);
 								}
@@ -207,7 +212,6 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 								
 								mBusy = PR_FALSE;
 								mProcessing = PR_FALSE;
-								mComment = NS_LITERAL_STRING("");
 
 								return NS_OK;
 						}
