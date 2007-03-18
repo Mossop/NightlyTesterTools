@@ -474,7 +474,7 @@ NS_IMETHODIMP nttZipWriter::Close()
 				WRITE32(mBStream, mCDSOffset);
 				WRITE16(mBStream, mComment.Length());
 				for (PRUint32 i = 0; i < mComment.Length(); i++)
-					WRITE8(mBStream, mComment[i] & 0xff);
+						WRITE8(mBStream, mComment[i] & 0xff);
 
 				nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
 				seekable->SetEOF();

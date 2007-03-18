@@ -142,7 +142,7 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		mOffset                = READ32(buf, 42);
 		
 		char *field = (char*)NS_Alloc(namelength);
-		rv = NTT_ReadData(stream, buf, namelength);
+		rv = NTT_ReadData(stream, field, namelength);
 		if (NS_FAILED(rv))
 		{
 			NS_Free(field);
@@ -155,7 +155,7 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		NS_Free(field);
 		
 		field = (char*)NS_Alloc(fieldlength);
-		rv = NTT_ReadData(stream, buf, fieldlength);
+		rv = NTT_ReadData(stream, field, fieldlength);
 		if (NS_FAILED(rv))
 		{
 			NS_Free(field);
@@ -164,7 +164,7 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		NS_Free(field);
 		
 		field = (char*)NS_Alloc(commentlength);
-		rv = NTT_ReadData(stream, buf, commentlength);
+		rv = NTT_ReadData(stream, field, commentlength);
 		if (NS_FAILED(rv))
 		{
 			NS_Free(field);
@@ -202,7 +202,7 @@ void nttZipHeader::WriteString(const nsAString & string, nsIBinaryOutputStream *
 		}
 		else
 		{
-				for (PRUint32 i = 0; i<mName.Length(); i++)
-						WRITE8(stream, mName[i] & 0xff);
+				for (PRUint32 i = 0; i<string.Length(); i++)
+						WRITE8(stream, string[i] & 0xff);
 		}
 }
