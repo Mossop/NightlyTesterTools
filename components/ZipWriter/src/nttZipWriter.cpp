@@ -542,6 +542,7 @@ NS_IMETHODIMP nttZipWriter::OnStopRequest(nsIRequest *aRequest, nsISupports *aCo
 						FinishQueue(rv);
 						return rv;
 				}
+				mBusy = PR_FALSE;
 				BeginProcessingNextItem();
 		}
 		return NS_OK;
