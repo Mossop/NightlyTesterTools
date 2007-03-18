@@ -172,7 +172,7 @@ NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISuppor
 
 nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupports *aContext)
 {
-		nsresult rv;
+		nsresult rv = NS_OK;
 		
 		PRUint32 bytesToWrite = ZIP_BUFLEN - mDeflate->mZs.avail_out;
 

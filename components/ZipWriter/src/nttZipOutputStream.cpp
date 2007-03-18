@@ -105,7 +105,7 @@ NS_IMETHODIMP nttZipOutputStream::Write(const char *aBuf, PRUint32 aCount, PRUin
 		{
 				nsCOMPtr<nsIStringInputStream> stream = do_CreateInstance("@mozilla.org/io/string-input-stream;1");
 				stream->ShareData(aBuf, aCount);
-				mConverter->OnDataAvailable(nsnull, nsnull, stream, mHeader.mUSize, aCount);
+				rv = mConverter->OnDataAvailable(nsnull, nsnull, stream, mHeader.mUSize, aCount);
 		}
 		else
 		{
