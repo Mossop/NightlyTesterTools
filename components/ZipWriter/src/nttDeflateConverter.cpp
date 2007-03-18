@@ -43,8 +43,10 @@
  *
  */
 
+#include "StreamFunctions.h"
 #include "nttDeflateConverter.h"
 #include "nsIInputStreamPump.h"
+#include "nsIStringStream.h"
 #include "nsComponentManagerUtils.h"
 #include "nspr.h"
 
@@ -62,7 +64,6 @@ nsresult nttDeflateConverter::Init()
 		int zerr;
 		
 		mOffset = 0;
-    mPipe = do_CreateInstance("@mozilla.org/pipe;1");
 		mDeflate = (DeflateStruct*) PR_Malloc(sizeof(DeflateStruct));
 		NS_ENSURE_TRUE(mDeflate, NS_ERROR_OUT_OF_MEMORY);
 
@@ -84,20 +85,7 @@ nsresult nttDeflateConverter::Init()
 /* nsIInputStream convert (in nsIInputStream aFromStream, in string aFromType, in string aToType, in nsISupports aCtxt); */
 NS_IMETHODIMP nttDeflateConverter::Convert(nsIInputStream *aFromStream, const char *aFromType, const char *aToType, nsISupports *aCtxt, nsIInputStream **_retval)
 {
-		nsresult rv;
-		
-		nsCOMPtr<nsIInputStreamPump> pump = do_CreateInstance("@mozilla.org/network/input-stream-pump;1");
-		
-		rv = Init();
-		if (NS_FAILED(rv)) return rv;
-		
-		nsCOMPtr<nsIAsyncInputStream> in;
-		mPipe->GetInputStream(getter_AddRefs(in));
-		*_retval = in;
-		
-		rv = pump->Init(aFromStream, -1, -1, 0, 0, PR_FALSE);
-		if (NS_FAILED(rv)) return rv;
-    return pump->AsyncRead(this, aCtxt);
+		return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* void asyncConvertData (in string aFromType, in string aToType, in nsIStreamListener aListener, in nsISupports aCtxt); */
@@ -112,31 +100,36 @@ NS_IMETHODIMP nttDeflateConverter::OnDataAvailable(nsIRequest *aRequest, nsISupp
 {
 		nsresult rv;
 		
+		printf("Data Available %u\n", aCount);
+		
 		char* aBuffer = (char*)NS_Alloc(aCount);
-		PRUint32 aBytesWrite;
-		rv = aInputStream->Read(aBuffer, aCount, &aBytesWrite);
+		rv = NTT_ReadData(aInputStream, aBuffer, aCount);
+		if (NS_FAILED(rv))
+		{
+				NS_Free(aBuffer);
+				return rv;
+		}
     
-		const PRUint32 oldTotalOut = mDeflate->mZs.total_out;
-	
 		// make sure we aren't reading too much
 		mDeflate->mZs.avail_in = aCount;
 		mDeflate->mZs.next_in = (unsigned char*)aBuffer;
 	
-		aBytesWrite = 0;
 		int zerr = Z_OK;
 		// deflate loop
-		while (mDeflate->mZs.avail_in > 0 && zerr == Z_OK) {
+		while (mDeflate->mZs.avail_in > 0 && zerr == Z_OK)
+		{
+				printf("Deflating\n");
 				zerr = deflate(&(mDeflate->mZs), Z_NO_FLUSH);
 		
-				while (mDeflate->mZs.avail_out == 0) {
+				while (mDeflate->mZs.avail_out == 0)
+				{
+						printf("Pushing data\n");
 						// buffer is full, time to write it to disk!
 						nsresult rv = PushAvailableData(aRequest, aContext);
 						NS_ENSURE_SUCCESS(rv, rv);
 						zerr = deflate(&(mDeflate->mZs), Z_NO_FLUSH);
 				}
 		}
-		
-		aBytesWrite = (mDeflate->mZs.total_out - oldTotalOut);
 		
 		NS_Free(aBuffer);
 		
@@ -148,6 +141,7 @@ NS_IMETHODIMP nttDeflateConverter::OnStartRequest(nsIRequest *aRequest, nsISuppo
 {
 		if (mListener)
 		    return mListener->OnStartRequest(aRequest, aContext);
+		return NS_OK;
 }
 
 /* void onStopRequest (in nsIRequest aRequest, in nsISupports aContext, in nsresult aStatusCode); */
@@ -156,7 +150,9 @@ NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISuppor
 		nsresult rv;
 	
 		int zerr;
-		do {
+		do
+		{
+				printf("Handling remaining data\n");
 				zerr = deflate(&(mDeflate->mZs), Z_FINISH);
 				// TODO check whether output size smaller than input size
 				rv = PushAvailableData(aRequest, aContext);
@@ -177,25 +173,18 @@ nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupport
 {
 		nsresult rv;
 		
-		nsCOMPtr<nsIAsyncOutputStream> out;
-		mPipe->GetOutputStream(getter_AddRefs(out));
-		nsCOMPtr<nsIAsyncInputStream> in;
-		mPipe->GetInputStream(getter_AddRefs(in));
-		
 		PRUint32 bytesToWrite = ZIP_BUFLEN - mDeflate->mZs.avail_out;
-		PRUint32 bytesWritten;
 
-		rv = out->Write((char*)mDeflate->mWriteBuf, bytesToWrite, &bytesWritten);
-		if (NS_FAILED(rv)) return rv;
-		if (bytesWritten < bytesToWrite)
-				return NS_ERROR_FAILURE;
-		
+		printf("Pushing %u bytes of data\n", bytesToWrite);
+		nsCOMPtr<nsIStringInputStream> stream = do_CreateInstance("@mozilla.org/io/string-input-stream;1");
+		stream->ShareData((char*)mDeflate->mWriteBuf, bytesToWrite);
+		if (mListener)
+				rv = mListener->OnDataAvailable(aRequest, aContext, stream, mOffset, bytesToWrite);
+
 		// now set the state for 'deflate'
 		mDeflate->mZs.next_out = mDeflate->mWriteBuf;
 		mDeflate->mZs.avail_out = ZIP_BUFLEN;
 		
-		if (mListener)
-				rv = mListener->OnDataAvailable(aRequest, aContext, in, mOffset, bytesWritten);
-		mOffset += bytesWritten;
+		mOffset += bytesToWrite;
 		return rv;
 }

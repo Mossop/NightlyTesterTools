@@ -77,7 +77,6 @@ private:
 	  {
 	  }
 	  
-	  nsCOMPtr<nsIPipe> mPipe;
 	  nsCOMPtr<nsIStreamListener> mListener;
 	  PRUint32 mOffset;
 		struct DeflateStruct {
