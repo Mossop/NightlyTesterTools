@@ -51,6 +51,9 @@
 #include "nsComponentManagerUtils.h"
 #include "stdio.h"
 
+#define ZIP_EOCDR_HEADER_SIZE 22
+#define ZIP_EOCDR_HEADER_SIGNATURE 0x06054b50
+
 NS_IMPL_ISUPPORTS2(nttZipWriter, nttIZipWriter, nsIRequestObserver)
 
 nttZipWriter::nttZipWriter()
@@ -126,7 +129,7 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 				seek = 0;
 		}
 		
-		PRUint32 pos = length-22;
+		PRUint32 pos;
 		PRUint32 sig = 0;
 		nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(stream);
 
@@ -146,31 +149,38 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 						return rv;
 				}
 				
-				pos = length - 22;       // We know it's at least this far from the end
-				sig = READ32(buf, pos);
+				pos = length - ZIP_EOCDR_HEADER_SIZE;       // We know it's at least this far from the end
+				READ32(buf, pos, sig);
+				pos-=4;
 				while (pos >=0)
 				{
 						printf("Checking at %u\n", pos);
-						if (sig == 0x06054b50)
+						if (sig == ZIP_EOCDR_HEADER_SIGNATURE)
 						{
 								printf("Found signature\n");
 								
-								mCDSOffset = READ32(buf, pos+16);
-								PRUint32 entries = READ16(buf, pos+10);
-								PRUint32 commentlen = READ16(buf, pos+20);
+								// Skip down to entry count
+								pos+=10;
+								PRUint32 entries;
+								READ16(buf, pos, entries);
+								// Skip past CDS size
+								pos+=4;
+								READ32(buf, pos, mCDSOffset);
+								PRUint32 commentlen;
+								READ16(buf, pos, commentlen);
 								
 								if (commentlen == 0)
 								{
 										mComment = NS_LITERAL_STRING("");
 								}
-								else if (pos+22+commentlen <= length)
+								else if (pos+commentlen <= length)
 								{
-										mComment = NS_ConvertASCIItoUTF16(buf+pos+22, commentlen);
+										mComment = NS_ConvertASCIItoUTF16(buf+pos, commentlen);
 								}
 								else
 								{
 										char *field = (char*)NS_Alloc(commentlen);
-										rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek+pos+22);
+										rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek+pos);
 										if (NS_FAILED(rv))
 										{
 												NS_Free(field);
@@ -233,9 +243,6 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 										return rv;
 								}
 								
-								mBStream = do_CreateInstance("@mozilla.org/binaryoutputstream;1");
-								mBStream->SetOutputStream(mStream);
-								
 								seekable = do_QueryInterface(mStream);
 								seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
 								
@@ -255,7 +262,7 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 						return NS_ERROR_FAILURE;
 				}
 					
-				seek -= (1024 - 22);     // Overlap by the size of the end of cdr
+				seek -= (1024 - ZIP_EOCDR_HEADER_SIZE);     // Overlap by the size of the end of cdr
 				if (seek < 0)
 				{
 						length += seek;
@@ -289,9 +296,6 @@ NS_IMETHODIMP nttZipWriter::Create(nsIFile *file)
 		
 		mFile = file;
 
-		mBStream = do_CreateInstance("@mozilla.org/binaryoutputstream;1");
-		mBStream->SetOutputStream(mStream);
-
 		mBusy = PR_FALSE;
 		mProcessing = PR_FALSE;
 		mCDSOffset = 0;
@@ -313,7 +317,7 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
 			
 		nttZipHeader header;
 		header.Init(path, modtime, 16, mCDSOffset);
-		rv = header.WriteFileHeader(mBStream);
+		rv = header.WriteFileHeader(mStream);
 		if (NS_FAILED(rv)) return rv;
 		
 		mCDSDirty = PR_TRUE;
@@ -336,7 +340,7 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime
 		
 		nttZipHeader header;
 		header.Init(path, modtime, 0, mCDSOffset);
-		rv = header.WriteFileHeader(mBStream);
+		rv = header.WriteFileHeader(mStream);
 		if (NS_FAILED(rv)) return rv;
 		
 		nttZipOutputStream *stream = new nttZipOutputStream(this, mStream, header);
@@ -473,31 +477,41 @@ NS_IMETHODIMP nttZipWriter::Close()
 		
 		if (mCDSDirty)
 		{
+				nsresult rv;
+				
 				PRUint32 size = 0;
 				for (PRUint32 i = 0; i < mHeaders.Length(); i++)
 				{
-						mHeaders[i].WriteCDSHeader(mBStream);
+						rv = mHeaders[i].WriteCDSHeader(mStream);
+						if (NS_FAILED(rv)) return rv;
 						size += mHeaders[i].GetCDSHeaderLength();
 				}
 				
-				WRITE32(mBStream, 0x06054b50);
-				WRITE16(mBStream, 0);
-				WRITE16(mBStream, 0);
-				WRITE16(mBStream, mHeaders.Length());
-				WRITE16(mBStream, mHeaders.Length());
-				WRITE32(mBStream, size);
-				WRITE32(mBStream, mCDSOffset);
-				WRITE16(mBStream, mComment.Length());
-				for (PRUint32 i = 0; i < mComment.Length(); i++)
-						WRITE8(mBStream, mComment[i] & 0xff);
+				nsCAutoString comment = NS_LossyConvertUTF16toASCII(mComment);
+
+				char buf[ZIP_EOCDR_HEADER_SIZE];
+				PRUint32 pos = 0;
+				WRITE32(buf, pos, ZIP_EOCDR_HEADER_SIGNATURE);
+				WRITE16(buf, pos, 0);
+				WRITE16(buf, pos, 0);
+				WRITE16(buf, pos, mHeaders.Length());
+				WRITE16(buf, pos, mHeaders.Length());
+				WRITE32(buf, pos, size);
+				WRITE32(buf, pos, mCDSOffset);
+				WRITE16(buf, pos, comment.Length());
+				rv = NTT_WriteData(mStream, buf, pos);
+				if (NS_FAILED(rv)) return rv;
+				
+				rv = NTT_WriteData(mStream, comment.get(), comment.Length());
+				if (NS_FAILED(rv)) return rv;
 
 				nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
-				seekable->SetEOF();
+				rv = seekable->SetEOF();
+				if (NS_FAILED(rv)) return rv;
 		}
 		
 		mStream->Close();
 		mStream = nsnull;
-		mBStream = nsnull;
 		mHeaders.Clear();
 		
 		return NS_OK;
@@ -541,7 +555,7 @@ nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
 		
 		rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
 		if (NS_FAILED(rv)) return rv;
-		rv = header.WriteFileHeader(mBStream);
+		rv = header.WriteFileHeader(mStream);
 		if (NS_FAILED(rv)) return rv;
 		rv = mStream->Flush();
 		if (NS_FAILED(rv)) return rv;

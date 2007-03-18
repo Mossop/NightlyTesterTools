@@ -49,17 +49,21 @@
 #include "nsIInputStream.h"
 #include "nsIOutputStream.h"
 
-#define WRITE8(str,val) str->Write8(val)
-#define WRITE16(str,val) str->Write8(val & 0xFF); str->Write8(val >> 8)
-#define WRITE32(str,val) str->Write8(val & 0xFF); str->Write8((val >> 8) & 0xFF); str->Write8((val >> 16) & 0xFF); str->Write8(val >> 24)
+#define WRITE8(buf, off, val)  buf[off++] = val & 0xff
+#define WRITE16(buf, off, val) buf[off++] = val & 0xff; \
+                               buf[off++] = (val >> 8) & 0xff
+#define WRITE32(buf, off, val) buf[off++] = val & 0xff; \
+                               buf[off++] = (val >> 8) & 0xff; \
+                               buf[off++] = (val >> 16) & 0xff; \
+                               buf[off++] = (val >> 24) & 0xff
 
-#define READ8(buf, off) (PRUint8)buf[off]
-#define READ16(buf, off) ((PRUint16)buf[off] & 0xff) + \
-                         (((PRUint16)buf[off+1] & 0xff) << 8)
-#define READ32(buf, off) ((PRUint32)buf[off] & 0xff) + \
-                         (((PRUint32)buf[off+1] & 0xff) << 8) + \
-                         (((PRUint32)buf[off+2] & 0xff) << 16) + \
-                         (((PRUint32)buf[off+3] & 0xff) << 24)
+#define READ8(buf, off, val)  val  = (PRUint8)buf[off++]
+#define READ16(buf, off, val) val  = (PRUint16)buf[off++] & 0xff; \
+                              val += ((PRUint16)buf[off++] & 0xff) << 8
+#define READ32(buf, off, val) val  = (PRUint32)buf[off++] & 0xff; \
+                              val += ((PRUint32)buf[off++] & 0xff) << 8; \
+                              val += ((PRUint32)buf[off++] & 0xff) << 16; \
+                              val += ((PRUint32)buf[off++] & 0xff) << 24
 
 nsresult NTT_ReadData(nsIInputStream *stream, char *buf, PRUint32 count);
 

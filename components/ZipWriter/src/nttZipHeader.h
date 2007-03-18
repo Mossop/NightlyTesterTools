@@ -46,7 +46,7 @@
 #define _nttZipHeader_h_
 
 #include "nsStringAPI.h"
-#include "nsIBinaryOutputStream.h"
+#include "nsIOutputStream.h"
 #include "nsIInputStream.h"
 
 class nttZipHeader
@@ -89,12 +89,11 @@ public:
 
 		void Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset);
 		PRUint32 GetFileHeaderLength();
-		nsresult WriteFileHeader(nsIBinaryOutputStream *stream);
+		nsresult WriteFileHeader(nsIOutputStream *stream);
 		PRUint32 GetCDSHeaderLength();
-		nsresult WriteCDSHeader(nsIBinaryOutputStream *stream);
+		nsresult WriteCDSHeader(nsIOutputStream *stream);
 		nsresult ReadCDSHeader(nsIInputStream *stream);
-		PRUint32 GetStringLength(const nsAString & string);
-		void WriteString(const nsAString & string, nsIBinaryOutputStream *stream);
+		void GetCodedString(const nsAString & string, nsACString & retval);
 };
 
 #endif

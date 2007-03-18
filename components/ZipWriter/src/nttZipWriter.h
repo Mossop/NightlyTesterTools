@@ -76,7 +76,6 @@ public:
 	
 private:
 	  ~nttZipWriter();
-		nsCOMPtr<nsIBinaryOutputStream> mBStream;
 		nsCOMPtr<nsIBufferedOutputStream> mStream;
 		nsTArray<nttZipHeader> mHeaders;
 		PRUint32 mCDSOffset;
