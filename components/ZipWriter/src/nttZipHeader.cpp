@@ -42,6 +42,7 @@
  *
  */
 
+#include "StreamFunctions.h"
 #include "nttZipHeader.h"
 
 void nttZipHeader::Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset)
@@ -113,11 +114,11 @@ nsresult nttZipHeader::WriteCDSHeader(nsIBinaryOutputStream *stream)
 nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 {
 		char buf[46];
+		nsresult rv;
 		
 		PRUint32 count;
-		stream->Read(buf, 46, &count);
-		if (count < 46)
-				return NS_ERROR_FAILURE;
+		rv = NTT_ReadData(stream, buf, 46);
+		if (NS_FAILED(rv)) return rv;
 		
 		PRUint32 signature     = READ32(buf, 0);
 		if (signature != 0x02014b50)
@@ -141,9 +142,12 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		mOffset                = READ32(buf, 42);
 		
 		char *field = (char*)NS_Alloc(namelength);
-		stream->Read(field, namelength, &count);
-		if (count < namelength)
-			return NS_ERROR_FAILURE;
+		rv = NTT_ReadData(stream, buf, namelength);
+		if (NS_FAILED(rv))
+		{
+			NS_Free(field);
+			return rv;
+		}
 		if (mFlags & 0x800)
 				mName = NS_ConvertUTF8toUTF16(field, namelength);
 		else
@@ -151,15 +155,21 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		NS_Free(field);
 		
 		field = (char*)NS_Alloc(fieldlength);
-		stream->Read(field, fieldlength, &count);
-		if (count < fieldlength)
-			return NS_ERROR_FAILURE;
+		rv = NTT_ReadData(stream, buf, fieldlength);
+		if (NS_FAILED(rv))
+		{
+			NS_Free(field);
+			return rv;
+		}
 		NS_Free(field);
 		
 		field = (char*)NS_Alloc(commentlength);
-		stream->Read(field, commentlength, &count);
-		if (count < commentlength)
-			return NS_ERROR_FAILURE;
+		rv = NTT_ReadData(stream, buf, commentlength);
+		if (NS_FAILED(rv))
+		{
+			NS_Free(field);
+			return rv;
+		}
 		if (mFlags & 0x800)
 				mComment = NS_ConvertUTF8toUTF16(field, commentlength);
 		else

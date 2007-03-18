@@ -35,66 +35,34 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL$
- * $LastChangedBy$
- * $Date$
- * $Revision$
+ * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/components/ZipWriter/src/nttZipHeader.h $
+ * $LastChangedBy: dave $
+ * $Date: 2007-03-17 23:23:09 +0000 (Sat, 17 Mar 2007) $
+ * $Revision: 998 $
  *
  */
 
-#ifndef _nttZipHeader_h_
-#define _nttZipHeader_h_
+#ifndef _nttStreamFunctions_h_
+#define _nttStreamFunctions_h_
 
-#include "nsStringAPI.h"
-#include "nsIBinaryOutputStream.h"
+#include "nscore.h"
 #include "nsIInputStream.h"
+#include "nsIOutputStream.h"
 
-class nttZipHeader
-{
-public:
-		nttZipHeader() :
-				mVersionMade(20),
-				mVersionNeeded(20),
-				mFlags(0),
-				mMethod(0),
-				mTime(0),
-				mDate(0),
-				mCRC(0),
-				mCSize(0),
-				mUSize(0),
-				mDisk(0),
-				mIAttr(0),
-				mEAttr(0),
-				mOffset(0),
-				mName(nsnull),
-				mComment(nsnull)
-		{
-		}
-		
-	 	PRUint16 mVersionMade;
-		PRUint16 mVersionNeeded;
-		PRUint16 mFlags;
-		PRUint16 mMethod;
-		PRUint16 mTime;
-		PRUint16 mDate;
-		PRUint32 mCRC;
-		PRUint32 mCSize;
-		PRUint32 mUSize;
-		PRUint16 mDisk;
-		PRUint16 mIAttr;
-		PRUint32 mEAttr;
-		PRUint32 mOffset;
-		nsString mName;
-		nsString mComment;
+#define WRITE8(str,val) str->Write8(val)
+#define WRITE16(str,val) str->Write8(val & 0xFF); str->Write8(val >> 8)
+#define WRITE32(str,val) str->Write8(val & 0xFF); str->Write8((val >> 8) & 0xFF); str->Write8((val >> 16) & 0xFF); str->Write8(val >> 24)
 
-		void Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset);
-		PRUint32 GetFileHeaderLength();
-		nsresult WriteFileHeader(nsIBinaryOutputStream *stream);
-		PRUint32 GetCDSHeaderLength();
-		nsresult WriteCDSHeader(nsIBinaryOutputStream *stream);
-		nsresult ReadCDSHeader(nsIInputStream *stream);
-		PRUint32 GetStringLength(const nsAString & string);
-		void WriteString(const nsAString & string, nsIBinaryOutputStream *stream);
-};
+#define READ8(buf, off) (PRUint8)buf[off]
+#define READ16(buf, off) ((PRUint16)buf[off] & 0xff) + \
+                         (((PRUint16)buf[off+1] & 0xff) << 8)
+#define READ32(buf, off) ((PRUint32)buf[off] & 0xff) + \
+                         (((PRUint32)buf[off+1] & 0xff) << 8) + \
+                         (((PRUint32)buf[off+2] & 0xff) << 16) + \
+                         (((PRUint32)buf[off+3] & 0xff) << 24)
+
+nsresult NTT_ReadData(nsIInputStream *stream, char *buf, PRUint32 count);
+
+nsresult NTT_WriteData(nsIOutputStream *stream, const char *buf, PRUint32 count);
 
 #endif

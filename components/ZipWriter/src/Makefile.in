@@ -60,7 +60,8 @@ REQUIRES = xpcom \
            $(ZLIB_REQUIRES) \
            $(NULL)
 
-CPPSRCS = nttDeflateConverter.cpp \
+CPPSRCS = StreamFunctions.cpp \
+          nttDeflateConverter.cpp \
           nttZipHeader.cpp \
           nttZipOutputStream.cpp \
           nttZipWriter.cpp \

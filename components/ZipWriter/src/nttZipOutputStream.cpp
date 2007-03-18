@@ -43,6 +43,7 @@
  */
 
 #include "crctable.h"
+#include "StreamFunctions.h"
 #include "nttZipOutputStream.h"
 
 NS_IMPL_THREADSAFE_ISUPPORTS1(nttZipOutputStream, nsIOutputStream)
@@ -88,10 +89,11 @@ NS_IMETHODIMP nttZipOutputStream::Write(const char *aBuf, PRUint32 aCount, PRUin
 			
 		nsresult rv;
 		
-		rv = mStream->Write(aBuf, aCount, _retval);
+		rv = NTT_WriteData(mStream, aBuf, aCount);
 		if (NS_FAILED(rv)) return rv;
-	
-		for (PRUint32 n = 0; n < *_retval; n++)
+		*_retval = aCount;
+		
+		for (PRUint32 n = 0; n < aCount; n++)
 			mCRC = CRC_TABLE[(mCRC ^ aBuf[n]) & 0xFF] ^ ((mCRC >> 8) & 0xFFFFFF);
 			
 		mSize += *_retval;

@@ -42,6 +42,7 @@
  *
  */
 
+#include "StreamFunctions.h"
 #include "nttZipWriter.h"
 #include "nttZipOutputStream.h"
 #include "nsISeekableStream.h"
@@ -108,16 +109,23 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 		
 		PRUint32 pos = length-22;
 		PRUint32 sig = 0;
-		PRUint32 count = 0;
 		nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(stream);
 
 		while (true)
 		{
 				printf("Reading from %lld\n", seek);
-				seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek);
-				stream->Read(buf, length, &count);
-				if (count < length)
-						return NS_ERROR_FAILURE;
+				rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek);
+				if (NS_FAILED(rv))
+				{
+						stream->Close();
+						return rv;
+				}
+				rv = NTT_ReadData(stream, buf, length);
+				if (NS_FAILED(rv))
+				{
+						stream->Close();
+						return rv;
+				}
 				
 				pos = length - 22;       // We know it's at least this far from the end
 				sig = READ32(buf, pos);
@@ -130,15 +138,53 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 								
 								mCDSOffset = READ32(buf, pos+16);
 								PRUint32 entries = READ16(buf, pos+10);
+								PRUint32 commentlen = READ16(buf, pos+20);
+								if (pos+22+commentlen <= length)
+								{
+										mComment = NS_ConvertASCIItoUTF16(buf+pos+22, commentlen);
+								}
+								else
+								{
+										char *field = (char*)NS_Alloc(commentlen);
+										rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek+pos+22);
+										if (NS_FAILED(rv))
+										{
+												NS_Free(field);
+												stream->Close();
+												return rv;
+										}
+										rv = NTT_ReadData(stream, buf, length);
+										if (NS_FAILED(rv))
+										{
+												NS_Free(field);
+												stream->Close();
+												return rv;
+										}
+										mComment = NS_ConvertASCIItoUTF16(field, commentlen);
+										NS_Free(field);
+								}
+								
+								if (commentlen > 0)
+										printf("Comment was %s\n", NS_LossyConvertUTF16toASCII(mComment).get());
+										
 								mCDSDirty = PR_FALSE;
 								printf("CDS at %u, %u entries\n", mCDSOffset, entries);
 								rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
-								if (NS_FAILED(rv)) return rv;
+								if (NS_FAILED(rv))
+								{
+										stream->Close();
+										return rv;
+								}
 								for (PRUint32 entry = 0; entry < entries; entry++)
 								{
 										nttZipHeader header;
 										rv = header.ReadCDSHeader(stream);
-										if (NS_FAILED(rv)) return rv;
+										if (NS_FAILED(rv))
+										{
+												mHeaders.Clear();
+												stream->Close();
+												return rv;
+										}
 										printf("Read %s\n", NS_LossyConvertUTF16toASCII(header.mName).get());
 										mHeaders.AppendElement(header);
 								}
@@ -147,7 +193,11 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 
 								mStream = do_CreateInstance("@mozilla.org/network/file-output-stream;1");
 								rv = mStream->Init(file, 0x02 | 0x08, 0664, 0);
-								if (NS_FAILED(rv)) return rv;
+								if (NS_FAILED(rv))
+								{
+										mHeaders.Clear();
+										return rv;
+								}
 						
 								mBStream = do_CreateInstance("@mozilla.org/binaryoutputstream;1");
 								mBStream->SetOutputStream(mStream);
@@ -284,7 +334,7 @@ NS_IMETHODIMP nttZipWriter::RemoveEntry(const nsAString & path)
 								rv = reader->Read(buf, read, &read);
 								if (NS_FAILED(rv)) return rv;
 								
-								rv = mStream->Write(buf, read, &read);
+								rv = NTT_WriteData(mStream, buf, read);
 								if (NS_FAILED(rv)) return rv;
 								
 								count -= read;
@@ -424,7 +474,7 @@ NS_IMETHODIMP nttZipWriter::Close()
 				WRITE32(mBStream, mCDSOffset);
 				WRITE16(mBStream, mComment.Length());
 				for (PRUint32 i = 0; i < mComment.Length(); i++)
-					WRITE8(mBStream, mComment[i]);
+					WRITE8(mBStream, mComment[i] & 0xff);
 
 				nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
 				seekable->SetEOF();
@@ -433,6 +483,7 @@ NS_IMETHODIMP nttZipWriter::Close()
 		mStream->Close();
 		mStream = nsnull;
 		mBStream = nsnull;
+		mHeaders.Clear();
 		
 		return NS_OK;
 }
