@@ -118,26 +118,24 @@ OldZipReaderWrapper.prototype = {
 	}
 }
 
-function ZipMonitor(tmpdir)
+function ZipMonitor(zipwriter, rdftmp)
 {
-	this.tmpdir = tmpdir;
+	this.zipwriter = zipwriter;
+	this.rdftmp = rdftmp;
 }
 
 ZipMonitor.prototype = {
-	fileCount: 0,
-	tmpdir: null,
+	rdftmp: null,
+	zipwriter: null,
 	
   onStartRequest: function(aRequest, aContext)
   {
-  	this.fileCount++;
   },
 
   onStopRequest: function(aRequest, aContext, aStatusCode)
   {
-    this.fileCount--;
-    if (this.fileCount == 0)
-    	aContext.QueryInterface(Ci.nttIZipWriter).close();
-    this.tmpdir.remove(true);
+   	this.zipwriter.close();
+    this.rdftmp.remove(true);
     LOG("Compression complete");
   }
 }
@@ -169,6 +167,17 @@ monitorInstall: function(url)
 {
 	if (this.installCount == 0)
 	{
+		this.previousSetting = true;
+		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+								                .getService(Components.interfaces.nsIPrefBranch);
+		try
+		{
+		  this.previousSetting = prefservice.getBoolPref("extensions.checkCompatibility");
+		}
+		catch (e)
+		{
+		}
+		prefservice.setBoolPref("extensions.checkCompatibility", false);
 	  var em = Cc["@mozilla.org/extensions/manager;1"]
 	             .getService(Ci.nsIExtensionManager);
 	  em.datasource.AddObserver(this);
@@ -213,69 +222,6 @@ getStageFile: function(id)
 	return null;
 },
 
-extractFiles: function(zipReader, tmpdir)
-{
-	// create directories first
-	var entries = zipReader.findEntries("*/");
-	while (entries.hasMore())
-	{
-	  var entry = entries.getNext();
-	  var target = tmpdir.clone();
-		var parts = entry.split("/");
-		for (var i = 0; i < parts.length; ++i)
-			target.append(parts[i]);
-	  if (!target.exists())
-	  {
-	    try
-	    {
-	      target.create(Components.interfaces.nsILocalFile.DIRECTORY_TYPE, 0755);
-	    }
-	    catch (e)
-	    {
-	    }
-	  }
-	}
-	
-	entries = zipReader.findEntries("*");
-	while (entries.hasMore())
-	{
-	  var entry = entries.getNext();
-	  var target = tmpdir.clone();
-		var parts = entry.split("/");
-		for (var i = 0; i < parts.length; ++i)
-			target.append(parts[i]);
-	  if (!target.exists())
-	  {
-	    try
-	    {
-	    	target.create(Components.interfaces.nsILocalFile.NORMAL_FILE_TYPE, 0644);
-	    }
-	    catch (e)
-	    {
-	    }
-	    zipReader.extract(entry, target);
-	  }
-	}
-},
-
-compressFiles: function(zipWriter, dir, path, monitor)
-{
-	LOG("Scanning for files from "+dir.path);
-	var entries = dir.directoryEntries.QueryInterface(Ci.nsIDirectoryEnumerator);
-	while (entries.hasMoreElements())
-	{
-		var file = entries.nextFile;
-		if (!(file instanceof Ci.nsILocalFile))
-			continue;
-
-		zipWriter.queueFile(path + file.leafName, file);
-
-		if (file.isDirectory())
-			this.compressFiles(zipWriter, file, path + file.leafName + "/", monitor);
-	}
-	entries.close();
-},
-
 updateXPI: function(id)
 {
   var ioService = Cc["@mozilla.org/network/io-service;1"]
@@ -294,11 +240,9 @@ updateXPI: function(id)
 	var stageFile = this.getStageFile(id);
 	if (stageFile)
 	{
-		var tmpdir = gDS.get("TmpD", Ci.nsIFile);
-		tmpdir.append("nightlyinstall");
-		tmpdir.createUnique(Ci.nsILocalFile.DIRECTORY_TYPE, 0755);
-		var rdftmp = tmpdir.clone();
+		var rdftmp = gDS.get("TmpD", Ci.nsIFile);
 		rdftmp.append("install.rdf");
+		rdftmp.createUnique(Ci.nsILocalFile.NORMAL_FILE_TYPE, 0755);
 		zipReader = Cc["@mozilla.org/libjar/zip-reader;1"]
                  .createInstance(Ci.nsIZipReader);
 		if (zipReader.init)
@@ -307,6 +251,7 @@ updateXPI: function(id)
 		zipReader.open(stageFile);
 
 		zipReader.extract("install.rdf", rdftmp);
+		zipReader.close();
 
 		var fileuri=ioService.newFileURI(rdftmp);
 
@@ -349,42 +294,19 @@ updateXPI: function(id)
   		LOG("Writing new extension");
       rdfds.QueryInterface(Components.interfaces.nsIRDFRemoteDataSource);
       rdfds.Flush();
-      this.extractFiles(zipReader, tmpdir);
-      zipReader.close();
-      stageFile.remove(false);
 
-      var extension = stageFile.leafName.substr(-4);
-      var name = stageFile.leafName.substring(0, stageFile.leafName.length-4);
-      var path = stageFile.parent.path;
-      var target = Cc["@mozilla.org/file/local;1"]
-                    .createInstance(Ci.nsILocalFile);
-      var pos = 0;
-      do
-      {
-      	pos++;
-      	target.initWithPath(path+"/"+name+"-"+pos+extension);
-      } while (target.exists())
-      LOG("Writing to "+target.path);
-      
-      var zipWriter;
-      if (Cc["@blueprintit.co.uk/zipwriter;1"])
-      	zipWriter = Cc["@blueprintit.co.uk/zipwriter;1"]
-                     .createInstance(Ci.nttIZipWriter);
-      else
-      	zipWriter = Cc["@blueprintit.co.uk/fallback/zipwriter;1"]
-                     .createInstance(Ci.nttIZipWriter);
+      var zipWriter = Cc["@blueprintit.co.uk/zipwriter;1"]
+                       .createInstance(Ci.nttIZipWriter);
 
-      zipWriter.create(target);
-      var monitor = new ZipMonitor(tmpdir);
-      this.compressFiles(zipWriter, tmpdir, "", monitor);
-      zipWriter.processQueue(monitor);
+      zipWriter.open(stageFile);
+      zipWriter.queueRemoval("install.rdf");
+      zipWriter.queueFile("install.rdf", rdftmp);
+      zipWriter.processQueue(new ZipMonitor(zipWriter, rdftmp), null);
   	}
   	else
   	{
   		LOG("No changes necessary");
-	 		tmpdir.remove(true);
-	
-			zipReader.close();
+	 		rdftmp.remove(true);
   	}
 	}
 	else
@@ -416,6 +338,9 @@ onAssert: function(aDataSource, aSource, aProperty, aTarget)
 		
 		if (this.installCount == 0)
 		{
+			var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+									                .getService(Components.interfaces.nsIPrefBranch);
+		  prefservice.setBoolPref("extensions.checkCompatibility", this.previousSetting);
 		  var em = Cc["@mozilla.org/extensions/manager;1"]
 		             .getService(Ci.nsIExtensionManager);
 		  em.datasource.RemoveObserver(this);

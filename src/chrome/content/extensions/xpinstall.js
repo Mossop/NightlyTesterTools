@@ -59,7 +59,7 @@ init: function(event)
 	catch (e)
 	{
 	}
-	if (checkCompatibility)
+	if (checkCompatibility && Components.classes["@blueprintit.co.uk/zipwriter;1"])
 	{
   	NightlyXPInstall.savedAccept=XPInstallConfirm.onOK;
   	XPInstallConfirm.onOK=NightlyXPInstall.dialogAccept;
