@@ -104,8 +104,6 @@ NS_IMETHODIMP nttDeflateConverter::OnDataAvailable(nsIRequest *aRequest, nsISupp
 		
 		nsresult rv;
 		
-		printf("Data Available %u\n", aCount);
-		
 		char* aBuffer = (char*)NS_Alloc(aCount);
 		rv = NTT_ReadData(aInputStream, aBuffer, aCount);
 		if (NS_FAILED(rv))
@@ -122,12 +120,10 @@ NS_IMETHODIMP nttDeflateConverter::OnDataAvailable(nsIRequest *aRequest, nsISupp
 		// deflate loop
 		while (mDeflate->mZs.avail_in > 0 && zerr == Z_OK)
 		{
-				printf("Deflating\n");
 				zerr = deflate(&(mDeflate->mZs), Z_NO_FLUSH);
 		
 				while (mDeflate->mZs.avail_out == 0)
 				{
-						printf("Pushing data\n");
 						// buffer is full, time to write it to disk!
 						nsresult rv = PushAvailableData(aRequest, aContext);
 						NS_ENSURE_SUCCESS(rv, rv);
@@ -158,7 +154,6 @@ NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISuppor
 		int zerr;
 		do
 		{
-				printf("Handling remaining data\n");
 				zerr = deflate(&(mDeflate->mZs), Z_FINISH);
 				// TODO check whether output size smaller than input size
 				rv = PushAvailableData(aRequest, aContext);
@@ -185,7 +180,6 @@ nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupport
 
 		if (mListener)
 		{
-				printf("Pushing %u bytes of data\n", bytesToWrite);
 				nsCOMPtr<nsIInputStream> stream = new nttStringInputStream((char*)mDeflate->mWriteBuf, bytesToWrite);
 				rv = mListener->OnDataAvailable(aRequest, mContext, stream, mOffset, bytesToWrite);
 		}

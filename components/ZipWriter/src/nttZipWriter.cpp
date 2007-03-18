@@ -50,7 +50,6 @@
 #include "nsISimpleStreamListener.h"
 #include "nsComponentManagerUtils.h"
 #include "nsMemory.h"
-#include "stdio.h"
 
 #define ZIP_EOCDR_HEADER_SIZE 22
 #define ZIP_EOCDR_HEADER_SIGNATURE 0x06054b50
@@ -109,8 +108,6 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 		if (!exists)
 				return NS_ERROR_FILE_NOT_FOUND;
 
-		printf("File exists\n");
-		
 		mFile = file;
 		
 		nsCOMPtr<nsIFileInputStream> stream = do_CreateInstance("@mozilla.org/network/file-input-stream;1");
@@ -136,7 +133,6 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 
 		while (true)
 		{
-				printf("Reading from %lld\n", seek);
 				rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, seek);
 				if (NS_FAILED(rv))
 				{
@@ -155,11 +151,8 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 				pos-=4;
 				while (pos >=0)
 				{
-						printf("Checking at %u\n", pos);
 						if (sig == ZIP_EOCDR_HEADER_SIGNATURE)
 						{
-								printf("Found signature\n");
-								
 								// Skip down to entry count
 								pos+=10;
 								PRUint32 entries;
@@ -199,11 +192,7 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 										NS_Free(field);
 								}
 								
-								if (commentlen > 0)
-										printf("Comment was %s\n", NS_LossyConvertUTF16toASCII(mComment).get());
-										
 								mCDSDirty = PR_FALSE;
-								printf("CDS at %u, %u entries\n", mCDSOffset, entries);
 								rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
 								if (NS_FAILED(rv))
 								{
@@ -220,7 +209,6 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 												stream->Close();
 												return rv;
 										}
-										printf("Read %s\n", NS_LossyConvertUTF16toASCII(header.mName).get());
 										mHeaders.AppendElement(header);
 								}
 
@@ -258,7 +246,6 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
 				
 				if (seek == 0)           // Out of room, this zip is damaged
 				{
-						printf("Signature never found\n");
 						stream->Close();
 						return NS_ERROR_FAILURE;
 				}
