@@ -47,28 +47,141 @@
 #include "nsIRequestObserver.idl"
 #include "nsIFile.idl"
 
+/**
+ * nttIZipWriter
+ *
+ * An interface for a zip archiver that can be used from script.
+ *
+ * The interface supports both a synchronous method of archiving data and a
+ * queueing system to allow operations to be prepared then run in sequence
+ * with notification after completion.
+ *
+ * Many operations (whether being performed synchronously or in the
+ * background queue) ark the zip writer "busy". Only one of these can be
+ * carried out at a time.
+ */
 [scriptable, uuid(98e40e77-2a94-46cc-bac0-deab758066be)]
 interface nttIZipWriter : nsISupports
 {
+	/**
+	 * Gets or sets the comment associated with the open zip file.
+	 *
+	 * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+	 */
 	attribute AString comment;
 	
+	/**
+	 * Indicates that the zip writer is in a "busy" state while operations
+	 * are being performed.
+	 */
 	readonly attribute boolean busy;
 	
+	/**
+	 * Opens an existing zip file for modification.
+	 *
+	 * @param file the zip file to open
+	 *
+	 * @throws NS_ERROR_ALREADY_INITIALIZED if a zip file is already open
+	 * @throws NS_ERROR_INVALID_ARG if file is null
+	 * @throws NS_ERROR_FILE_NOT_FOUND if file does not exist
+	 * @throws <other-error> on failure to open zip file (most likely corrupt
+	 * or unsupported form)
+	 */
 	void open(in nsIFile file);
 	
+	/**
+	 * Creates a new zip file, overwriting any existing data.
+	 *
+	 * @param file the zip file to create
+	 *
+	 * @throws NS_ERROR_ALREADY_INITIALIZED if a zip file is already open
+	 * @throws <other-error> on failure to create file
+	 */
 	void create(in nsIFile file);
 	
+	/**
+	 * Adds a new directory entry to the zip file. This operation completes
+	 * immediately.
+	 *
+	 * @param path the path of the directory entry
+	 * @param modtime the modification time of the directory
+	 *
+	 * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+	 * @throws NS_ERROR_FAILURE if another operation is currently in progress
+	 */
 	void addDirectoryEntry(in AString path, in PRInt64 modtime);
 	
+	/**
+	 * Adds a new file entry to the zip file. This operation will not complete
+	 * until the returned nsIOutputStream is closed. The zip writer will be busy
+	 * until then.
+	 *
+	 * @param path the path of the file entry
+	 * @param modtime the modification time of the file
+	 *
+	 * @return an nsIOutputStream to write the file data to.
+	 *
+	 * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+	 * @throws NS_ERROR_FAILURE if another operation is currently in progress
+	 */
 	nsIOutputStream addFileEntry(in AString path, in PRInt64 modtime);
 	
+	/**
+	 * Removes an existing entry from the zip file. This operation can take
+	 * time to complete and will not return until it has completed. The zip
+	 * writer will be busy until then.
+	 *
+	 * @param path the path of the entry to be removed
+	 *
+	 * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+	 * @throws NS_ERROR_FAILURE if another operation is currently in progress
+	 * @throws NS_ERROR_FILE_NOT_FOUND if no entry with the given path exists
+	 * @throws <other-error> on failure to update the zip file
+	 */
 	void removeEntry(in AString path);
 	
+	/**
+	 * Places a file for compression into the queue for processing at some
+	 * future time.
+	 *
+	 * @param path the path to give the entry
+	 * @param file the file to store, can be a file or directory
+	 *
+	 * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+	 * @throws NS_ERROR_FILE_NOT_FOUND if file does not exist
+	 */
 	void queueFile(in AString path, in nsIFile file);
 	
+	/**
+	 * Places a removal into the queue for processing at some
+	 * future time.
+	 *
+	 * @param path the path entry to be removed
+	 *
+	 * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+	 */
 	void queueRemoval(in AString path);
 	
+	/**
+	 * Processes all queued items until complete or some error occurs. The
+	 * observer will be notified when the first operation starts and when the
+	 * last operation completes. Any failures will be passed to the observer.
+	 * The zip writer will be busy until the queue is complete or some error
+	 * halted processing of the queue early. In the event of an early failure,
+	 * remaining items will stay in the queue and calling processQueue will
+	 * continue.
+	 *
+	 * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+	 * @throws NS_ERROR_FAILURE if another operation is currently in progress
+	 */
 	void processQueue(in nsIRequestObserver observer, in nsISupports ctxt);
 	
+	/**
+	 * Closes the zip file.
+	 *
+	 * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+	 * @throws NS_ERROR_FAILURE if another operation is currently in progress
+	 * @throws <other-error> on failure to complete the zip file
+	 */
 	void close();
 };
