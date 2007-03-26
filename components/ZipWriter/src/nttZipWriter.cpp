@@ -302,9 +302,18 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
 				return NS_ERROR_FAILURE;
 		
 		nsresult rv;
-			
+		
+		const nsAString& last = Substring(path, path.Length()-1);
 		nttZipHeader header;
-		header.Init(path, modtime, 16, mCDSOffset);
+		if (last.Equals(NS_LITERAL_STRING("/")))
+		{
+				nsString dirPath;
+				dirPath.Append(path);
+				dirPath.Append(NS_LITERAL_STRING("/"));
+				header.Init(dirPath, modtime, 16, mCDSOffset);
+		}
+		else
+				header.Init(path, modtime, 16, mCDSOffset);
 		rv = header.WriteFileHeader(mStream);
 		if (NS_FAILED(rv)) return rv;
 		
