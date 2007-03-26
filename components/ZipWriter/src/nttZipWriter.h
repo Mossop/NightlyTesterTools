@@ -60,40 +60,40 @@
 class nttZipQueueItem
 {
 public:
-		nsString mPath;
-  	nsCOMPtr<nsIFile> mFile;
+    nsString mPath;
+    nsCOMPtr<nsIFile> mFile;
 };
 
 class nttZipWriter : public nttIZipWriter
                    , public nsIRequestObserver
 {
 public:
-	  NS_DECL_ISUPPORTS
-	  NS_DECL_NTTIZIPWRITER
-	  NS_DECL_NSIREQUESTOBSERVER
-	
-	  nttZipWriter();
-		nsresult OnFileEntryComplete(nttZipHeader header);
-	
+    NS_DECL_ISUPPORTS
+    NS_DECL_NTTIZIPWRITER
+    NS_DECL_NSIREQUESTOBSERVER
+  
+    nttZipWriter();
+    nsresult OnFileEntryComplete(nttZipHeader header);
+  
 private:
-	  ~nttZipWriter();
-		nsCOMPtr<nsIBufferedOutputStream> mStream;
-		nsTArray<nttZipHeader> mHeaders;
-		PRUint32 mCDSOffset;
-		PRBool mCDSDirty;
-		nsString mComment;
-		
-		PRBool mBusy;
-		PRBool mProcessing;
-		nsTArray<nttZipQueueItem> mQueue;
-		nsCOMPtr<nsIFile> mFile;
-		nsCOMPtr<nsIBufferedOutputStream> mProcessOutputStream;
-		nsCOMPtr<nsIRequestObserver> mProcessObserver;
-		nsCOMPtr<nsISupports> mProcessContext;
-		
-		void BeginProcessingNextItem();
-		void FinishQueue(nsresult status);
-		PRInt32 FindEntry(const nsAString & path);
+    ~nttZipWriter();
+    nsCOMPtr<nsIBufferedOutputStream> mStream;
+    nsTArray<nttZipHeader> mHeaders;
+    PRUint32 mCDSOffset;
+    PRBool mCDSDirty;
+    nsString mComment;
+    
+    PRBool mBusy;
+    PRBool mProcessing;
+    nsTArray<nttZipQueueItem> mQueue;
+    nsCOMPtr<nsIFile> mFile;
+    nsCOMPtr<nsIBufferedOutputStream> mProcessOutputStream;
+    nsCOMPtr<nsIRequestObserver> mProcessObserver;
+    nsCOMPtr<nsISupports> mProcessContext;
+    
+    void BeginProcessingNextItem();
+    void FinishQueue(nsresult status);
+    PRInt32 FindEntry(const nsAString & path);
 };
 
 #endif

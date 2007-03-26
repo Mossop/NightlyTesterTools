@@ -50,15 +50,15 @@
 class nttStringInputStream : public nsIInputStream
 {
 public:
-		NS_DECL_ISUPPORTS
+    NS_DECL_ISUPPORTS
     NS_DECL_NSIINPUTSTREAM
 
-		nttStringInputStream(const char *buffer, PRUint32 count);
+    nttStringInputStream(const char *buffer, PRUint32 count);
 
 private:
-		const char *mBuffer;
-		PRUint32 mOffset;
-		PRUint32 mCount;
+    const char *mBuffer;
+    PRUint32 mOffset;
+    PRUint32 mCount;
 };
 
 #endif

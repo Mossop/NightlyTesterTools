@@ -49,9 +49,9 @@ NS_IMPL_THREADSAFE_ISUPPORTS1(nttStringInputStream, nsIInputStream)
 
 nttStringInputStream::nttStringInputStream(const char *buffer, PRUint32 count)
 {
-		mCount = count;
-		mBuffer = buffer;
-		mOffset = 0;
+    mCount = count;
+    mBuffer = buffer;
+    mOffset = 0;
 }
 
 /* void close (); */
@@ -63,20 +63,20 @@ NS_IMETHODIMP nttStringInputStream::Close()
 /* unsigned long available (); */
 NS_IMETHODIMP nttStringInputStream::Available(PRUint32 *_retval)
 {
-		*_retval = mCount - mOffset;
+    *_retval = mCount - mOffset;
     return NS_OK;
 }
 
 /* [noscript] unsigned long read (in charPtr aBuf, in unsigned long aCount); */
 NS_IMETHODIMP nttStringInputStream::Read(char * aBuf, PRUint32 aCount, PRUint32 *_retval)
 {
-		PRUint32 avail = mCount - mOffset;
-		if (avail < aCount)
-				aCount = avail;
-		
-		memcpy(aBuf, mBuffer+mOffset, aCount);
-		*_retval = aCount;
-		mOffset += aCount;
+    PRUint32 avail = mCount - mOffset;
+    if (avail < aCount)
+        aCount = avail;
+    
+    memcpy(aBuf, mBuffer+mOffset, aCount);
+    *_retval = aCount;
+    mOffset += aCount;
 
     return NS_OK;
 }
@@ -90,6 +90,6 @@ NS_IMETHODIMP nttStringInputStream::ReadSegments(nsWriteSegmentFun aWriter, void
 /* boolean isNonBlocking (); */
 NS_IMETHODIMP nttStringInputStream::IsNonBlocking(PRBool *_retval)
 {
-		*_retval = PR_FALSE;
+    *_retval = PR_FALSE;
     return NS_OK;
 }

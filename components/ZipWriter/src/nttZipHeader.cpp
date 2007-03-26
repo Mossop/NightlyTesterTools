@@ -54,181 +54,181 @@
 
 void nttZipHeader::Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset)
 {
-		mMethod = 8;
-		aDate /= 1000;
-		time_t timeval = (time_t)aDate;
-		struct tm *time = localtime(&timeval);
-		mTime = time->tm_sec/2 + (time->tm_min << 5) + (time->tm_hour << 11);
-		mDate = time->tm_mday + ((time->tm_mon+1) << 5) + ((time->tm_year-80) << 9);
-				
-		mEAttr = aAttr;
-		mOffset = aOffset;
-		mName = aPath;
-		mComment = NS_LITERAL_STRING("");
-		nsCString str = NS_ConvertUTF16toUTF8(aPath);
-		if (str.Length() != aPath.Length())
-				mFlags = mFlags | 0x800;
+    mMethod = 8;
+    aDate /= 1000;
+    time_t timeval = (time_t)aDate;
+    struct tm *time = localtime(&timeval);
+    mTime = time->tm_sec/2 + (time->tm_min << 5) + (time->tm_hour << 11);
+    mDate = time->tm_mday + ((time->tm_mon+1) << 5) + ((time->tm_year-80) << 9);
+        
+    mEAttr = aAttr;
+    mOffset = aOffset;
+    mName = aPath;
+    mComment = NS_LITERAL_STRING("");
+    nsCString str = NS_ConvertUTF16toUTF8(aPath);
+    if (str.Length() != aPath.Length())
+        mFlags = mFlags | 0x800;
 }
 
 PRUint32 nttZipHeader::GetFileHeaderLength()
 {
-		nsCString name;
-		GetCodedString(mName, name);
-		return ZIP_FILE_HEADER_SIZE+name.Length();
+    nsCString name;
+    GetCodedString(mName, name);
+    return ZIP_FILE_HEADER_SIZE+name.Length();
 }
 
 nsresult nttZipHeader::WriteFileHeader(nsIOutputStream *stream)
 {
-		nsresult rv;
-		
-		nsCString name;
-		GetCodedString(mName, name);
+    nsresult rv;
+    
+    nsCString name;
+    GetCodedString(mName, name);
 
-		char buf[ZIP_FILE_HEADER_SIZE];
-		PRUint32 pos = 0;
-		WRITE32(buf, pos, ZIP_FILE_HEADER_SIGNATURE);
-		WRITE16(buf, pos, mVersionNeeded);
-		WRITE16(buf, pos, mFlags);
-		WRITE16(buf, pos, mMethod);
-		WRITE16(buf, pos, mTime);
-		WRITE16(buf, pos, mDate);
-		WRITE32(buf, pos, mCRC);
-		WRITE32(buf, pos, mCSize);
-		WRITE32(buf, pos, mUSize);
-		WRITE16(buf, pos, name.Length());
-		WRITE16(buf, pos, 0);
+    char buf[ZIP_FILE_HEADER_SIZE];
+    PRUint32 pos = 0;
+    WRITE32(buf, pos, ZIP_FILE_HEADER_SIGNATURE);
+    WRITE16(buf, pos, mVersionNeeded);
+    WRITE16(buf, pos, mFlags);
+    WRITE16(buf, pos, mMethod);
+    WRITE16(buf, pos, mTime);
+    WRITE16(buf, pos, mDate);
+    WRITE32(buf, pos, mCRC);
+    WRITE32(buf, pos, mCSize);
+    WRITE32(buf, pos, mUSize);
+    WRITE16(buf, pos, name.Length());
+    WRITE16(buf, pos, 0);
 
-		rv = NTT_WriteData(stream, buf, pos);
-		if (NS_FAILED(rv)) return rv;
+    rv = NTT_WriteData(stream, buf, pos);
+    if (NS_FAILED(rv)) return rv;
 
-		return NTT_WriteData(stream, name.get(), name.Length());
+    return NTT_WriteData(stream, name.get(), name.Length());
 }
 
 PRUint32 nttZipHeader::GetCDSHeaderLength()
 {
-		nsCString name;
-		GetCodedString(mName, name);
-		nsCString comment;
-		GetCodedString(mComment, comment);
-		return 4+2+2+2+2+2+2+4+4+4+2+2+2+2+2+4+4+name.Length()+comment.Length();
+    nsCString name;
+    GetCodedString(mName, name);
+    nsCString comment;
+    GetCodedString(mComment, comment);
+    return 4+2+2+2+2+2+2+4+4+4+2+2+2+2+2+4+4+name.Length()+comment.Length();
 }
 
 nsresult nttZipHeader::WriteCDSHeader(nsIOutputStream *stream)
 {
-		nsresult rv;
-		
-		nsCString name;
-		GetCodedString(mName, name);
-		nsCString comment;
-		GetCodedString(mComment, comment);
-		
-		char buf[ZIP_CDS_HEADER_SIZE];
-		PRUint32 pos = 0;
-		WRITE32(buf, pos, ZIP_CDS_HEADER_SIGNATURE);
-		WRITE16(buf, pos, mVersionMade);
-		WRITE16(buf, pos, mVersionNeeded);
-		WRITE16(buf, pos, mFlags);
-		WRITE16(buf, pos, mMethod);
-		WRITE16(buf, pos, mTime);
-		WRITE16(buf, pos, mDate);
-		WRITE32(buf, pos, mCRC);
-		WRITE32(buf, pos, mCSize);
-		WRITE32(buf, pos, mUSize);
-		WRITE16(buf, pos, name.Length());
-		WRITE16(buf, pos, 0);
-		WRITE16(buf, pos, comment.Length());
-		WRITE16(buf, pos, mDisk);
-		WRITE16(buf, pos, mIAttr);
-		WRITE32(buf, pos, mEAttr);
-		WRITE32(buf, pos, mOffset);
+    nsresult rv;
+    
+    nsCString name;
+    GetCodedString(mName, name);
+    nsCString comment;
+    GetCodedString(mComment, comment);
+    
+    char buf[ZIP_CDS_HEADER_SIZE];
+    PRUint32 pos = 0;
+    WRITE32(buf, pos, ZIP_CDS_HEADER_SIGNATURE);
+    WRITE16(buf, pos, mVersionMade);
+    WRITE16(buf, pos, mVersionNeeded);
+    WRITE16(buf, pos, mFlags);
+    WRITE16(buf, pos, mMethod);
+    WRITE16(buf, pos, mTime);
+    WRITE16(buf, pos, mDate);
+    WRITE32(buf, pos, mCRC);
+    WRITE32(buf, pos, mCSize);
+    WRITE32(buf, pos, mUSize);
+    WRITE16(buf, pos, name.Length());
+    WRITE16(buf, pos, 0);
+    WRITE16(buf, pos, comment.Length());
+    WRITE16(buf, pos, mDisk);
+    WRITE16(buf, pos, mIAttr);
+    WRITE32(buf, pos, mEAttr);
+    WRITE32(buf, pos, mOffset);
 
-		rv = NTT_WriteData(stream, buf, pos);
-		if (NS_FAILED(rv)) return rv;
+    rv = NTT_WriteData(stream, buf, pos);
+    if (NS_FAILED(rv)) return rv;
 
-		rv = NTT_WriteData(stream, name.get(), name.Length());
-		if (NS_FAILED(rv)) return rv;
-		return NTT_WriteData(stream, comment.get(), comment.Length());
+    rv = NTT_WriteData(stream, name.get(), name.Length());
+    if (NS_FAILED(rv)) return rv;
+    return NTT_WriteData(stream, comment.get(), comment.Length());
 }
 
 nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 {
-		char buf[ZIP_CDS_HEADER_SIZE];
-		nsresult rv;
-		
-		rv = NTT_ReadData(stream, buf, ZIP_CDS_HEADER_SIZE);
-		if (NS_FAILED(rv)) return rv;
-		
-		PRUint32 signature;
-		PRUint16 namelength;
-		PRUint16 fieldlength;
-		PRUint16 commentlength;
+    char buf[ZIP_CDS_HEADER_SIZE];
+    nsresult rv;
+    
+    rv = NTT_ReadData(stream, buf, ZIP_CDS_HEADER_SIZE);
+    if (NS_FAILED(rv)) return rv;
+    
+    PRUint32 signature;
+    PRUint16 namelength;
+    PRUint16 fieldlength;
+    PRUint16 commentlength;
 
-		PRUint32 pos = 0;
-		READ32(buf, pos, signature);
-		if (signature != ZIP_CDS_HEADER_SIGNATURE)
-				return NS_ERROR_FAILURE;
-		
-		READ16(buf, pos, mVersionMade);
-		READ16(buf, pos, mVersionNeeded);
-		READ16(buf, pos, mFlags);
-		READ16(buf, pos, mMethod);
-		READ16(buf, pos, mTime);
-		READ16(buf, pos, mDate);
-		READ32(buf, pos, mCRC);
-		READ32(buf, pos, mCSize);
-		READ32(buf, pos, mUSize);
-		READ16(buf, pos, namelength);
-		READ16(buf, pos, fieldlength);
-		READ16(buf, pos, commentlength);
-		READ16(buf, pos, mDisk);
-		READ16(buf, pos, mIAttr);
-		READ32(buf, pos, mEAttr);
-		READ32(buf, pos, mOffset);
-		
-		char *field = (char*)NS_Alloc(namelength);
-		rv = NTT_ReadData(stream, field, namelength);
-		if (NS_FAILED(rv))
-		{
-				NS_Free(field);
-				return rv;
-		}
-		if (mFlags & 0x800)
-				mName = NS_ConvertUTF8toUTF16(field, namelength);
-		else
-				mName = NS_ConvertASCIItoUTF16(field, namelength);
-		NS_Free(field);
-		
-		field = (char*)NS_Alloc(fieldlength);
-		rv = NTT_ReadData(stream, field, fieldlength);
-		if (NS_FAILED(rv))
-		{
-				NS_Free(field);
-				return rv;
-		}
-		NS_Free(field);
-		
-		field = (char*)NS_Alloc(commentlength);
-		rv = NTT_ReadData(stream, field, commentlength);
-		if (NS_FAILED(rv))
-		{
-				NS_Free(field);
-				return rv;
-		}
-		if (mFlags & 0x800)
-				mComment = NS_ConvertUTF8toUTF16(field, commentlength);
-		else
-				mComment = NS_ConvertASCIItoUTF16(field, commentlength);
-		NS_Free(field);
-		
-		return NS_OK;
+    PRUint32 pos = 0;
+    READ32(buf, pos, signature);
+    if (signature != ZIP_CDS_HEADER_SIGNATURE)
+        return NS_ERROR_FAILURE;
+    
+    READ16(buf, pos, mVersionMade);
+    READ16(buf, pos, mVersionNeeded);
+    READ16(buf, pos, mFlags);
+    READ16(buf, pos, mMethod);
+    READ16(buf, pos, mTime);
+    READ16(buf, pos, mDate);
+    READ32(buf, pos, mCRC);
+    READ32(buf, pos, mCSize);
+    READ32(buf, pos, mUSize);
+    READ16(buf, pos, namelength);
+    READ16(buf, pos, fieldlength);
+    READ16(buf, pos, commentlength);
+    READ16(buf, pos, mDisk);
+    READ16(buf, pos, mIAttr);
+    READ32(buf, pos, mEAttr);
+    READ32(buf, pos, mOffset);
+    
+    char *field = (char*)NS_Alloc(namelength);
+    rv = NTT_ReadData(stream, field, namelength);
+    if (NS_FAILED(rv))
+    {
+        NS_Free(field);
+        return rv;
+    }
+    if (mFlags & 0x800)
+        mName = NS_ConvertUTF8toUTF16(field, namelength);
+    else
+        mName = NS_ConvertASCIItoUTF16(field, namelength);
+    NS_Free(field);
+    
+    field = (char*)NS_Alloc(fieldlength);
+    rv = NTT_ReadData(stream, field, fieldlength);
+    if (NS_FAILED(rv))
+    {
+        NS_Free(field);
+        return rv;
+    }
+    NS_Free(field);
+    
+    field = (char*)NS_Alloc(commentlength);
+    rv = NTT_ReadData(stream, field, commentlength);
+    if (NS_FAILED(rv))
+    {
+        NS_Free(field);
+        return rv;
+    }
+    if (mFlags & 0x800)
+        mComment = NS_ConvertUTF8toUTF16(field, commentlength);
+    else
+        mComment = NS_ConvertASCIItoUTF16(field, commentlength);
+    NS_Free(field);
+    
+    return NS_OK;
 }
 
 void nttZipHeader::GetCodedString(const nsAString & string, nsACString & retval)
 {
-		nsCString str;
-		if (mFlags & 0x800)
-				str = NS_ConvertUTF16toUTF8(string);
-		else
-				str = NS_LossyConvertUTF16toASCII(string);
-		retval = str;
+    nsCString str;
+    if (mFlags & 0x800)
+        str = NS_ConvertUTF16toUTF8(string);
+    else
+        str = NS_LossyConvertUTF16toASCII(string);
+    retval = str;
 }

@@ -54,25 +54,25 @@ class nttZipOutputStream : public nsIOutputStream
                          , public nsIStreamListener
 {
 public:
-		NS_DECL_ISUPPORTS
+    NS_DECL_ISUPPORTS
     NS_DECL_NSIREQUESTOBSERVER
     NS_DECL_NSISTREAMLISTENER
-		NS_DECL_NSIOUTPUTSTREAM
+    NS_DECL_NSIOUTPUTSTREAM
 
-		nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader);
+    nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader);
 
 private:
 
-		nttZipWriter* mWriter;
-		nsCOMPtr<nsIOutputStream> mStream;
-		nsCOMPtr<nsIStreamConverter> mConverter;
-		nttZipHeader mHeader;
-		
-		~nttZipOutputStream()
-		{
-				if (mStream)
-						Close();
-		}
+    nttZipWriter* mWriter;
+    nsCOMPtr<nsIOutputStream> mStream;
+    nsCOMPtr<nsIStreamConverter> mConverter;
+    nttZipHeader mHeader;
+    
+    ~nttZipOutputStream()
+    {
+        if (mStream)
+            Close();
+    }
 };
 
 #endif

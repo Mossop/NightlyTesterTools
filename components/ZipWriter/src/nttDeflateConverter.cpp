@@ -54,31 +54,31 @@ NS_IMPL_ISUPPORTS1(nttDeflateConverter, nsIStreamConverter)
 
 nsresult nttDeflateConverter::Init()
 {
-		int zerr;
-		
-		mOffset = 0;
-		mDeflate = (DeflateStruct*) NS_Alloc(sizeof(DeflateStruct));
-		NS_ENSURE_TRUE(mDeflate, NS_ERROR_OUT_OF_MEMORY);
+    int zerr;
+    
+    mOffset = 0;
+    mDeflate = (DeflateStruct*) NS_Alloc(sizeof(DeflateStruct));
+    NS_ENSURE_TRUE(mDeflate, NS_ERROR_OUT_OF_MEMORY);
 
-		memset(&(mDeflate->mZs), 0, sizeof(z_stream));
-		zerr = deflateInit2(&mDeflate->mZs,
-				                -1,
-				                Z_DEFLATED,
-				                -MAX_WBITS,
-				                8,
-				                Z_DEFAULT_STRATEGY);
-		if (zerr != Z_OK) return NS_ERROR_OUT_OF_MEMORY;
+    memset(&(mDeflate->mZs), 0, sizeof(z_stream));
+    zerr = deflateInit2(&mDeflate->mZs,
+                        -1,
+                        Z_DEFLATED,
+                        -MAX_WBITS,
+                        8,
+                        Z_DEFAULT_STRATEGY);
+    if (zerr != Z_OK) return NS_ERROR_OUT_OF_MEMORY;
 
-		mDeflate->mZs.next_out = mDeflate->mWriteBuf;
-		mDeflate->mZs.avail_out = ZIP_BUFLEN;
-		
-		return NS_OK;
+    mDeflate->mZs.next_out = mDeflate->mWriteBuf;
+    mDeflate->mZs.avail_out = ZIP_BUFLEN;
+    
+    return NS_OK;
 }
 
 /* nsIInputStream convert (in nsIInputStream aFromStream, in string aFromType, in string aToType, in nsISupports aCtxt); */
 NS_IMETHODIMP nttDeflateConverter::Convert(nsIInputStream *aFromStream, const char *aFromType, const char *aToType, nsISupports *aCtxt, nsIInputStream **_retval)
 {
-		return NS_ERROR_NOT_IMPLEMENTED;
+    return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* void asyncConvertData (in string aFromType, in string aToType, in nsIStreamListener aListener, in nsISupports aCtxt); */
@@ -92,94 +92,94 @@ NS_IMETHODIMP nttDeflateConverter::AsyncConvertData(const char *aFromType, const
 /* void onDataAvailable (in nsIRequest aRequest, in nsISupports aContext, in nsIInputStream aInputStream, in unsigned long aOffset, in unsigned long aCount); */
 NS_IMETHODIMP nttDeflateConverter::OnDataAvailable(nsIRequest *aRequest, nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset, PRUint32 aCount)
 {
-		NS_ASSERTION(mDeflate, "Not initialized");
-		
-		nsresult rv;
-		
-		char* aBuffer = (char*)NS_Alloc(aCount);
-		rv = NTT_ReadData(aInputStream, aBuffer, aCount);
-		if (NS_FAILED(rv))
-		{
-				NS_Free(aBuffer);
-				return rv;
-		}
+    NS_ASSERTION(mDeflate, "Not initialized");
     
-		// make sure we aren't reading too much
-		mDeflate->mZs.avail_in = aCount;
-		mDeflate->mZs.next_in = (unsigned char*)aBuffer;
-	
-		int zerr = Z_OK;
-		// deflate loop
-		while (mDeflate->mZs.avail_in > 0 && zerr == Z_OK)
-		{
-				zerr = deflate(&(mDeflate->mZs), Z_NO_FLUSH);
-		
-				while (mDeflate->mZs.avail_out == 0)
-				{
-						// buffer is full, time to write it to disk!
-						nsresult rv = PushAvailableData(aRequest, aContext);
-						NS_ENSURE_SUCCESS(rv, rv);
-						zerr = deflate(&(mDeflate->mZs), Z_NO_FLUSH);
-				}
-		}
-		
-		NS_Free(aBuffer);
-		
-		return NS_OK;
+    nsresult rv;
+    
+    char* aBuffer = (char*)NS_Alloc(aCount);
+    rv = NTT_ReadData(aInputStream, aBuffer, aCount);
+    if (NS_FAILED(rv))
+    {
+        NS_Free(aBuffer);
+        return rv;
+    }
+    
+    // make sure we aren't reading too much
+    mDeflate->mZs.avail_in = aCount;
+    mDeflate->mZs.next_in = (unsigned char*)aBuffer;
+  
+    int zerr = Z_OK;
+    // deflate loop
+    while (mDeflate->mZs.avail_in > 0 && zerr == Z_OK)
+    {
+        zerr = deflate(&(mDeflate->mZs), Z_NO_FLUSH);
+    
+        while (mDeflate->mZs.avail_out == 0)
+        {
+            // buffer is full, time to write it to disk!
+            nsresult rv = PushAvailableData(aRequest, aContext);
+            NS_ENSURE_SUCCESS(rv, rv);
+            zerr = deflate(&(mDeflate->mZs), Z_NO_FLUSH);
+        }
+    }
+    
+    NS_Free(aBuffer);
+    
+    return NS_OK;
 }
 
 /* void onStartRequest (in nsIRequest aRequest, in nsISupports aContext); */
 NS_IMETHODIMP nttDeflateConverter::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 {
-		if (mListener)
-		    return mListener->OnStartRequest(aRequest, mContext);
-		return NS_OK;
+    if (mListener)
+        return mListener->OnStartRequest(aRequest, mContext);
+    return NS_OK;
 }
 
 /* void onStopRequest (in nsIRequest aRequest, in nsISupports aContext, in nsresult aStatusCode); */
 NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISupports *aContext, nsresult aStatusCode)
 {
-		NS_ASSERTION(mDeflate, "Not initialized");
-		
-		nsresult rv;
-	
-		int zerr;
-		do
-		{
-				zerr = deflate(&(mDeflate->mZs), Z_FINISH);
-				// TODO check whether output size smaller than input size
-				rv = PushAvailableData(aRequest, aContext);
-				NS_ENSURE_SUCCESS(rv, rv);
-		} while (zerr == Z_OK);
+    NS_ASSERTION(mDeflate, "Not initialized");
+    
+    nsresult rv;
+  
+    int zerr;
+    do
+    {
+        zerr = deflate(&(mDeflate->mZs), Z_FINISH);
+        // TODO check whether output size smaller than input size
+        rv = PushAvailableData(aRequest, aContext);
+        NS_ENSURE_SUCCESS(rv, rv);
+    } while (zerr == Z_OK);
 
-		deflateEnd(&(mDeflate->mZs));
+    deflateEnd(&(mDeflate->mZs));
 
-		NS_Free(mDeflate);
+    NS_Free(mDeflate);
 
-		if (mListener)
-	    	return mListener->OnStopRequest(aRequest, mContext, aStatusCode);
-	  
-	  return NS_OK;
+    if (mListener)
+        return mListener->OnStopRequest(aRequest, mContext, aStatusCode);
+    
+    return NS_OK;
 }
 
 nsresult nttDeflateConverter::PushAvailableData(nsIRequest *aRequest, nsISupports *aContext)
 {
-		NS_ASSERTION(mDeflate, "Not initialized");
-		
-		nsresult rv = NS_OK;
-		
-		PRUint32 bytesToWrite = ZIP_BUFLEN - mDeflate->mZs.avail_out;
+    NS_ASSERTION(mDeflate, "Not initialized");
+    
+    nsresult rv = NS_OK;
+    
+    PRUint32 bytesToWrite = ZIP_BUFLEN - mDeflate->mZs.avail_out;
 
-		if (mListener)
-		{
-				nsCOMPtr<nsIInputStream> stream = new nttStringInputStream((char*)mDeflate->mWriteBuf, bytesToWrite);
-				rv = mListener->OnDataAvailable(aRequest, mContext, stream, mOffset, bytesToWrite);
-		}
+    if (mListener)
+    {
+        nsCOMPtr<nsIInputStream> stream = new nttStringInputStream((char*)mDeflate->mWriteBuf, bytesToWrite);
+        rv = mListener->OnDataAvailable(aRequest, mContext, stream, mOffset, bytesToWrite);
+    }
 
-		// now set the state for 'deflate'
-		mDeflate->mZs.next_out = mDeflate->mWriteBuf;
-		mDeflate->mZs.avail_out = ZIP_BUFLEN;
-		
-		mOffset += bytesToWrite;
-		return rv;
+    // now set the state for 'deflate'
+    mDeflate->mZs.next_out = mDeflate->mWriteBuf;
+    mDeflate->mZs.avail_out = ZIP_BUFLEN;
+    
+    mOffset += bytesToWrite;
+    return rv;
 }

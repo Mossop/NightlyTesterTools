@@ -51,18 +51,18 @@ NS_GENERIC_FACTORY_CONSTRUCTOR(nttZipWriter)
 
 static nsModuleComponentInfo components[] =
 {
-	{
-		DEFLATECONVERTER_CLASSNAME,
-		DEFLATECONVERTER_CID,
-		DEFLATECONVERTER_CONTRACTID,
-		nttDeflateConverterConstructor,
-	},
-	{
-		ZIPWRITER_CLASSNAME,
-		ZIPWRITER_CID,
-		ZIPWRITER_CONTRACTID,
-		nttZipWriterConstructor,
-	}
+  {
+    DEFLATECONVERTER_CLASSNAME,
+    DEFLATECONVERTER_CID,
+    DEFLATECONVERTER_CONTRACTID,
+    nttDeflateConverterConstructor,
+  },
+  {
+    ZIPWRITER_CLASSNAME,
+    ZIPWRITER_CID,
+    ZIPWRITER_CONTRACTID,
+    nttZipWriterConstructor,
+  }
 };
 
 NS_IMPL_NSGETMODULE("ZipWriterModule", components)

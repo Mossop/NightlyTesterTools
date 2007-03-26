@@ -60,32 +60,32 @@
 class nttDeflateConverter : public nsIStreamConverter
 {
 public:
-	  NS_DECL_ISUPPORTS
+    NS_DECL_ISUPPORTS
     NS_DECL_NSIREQUESTOBSERVER
     NS_DECL_NSISTREAMLISTENER
- 	  NS_DECL_NSISTREAMCONVERTER
-	  
-	  nttDeflateConverter()
-	  {
-	  }
-	
+    NS_DECL_NSISTREAMCONVERTER
+    
+    nttDeflateConverter()
+    {
+    }
+  
 private:
 
-	  ~nttDeflateConverter()
-	  {
-	  }
-	  
-	  nsCOMPtr<nsIStreamListener> mListener;
-	  nsCOMPtr<nsISupports> mContext;
-	  PRUint32 mOffset;
-		struct DeflateStruct {
-				z_stream         mZs;
-				unsigned char    mWriteBuf[ZIP_BUFLEN];
-		};
-		struct DeflateStruct* mDeflate;
-		
-		nsresult Init();
-		nsresult PushAvailableData(nsIRequest *aRequest, nsISupports *aContext);
+    ~nttDeflateConverter()
+    {
+    }
+    
+    nsCOMPtr<nsIStreamListener> mListener;
+    nsCOMPtr<nsISupports> mContext;
+    PRUint32 mOffset;
+    struct DeflateStruct {
+        z_stream         mZs;
+        unsigned char    mWriteBuf[ZIP_BUFLEN];
+    };
+    struct DeflateStruct* mDeflate;
+    
+    nsresult Init();
+    nsresult PushAvailableData(nsIRequest *aRequest, nsISupports *aContext);
 };
 
 #endif

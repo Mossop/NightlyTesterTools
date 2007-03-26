@@ -44,16 +44,16 @@ DEPTH                 = ../../..
 topsrcdir             = @top_srcdir@
 srcdir                = @srcdir@
 VPATH                 = @srcdir@
-	
+  
 include $(DEPTH)/config/autoconf.mk
-	
+  
 MODULE                = zipwriter
 
 XPI_NAME              = zipwriter
 
 EXPORTS = $(NULL)
-	
-XPIDLSRCS	= nttIZipWriter.idl \
+  
+XPIDLSRCS = nttIZipWriter.idl \
             $(NULL)
-	
+  
 include $(topsrcdir)/config/rules.mk

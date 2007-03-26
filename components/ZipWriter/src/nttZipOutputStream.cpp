@@ -55,73 +55,73 @@ NS_IMPL_THREADSAFE_ISUPPORTS2(nttZipOutputStream, nsIOutputStream, nsIStreamList
 
 nttZipOutputStream::nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader)
 {
-		mWriter = aWriter;
-		NS_ADDREF(mWriter);
-		mStream = aStream;
-		mHeader = aHeader;
-		mHeader.mCRC = 0xffffffff;
-		
-		if (mHeader.mMethod == 8)
-		{
-				mConverter = new nttDeflateConverter();
-				mConverter->AsyncConvertData("uncompressed", "deflate", (nsIStreamListener*)this, nsnull);
-		}
+    mWriter = aWriter;
+    NS_ADDREF(mWriter);
+    mStream = aStream;
+    mHeader = aHeader;
+    mHeader.mCRC = 0xffffffff;
+    
+    if (mHeader.mMethod == 8)
+    {
+        mConverter = new nttDeflateConverter();
+        mConverter->AsyncConvertData("uncompressed", "deflate", (nsIStreamListener*)this, nsnull);
+    }
 }
 
 /* void close (); */
 NS_IMETHODIMP nttZipOutputStream::Close()
 {
-		if (!mStream)
-				return NS_ERROR_NOT_INITIALIZED;
-				
-		if (mConverter)
-				mConverter->OnStopRequest(nsnull, nsnull, NS_OK);
-		mConverter = nsnull;
-		
-		mHeader.mCRC = mHeader.mCRC ^ 0xffffffff;
-		mStream = nsnull;
-		nsresult rv = mWriter->OnFileEntryComplete(mHeader);
-		NS_RELEASE(mWriter);
-		mWriter = nsnull;
+    if (!mStream)
+        return NS_ERROR_NOT_INITIALIZED;
+        
+    if (mConverter)
+        mConverter->OnStopRequest(nsnull, nsnull, NS_OK);
+    mConverter = nsnull;
+    
+    mHeader.mCRC = mHeader.mCRC ^ 0xffffffff;
+    mStream = nsnull;
+    nsresult rv = mWriter->OnFileEntryComplete(mHeader);
+    NS_RELEASE(mWriter);
+    mWriter = nsnull;
 
-		return rv;
+    return rv;
 }
 
 /* void flush (); */
 NS_IMETHODIMP nttZipOutputStream::Flush()
 {
-		if (!mStream)
-				return NS_ERROR_FAILURE;
-			
+    if (!mStream)
+        return NS_ERROR_FAILURE;
+      
     return mStream->Flush();
 }
 
 /* unsigned long write (in string aBuf, in unsigned long aCount); */
 NS_IMETHODIMP nttZipOutputStream::Write(const char *aBuf, PRUint32 aCount, PRUint32 *_retval)
 {
-		if (!mStream)
-				return NS_ERROR_FAILURE;
-			
-		nsresult rv;
-		
-		for (PRUint32 n = 0; n < aCount; n++)
-				mHeader.mCRC = CRC_TABLE[(mHeader.mCRC ^ aBuf[n]) & 0xFF] ^ ((mHeader.mCRC >> 8) & 0xFFFFFF);
-			
-		if (mConverter)
-		{
-				nsCOMPtr<nsIInputStream> stream = new nttStringInputStream(aBuf, aCount);
-				rv = mConverter->OnDataAvailable(nsnull, nsnull, stream, mHeader.mUSize, aCount);
-		}
-		else
-		{
-				rv = NTT_WriteData(mStream, aBuf, aCount);
-				if (NS_FAILED(rv)) return rv;
-				mHeader.mCSize += aCount;
-		}
-		
-		*_retval = aCount;
-		mHeader.mUSize += aCount;
-		
+    if (!mStream)
+        return NS_ERROR_FAILURE;
+      
+    nsresult rv;
+    
+    for (PRUint32 n = 0; n < aCount; n++)
+        mHeader.mCRC = CRC_TABLE[(mHeader.mCRC ^ aBuf[n]) & 0xFF] ^ ((mHeader.mCRC >> 8) & 0xFFFFFF);
+      
+    if (mConverter)
+    {
+        nsCOMPtr<nsIInputStream> stream = new nttStringInputStream(aBuf, aCount);
+        rv = mConverter->OnDataAvailable(nsnull, nsnull, stream, mHeader.mUSize, aCount);
+    }
+    else
+    {
+        rv = NTT_WriteData(mStream, aBuf, aCount);
+        if (NS_FAILED(rv)) return rv;
+        mHeader.mCSize += aCount;
+    }
+    
+    *_retval = aCount;
+    mHeader.mUSize += aCount;
+    
     return rv;
 }
 
@@ -140,43 +140,43 @@ NS_IMETHODIMP nttZipOutputStream::WriteSegments(nsReadSegmentFun aReader, void *
 /* boolean isNonBlocking (); */
 NS_IMETHODIMP nttZipOutputStream::IsNonBlocking(PRBool *_retval)
 {
-		if (!mStream)
-			return NS_ERROR_FAILURE;
-			
+    if (!mStream)
+      return NS_ERROR_FAILURE;
+      
     return mStream->IsNonBlocking(_retval);
 }
 
 /* void onDataAvailable (in nsIRequest aRequest, in nsISupports aContext, in nsIInputStream aInputStream, in unsigned long aOffset, in unsigned long aCount); */
 NS_IMETHODIMP nttZipOutputStream::OnDataAvailable(nsIRequest *aRequest, nsISupports *aContext, nsIInputStream *aInputStream, PRUint32 aOffset, PRUint32 aCount)
 {
-		nsresult rv;
-		char *buf = (char*)NS_Alloc(aCount);
+    nsresult rv;
+    char *buf = (char*)NS_Alloc(aCount);
 
-		rv = NTT_ReadData(aInputStream, buf, aCount);
-		if (NS_FAILED(rv))
-		{
-				NS_Free(buf);
-				return rv;
-		}
-		rv = NTT_WriteData(mStream, buf, aCount);
-		if (NS_FAILED(rv))
-		{
-				NS_Free(buf);
-				return rv;
-		}
-		mHeader.mCSize += aCount;
-		NS_Free(buf);
-		return NS_OK;
+    rv = NTT_ReadData(aInputStream, buf, aCount);
+    if (NS_FAILED(rv))
+    {
+        NS_Free(buf);
+        return rv;
+    }
+    rv = NTT_WriteData(mStream, buf, aCount);
+    if (NS_FAILED(rv))
+    {
+        NS_Free(buf);
+        return rv;
+    }
+    mHeader.mCSize += aCount;
+    NS_Free(buf);
+    return NS_OK;
 }
 
 /* void onStartRequest (in nsIRequest aRequest, in nsISupports aContext); */
 NS_IMETHODIMP nttZipOutputStream::OnStartRequest(nsIRequest *aRequest, nsISupports *aContext)
 {
-		return NS_OK;
+    return NS_OK;
 }
 
 /* void onStopRequest (in nsIRequest aRequest, in nsISupports aContext, in nsresult aStatusCode); */
 NS_IMETHODIMP nttZipOutputStream::OnStopRequest(nsIRequest *aRequest, nsISupports *aContext, nsresult aStatusCode)
 {
-		return NS_OK;
+    return NS_OK;
 }

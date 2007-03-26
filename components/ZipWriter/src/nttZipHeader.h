@@ -52,46 +52,46 @@
 class nttZipHeader
 {
 public:
-		nttZipHeader() :
-				mVersionMade(20),
-				mVersionNeeded(20),
-				mFlags(0),
-				mMethod(0),
-				mTime(0),
-				mDate(0),
-				mCRC(0),
-				mCSize(0),
-				mUSize(0),
-				mDisk(0),
-				mIAttr(0),
-				mEAttr(0),
-				mOffset(0)
-		{
-		}
-		
-	 	PRUint16 mVersionMade;
-		PRUint16 mVersionNeeded;
-		PRUint16 mFlags;
-		PRUint16 mMethod;
-		PRUint16 mTime;
-		PRUint16 mDate;
-		PRUint32 mCRC;
-		PRUint32 mCSize;
-		PRUint32 mUSize;
-		PRUint16 mDisk;
-		PRUint16 mIAttr;
-		PRUint32 mEAttr;
-		PRUint32 mOffset;
-		nsString mName;
-		nsString mComment;
+    nttZipHeader() :
+        mVersionMade(20),
+        mVersionNeeded(20),
+        mFlags(0),
+        mMethod(0),
+        mTime(0),
+        mDate(0),
+        mCRC(0),
+        mCSize(0),
+        mUSize(0),
+        mDisk(0),
+        mIAttr(0),
+        mEAttr(0),
+        mOffset(0)
+    {
+    }
+    
+    PRUint16 mVersionMade;
+    PRUint16 mVersionNeeded;
+    PRUint16 mFlags;
+    PRUint16 mMethod;
+    PRUint16 mTime;
+    PRUint16 mDate;
+    PRUint32 mCRC;
+    PRUint32 mCSize;
+    PRUint32 mUSize;
+    PRUint16 mDisk;
+    PRUint16 mIAttr;
+    PRUint32 mEAttr;
+    PRUint32 mOffset;
+    nsString mName;
+    nsString mComment;
 
-		void Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset);
-		PRUint32 GetFileHeaderLength();
-		nsresult WriteFileHeader(nsIOutputStream *stream);
-		PRUint32 GetCDSHeaderLength();
-		nsresult WriteCDSHeader(nsIOutputStream *stream);
-		nsresult ReadCDSHeader(nsIInputStream *stream);
-		void GetCodedString(const nsAString & string, nsACString & retval);
+    void Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset);
+    PRUint32 GetFileHeaderLength();
+    nsresult WriteFileHeader(nsIOutputStream *stream);
+    PRUint32 GetCDSHeaderLength();
+    nsresult WriteCDSHeader(nsIOutputStream *stream);
+    nsresult ReadCDSHeader(nsIInputStream *stream);
+    void GetCodedString(const nsAString & string, nsACString & retval);
 };
 
 #endif

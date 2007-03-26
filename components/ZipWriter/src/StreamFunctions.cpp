@@ -49,38 +49,38 @@
 
 nsresult NTT_ReadData(nsIInputStream *stream, char *buf, PRUint32 count)
 {
-		PRUint32 total = 0;
-		nsresult rv;
-		PRUint32 read = 0;
-		
-		while (total < count)
-		{
-				rv = stream->Read(buf, count, &read);
-				if (NS_FAILED(rv)) return rv;
-				if (read <= 0)
-						return NS_ERROR_FAILURE;
-				total += read;
-				buf += read;
-		}
-		
-		return NS_OK;
+    PRUint32 total = 0;
+    nsresult rv;
+    PRUint32 read = 0;
+    
+    while (total < count)
+    {
+        rv = stream->Read(buf, count, &read);
+        if (NS_FAILED(rv)) return rv;
+        if (read <= 0)
+            return NS_ERROR_FAILURE;
+        total += read;
+        buf += read;
+    }
+    
+    return NS_OK;
 }
 
 nsresult NTT_WriteData(nsIOutputStream *stream, const char *buf, PRUint32 count)
 {
-		PRUint32 total = 0;
-		nsresult rv;
-		PRUint32 written = 0;
-		
-		while (total < count)
-		{
-				rv = stream->Write(buf, count, &written);
-				if (NS_FAILED(rv)) return rv;
-				if (written <= 0)
-						return NS_ERROR_FAILURE;
-				total += written;
-				buf += written;
-		}
-		
-		return NS_OK;
+    PRUint32 total = 0;
+    nsresult rv;
+    PRUint32 written = 0;
+    
+    while (total < count)
+    {
+        rv = stream->Write(buf, count, &written);
+        if (NS_FAILED(rv)) return rv;
+        if (written <= 0)
+            return NS_ERROR_FAILURE;
+        total += written;
+        buf += written;
+    }
+    
+    return NS_OK;
 }
