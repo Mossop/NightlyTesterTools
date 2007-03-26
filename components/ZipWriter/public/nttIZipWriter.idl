@@ -57,7 +57,7 @@
  * with notification after completion.
  *
  * Many operations (whether being performed synchronously or in the
- * background queue) ark the zip writer "busy". Only one of these can be
+ * background queue) mark the zip writer "busy". Only one of these can be
  * carried out at a time.
  */
 [scriptable, uuid(98e40e77-2a94-46cc-bac0-deab758066be)]
