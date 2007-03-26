@@ -189,8 +189,8 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		rv = NTT_ReadData(stream, field, namelength);
 		if (NS_FAILED(rv))
 		{
-			NS_Free(field);
-			return rv;
+				NS_Free(field);
+				return rv;
 		}
 		if (mFlags & 0x800)
 				mName = NS_ConvertUTF8toUTF16(field, namelength);
@@ -202,8 +202,8 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		rv = NTT_ReadData(stream, field, fieldlength);
 		if (NS_FAILED(rv))
 		{
-			NS_Free(field);
-			return rv;
+				NS_Free(field);
+				return rv;
 		}
 		NS_Free(field);
 		
@@ -211,8 +211,8 @@ nsresult nttZipHeader::ReadCDSHeader(nsIInputStream *stream)
 		rv = NTT_ReadData(stream, field, commentlength);
 		if (NS_FAILED(rv))
 		{
-			NS_Free(field);
-			return rv;
+				NS_Free(field);
+				return rv;
 		}
 		if (mFlags & 0x800)
 				mComment = NS_ConvertUTF8toUTF16(field, commentlength);

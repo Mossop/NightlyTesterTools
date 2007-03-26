@@ -20,6 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *      Mook <mook.moz+random.code@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -90,7 +91,7 @@ NS_IMETHODIMP nttZipOutputStream::Close()
 NS_IMETHODIMP nttZipOutputStream::Flush()
 {
 		if (!mStream)
-			return NS_ERROR_FAILURE;
+				return NS_ERROR_FAILURE;
 			
     return mStream->Flush();
 }
@@ -99,12 +100,12 @@ NS_IMETHODIMP nttZipOutputStream::Flush()
 NS_IMETHODIMP nttZipOutputStream::Write(const char *aBuf, PRUint32 aCount, PRUint32 *_retval)
 {
 		if (!mStream)
-			return NS_ERROR_FAILURE;
+				return NS_ERROR_FAILURE;
 			
 		nsresult rv;
 		
 		for (PRUint32 n = 0; n < aCount; n++)
-			mHeader.mCRC = CRC_TABLE[(mHeader.mCRC ^ aBuf[n]) & 0xFF] ^ ((mHeader.mCRC >> 8) & 0xFFFFFF);
+				mHeader.mCRC = CRC_TABLE[(mHeader.mCRC ^ aBuf[n]) & 0xFF] ^ ((mHeader.mCRC >> 8) & 0xFFFFFF);
 			
 		if (mConverter)
 		{
