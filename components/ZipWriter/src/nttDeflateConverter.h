@@ -55,9 +55,7 @@
 #define DEFLATECONVERTER_CLASSNAME "Deflate converter"
 #define DEFLATECONVERTER_CID { 0x0ed5d497, 0xf13d, 0x4382, { 0x82, 0x05, 0x3e, 0x32, 0xb9, 0xca, 0x3a, 0x1c } }
 
-#define NBUCKETS 6
-#define BY4ALLOC_ITEMS 320
-#define ZIP_BUFLEN    (4 * 1024 - 1)
+#define ZIP_BUFLEN (4 * 1024 - 1)
 
 class nttDeflateConverter : public nsIStreamConverter
 {

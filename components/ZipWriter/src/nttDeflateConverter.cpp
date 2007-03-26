@@ -49,26 +49,18 @@
 #include "nsIInputStreamPump.h"
 #include "nsComponentManagerUtils.h"
 #include "nsMemory.h"
-#include "nspr.h"
 
 NS_IMPL_ISUPPORTS1(nttDeflateConverter, nsIStreamConverter)
-
-nsresult gZlibInit(z_stream *zs)
-{
-		memset(zs, 0, sizeof(z_stream));
-
-		return NS_OK;
-}
 
 nsresult nttDeflateConverter::Init()
 {
 		int zerr;
 		
 		mOffset = 0;
-		mDeflate = (DeflateStruct*) PR_Malloc(sizeof(DeflateStruct));
+		mDeflate = (DeflateStruct*) NS_Alloc(sizeof(DeflateStruct));
 		NS_ENSURE_TRUE(mDeflate, NS_ERROR_OUT_OF_MEMORY);
 
-		gZlibInit(&(mDeflate->mZs));
+		memset(&(mDeflate->mZs), 0, sizeof(z_stream));
 		zerr = deflateInit2(&mDeflate->mZs,
 				                -1,
 				                Z_DEFLATED,
@@ -162,7 +154,7 @@ NS_IMETHODIMP nttDeflateConverter::OnStopRequest(nsIRequest *aRequest, nsISuppor
 
 		deflateEnd(&(mDeflate->mZs));
 
-		PR_FREEIF(mDeflate);
+		NS_Free(mDeflate);
 
 		if (mListener)
 	    	return mListener->OnStopRequest(aRequest, mContext, aStatusCode);
