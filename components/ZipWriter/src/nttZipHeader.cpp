@@ -52,7 +52,7 @@
 #define ZIP_CDS_HEADER_SIGNATURE 0x02014b50
 #define ZIP_CDS_HEADER_SIZE 46
 
-void nttZipHeader::Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset)
+void nttZipHeader::Init(const nsAString & aPath, PRTime aDate, PRUint32 aAttr, PRUint32 aOffset)
 {
     mMethod = 8;
     aDate /= 1000;

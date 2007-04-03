@@ -91,6 +91,7 @@ private:
     nsCOMPtr<nsIRequestObserver> mProcessObserver;
     nsCOMPtr<nsISupports> mProcessContext;
     
+    nsresult nttZipWriter::ReadFile(nsIFile *file);
     void BeginProcessingNextItem();
     void FinishQueue(nsresult status);
     PRInt32 FindEntry(const nsAString & path);

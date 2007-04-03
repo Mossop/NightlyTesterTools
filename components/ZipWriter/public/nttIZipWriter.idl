@@ -77,27 +77,19 @@ interface nttIZipWriter : nsISupports
   readonly attribute boolean busy;
   
   /**
-   * Opens an existing zip file for modification.
+   * Opens a zip file.
    *
    * @param file the zip file to open
+   * @param ioflags the open flags for the zip file from prio.h
    *
    * @throws NS_ERROR_ALREADY_INITIALIZED if a zip file is already open
    * @throws NS_ERROR_INVALID_ARG if file is null
-   * @throws NS_ERROR_FILE_NOT_FOUND if file does not exist
+   * @throws NS_ERROR_FILE_NOT_FOUND if file does not exist and flags did
+   *  not allow for creation
    * @throws <other-error> on failure to open zip file (most likely corrupt
    * or unsupported form)
    */
-  void open(in nsIFile file);
-  
-  /**
-   * Creates a new zip file, overwriting any existing data.
-   *
-   * @param file the zip file to create
-   *
-   * @throws NS_ERROR_ALREADY_INITIALIZED if a zip file is already open
-   * @throws <other-error> on failure to create file
-   */
-  void create(in nsIFile file);
+  void open(in nsIFile file, in PRInt32 ioflags);
   
   /**
    * Adds a new directory entry to the zip file. This operation completes
@@ -109,7 +101,7 @@ interface nttIZipWriter : nsISupports
    * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
    * @throws NS_ERROR_FAILURE if another operation is currently in progress
    */
-  void addDirectoryEntry(in AString path, in PRInt64 modtime);
+  void addDirectoryEntry(in AString path, in PRTime modtime);
   
   /**
    * Adds a new file entry to the zip file. This operation will not complete
@@ -124,7 +116,7 @@ interface nttIZipWriter : nsISupports
    * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
    * @throws NS_ERROR_FAILURE if another operation is currently in progress
    */
-  nsIOutputStream addFileEntry(in AString path, in PRInt64 modtime);
+  nsIOutputStream addFileEntry(in AString path, in PRTime modtime);
   
   /**
    * Removes an existing entry from the zip file. This operation can take

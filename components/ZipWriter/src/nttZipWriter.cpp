@@ -93,23 +93,9 @@ NS_IMETHODIMP nttZipWriter::GetBusy(PRBool *aBusy)
     return NS_OK;
 }
 
-/* void open (in nsIFile file); */
-NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
+nsresult nttZipWriter::ReadFile(nsIFile *file)
 {
-    if (mStream)
-        return NS_ERROR_ALREADY_INITIALIZED;
-    
-    if (!file)
-        return NS_ERROR_INVALID_ARG;
-    
     nsresult rv;
-    
-    PRBool exists;
-    file->Exists(&exists);
-    if (!exists)
-        return NS_ERROR_FILE_NOT_FOUND;
-
-    mFile = file;
     
     nsCOMPtr<nsIFileInputStream> stream = do_CreateInstance("@mozilla.org/network/file-input-stream;1");
     rv = stream->Init(file, 1, 0, 0);
@@ -193,7 +179,6 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
                     NS_Free(field);
                 }
                 
-                mCDSDirty = PR_FALSE;
                 rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
                 if (NS_FAILED(rv))
                 {
@@ -263,39 +248,58 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file)
     return NS_ERROR_FAILURE;
 }
   
-/* void create (in nsIFile file); */
-NS_IMETHODIMP nttZipWriter::Create(nsIFile *file)
+/* void open (in nsIFile file, in PRInt32 ioflags); */
+NS_IMETHODIMP nttZipWriter::Open(nsIFile *file, PRInt32 ioflags)
 {
     if (mStream)
         return NS_ERROR_ALREADY_INITIALIZED;
   
-    nsresult rv;
-    nsCOMPtr<nsIFileOutputStream> stream = do_CreateInstance("@mozilla.org/network/file-output-stream;1");
-    rv = stream->Init(file, 0x02 | 0x08 | 0x20, 0664, 0);
-    if (NS_FAILED(rv)) return rv;
-    
-    mStream = do_CreateInstance("@mozilla.org/network/buffered-output-stream;1");
-    rv = mStream->Init(stream, 0x8000);
-    if (NS_FAILED(rv))
-    {
-        mStream = nsnull;
-        stream->Close();
-        return rv;
-    }
+    if (!file)
+        return NS_ERROR_INVALID_ARG;
     
     mFile = file;
+    
+    PRBool exists;
+    file->Exists(&exists);
+    if (!exists && !(ioflags & 0x08))
+        return NS_ERROR_FILE_NOT_FOUND;
 
     mBusy = PR_FALSE;
     mProcessing = PR_FALSE;
-    mCDSOffset = 0;
-    mComment = NS_LITERAL_STRING("");
-    mCDSDirty = PR_TRUE;
 
-    return NS_OK;
+    if (!exists || (ioflags & 0x20))
+    {
+        nsresult rv;
+
+        nsCOMPtr<nsIFileOutputStream> stream = do_CreateInstance("@mozilla.org/network/file-output-stream;1");
+        rv = stream->Init(file, 0x02 | 0x08 | 0x20, 0664, 0);
+        if (NS_FAILED(rv)) return rv;
+        
+        mStream = do_CreateInstance("@mozilla.org/network/buffered-output-stream;1");
+        rv = mStream->Init(stream, 0x8000);
+        if (NS_FAILED(rv))
+        {
+            mStream = nsnull;
+            stream->Close();
+            return rv;
+        }
+        
+        mCDSOffset = 0;
+        mComment = NS_LITERAL_STRING("");
+        mCDSDirty = PR_TRUE;
+    
+        return NS_OK;
+    }
+    else
+    {
+        mCDSDirty = PR_FALSE;
+
+        return ReadFile(file);
+    }
 }
 
-/* void addDirectoryEntry (in AString path, in PRInt64 modtime); */
-NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 modtime)
+/* void addDirectoryEntry (in AString path, in PRTime modtime); */
+NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRTime modtime)
 {
     if (!mStream)
         return NS_ERROR_NOT_INITIALIZED;
@@ -325,8 +329,8 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRInt64 mo
     return NS_OK;
 }
 
-/* nsIOutputStream addFileEntry (in AString path, in PRInt64 modtime); */
-NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRInt64 modtime, nsIOutputStream **_retval)
+/* nsIOutputStream addFileEntry (in AString path, in PRTime modtime); */
+NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRTime modtime, nsIOutputStream **_retval)
 {
     if (!mStream)
         return NS_ERROR_NOT_INITIALIZED;

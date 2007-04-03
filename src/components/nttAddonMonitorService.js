@@ -298,7 +298,7 @@ updateXPI: function(id)
       var zipWriter = Cc["@blueprintit.co.uk/zipwriter;1"]
                        .createInstance(Ci.nttIZipWriter);
 
-      zipWriter.open(stageFile);
+      zipWriter.open(stageFile, 0);
       zipWriter.queueRemoval("install.rdf");
       zipWriter.queueFile("install.rdf", rdftmp);
       zipWriter.processQueue(new ZipMonitor(zipWriter, rdftmp), null);

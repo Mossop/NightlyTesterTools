@@ -85,7 +85,7 @@ public:
     nsString mName;
     nsString mComment;
 
-    void Init(const nsAString & aPath, PRUint64 aDate, PRUint32 aAttr, PRUint32 aOffset);
+    void Init(const nsAString & aPath, PRTime aDate, PRUint32 aAttr, PRUint32 aOffset);
     PRUint32 GetFileHeaderLength();
     nsresult WriteFileHeader(nsIOutputStream *stream);
     PRUint32 GetCDSHeaderLength();
