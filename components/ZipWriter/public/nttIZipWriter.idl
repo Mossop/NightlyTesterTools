@@ -119,6 +119,22 @@ interface nttIZipWriter : nsISupports
   nsIOutputStream addFileEntry(in AString path, in PRTime modtime);
   
   /**
+   * Adds a new file or directory to the zip file. This operation will not
+   * complete until the given file has been completely stored into the zip
+   * file.
+   *
+   * @param path the path of the file entry
+   * @param modtime the modification time of the file
+   *
+   * @return an nsIOutputStream to write the file data to.
+   *
+   * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
+   * @throws NS_ERROR_FAILURE if another operation is currently in progress
+   * @throws NS_ERROR_FILE_NOT_FOUND if file does not exist
+   */
+  void addFile(in AString path, in nsIFile file);
+  
+  /**
    * Removes an existing entry from the zip file. This operation can take
    * time to complete and will not return until it has completed. The zip
    * writer will be busy until then.

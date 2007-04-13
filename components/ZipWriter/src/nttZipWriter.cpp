@@ -352,6 +352,69 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRTime modtime,
     return NS_OK;
 }
 
+/* void addFile (in AString path, in nsIFile file); */
+NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file)
+{
+    if (!mStream)
+        return NS_ERROR_NOT_INITIALIZED;
+    if (mBusy)
+        return NS_ERROR_FAILURE;
+
+    PRBool exists;
+    file->Exists(&exists);
+    if (!exists)
+        return NS_ERROR_FILE_NOT_FOUND;
+
+    PRBool isdir;
+    file->IsDirectory(&isdir);
+    PRInt64 modtime;
+    file->GetLastModifiedTime(&modtime);
+    if (isdir)
+    {
+        return AddDirectoryEntry(path, modtime);
+    }
+    else
+    {
+        nsresult rv;
+        
+        nsCOMPtr<nsIFileInputStream> inputStream = do_CreateInstance("@mozilla.org/network/file-input-stream;1");
+        rv = inputStream->Init(file, -1, 0, 0);
+        if (NS_FAILED(rv)) return rv;
+        
+        nsCOMPtr<nsIOutputStream> outputStream;
+        rv = AddFileEntry(path, modtime, getter_AddRefs(outputStream));
+        if (NS_FAILED(rv))
+        {
+            inputStream->Close();
+            return rv;
+        }
+        
+        char buf[4096];
+        PRUint32 read;
+        do
+        {
+            rv = inputStream->Read(buf, 4096, &read);
+            if (NS_FAILED(rv))
+            {
+                inputStream->Close();
+                outputStream->Close();
+                return rv;
+            }
+            
+            rv = NTT_WriteData(outputStream, buf, read);
+            if (NS_FAILED(rv))
+            {
+                inputStream->Close();
+                outputStream->Close();
+                return rv;
+            }
+        } while (read > 0);
+        inputStream->Close();
+        outputStream->Close();
+        return NS_OK;
+    }
+}
+
 /* void removeEntry (in AString path); */
 NS_IMETHODIMP nttZipWriter::RemoveEntry(const nsAString & path)
 {
