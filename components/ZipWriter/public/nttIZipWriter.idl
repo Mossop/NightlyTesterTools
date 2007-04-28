@@ -126,8 +126,6 @@ interface nttIZipWriter : nsISupports
    * @param path the path of the file entry
    * @param modtime the modification time of the file
    *
-   * @return an nsIOutputStream to write the file data to.
-   *
    * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
    * @throws NS_ERROR_FAILURE if another operation is currently in progress
    * @throws NS_ERROR_FILE_NOT_FOUND if file does not exist
