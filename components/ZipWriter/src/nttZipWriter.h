@@ -51,6 +51,7 @@
 #include "nsIBufferedStreams.h"
 #include "nttZipHeader.h"
 #include "nsCOMPtr.h"
+#include "nsCOMArray.h"
 #include "nsTArray.h"
 
 #define ZIPWRITER_CONTRACTID "@blueprintit.co.uk/zipwriter;1"
@@ -73,12 +74,12 @@ public:
     NS_DECL_NSIREQUESTOBSERVER
   
     nttZipWriter();
-    nsresult OnFileEntryComplete(nttZipHeader header);
+    nsresult OnFileEntryComplete(nttZipHeader *header);
   
 private:
     ~nttZipWriter();
     nsCOMPtr<nsIBufferedOutputStream> mStream;
-    nsTArray<nttZipHeader> mHeaders;
+    nsCOMArray<nttZipHeader> mHeaders;
     PRUint32 mCDSOffset;
     PRBool mCDSDirty;
     nsString mComment;

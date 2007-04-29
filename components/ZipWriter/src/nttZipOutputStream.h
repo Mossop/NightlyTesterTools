@@ -49,6 +49,7 @@
 #include "nttZipWriter.h"
 #include "nsIOutputStream.h"
 #include "nsIStreamConverter.h"
+#include "nsAutoPtr.h"
 
 class nttZipOutputStream : public nsIOutputStream
                          , public nsIStreamListener
@@ -59,14 +60,14 @@ public:
     NS_DECL_NSISTREAMLISTENER
     NS_DECL_NSIOUTPUTSTREAM
 
-    nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader);
+    nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader *aHeader);
 
 private:
 
-    nttZipWriter* mWriter;
+    nsRefPtr<nttZipWriter> mWriter;
     nsCOMPtr<nsIOutputStream> mStream;
     nsCOMPtr<nsIStreamConverter> mConverter;
-    nttZipHeader mHeader;
+    nsRefPtr<nttZipHeader> mHeader;
     
     ~nttZipOutputStream()
     {

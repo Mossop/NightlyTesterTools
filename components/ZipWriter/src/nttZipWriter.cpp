@@ -76,6 +76,7 @@ NS_IMETHODIMP nttZipWriter::GetComment(nsAString & aComment)
     aComment = mComment;
     return NS_OK;
 }
+
 NS_IMETHODIMP nttZipWriter::SetComment(const nsAString & aComment)
 {
     if (!mStream)
@@ -187,15 +188,15 @@ nsresult nttZipWriter::ReadFile(nsIFile *file)
                 }
                 for (PRUint32 entry = 0; entry < entries; entry++)
                 {
-                    nttZipHeader header;
-                    rv = header.ReadCDSHeader(stream);
+                    nttZipHeader* header = new nttZipHeader();
+                    rv = header->ReadCDSHeader(stream);
                     if (NS_FAILED(rv))
                     {
                         mHeaders.Clear();
                         stream->Close();
                         return rv;
                     }
-                    mHeaders.AppendElement(header);
+                    mHeaders.AppendObject(header);
                 }
 
                 stream->Close();
@@ -298,8 +299,20 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file, PRInt32 ioflags)
     }
 }
 
+/* nsIZipEntry getEntry (in AString zipEntry); */
+NS_IMETHODIMP nttZipWriter::GetEntry(const nsAString & zipEntry, nsIZipEntry **_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* boolean hasEntry (in AString zipEntry); */
+NS_IMETHODIMP nttZipWriter::HasEntry(const nsAString & zipEntry, PRBool *_retval)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
 /* void addDirectoryEntry (in AString path, in PRTime modtime); */
-NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRTime modtime)
+NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRTime modtime, nsIZipEntry **_retval)
 {
     if (!mStream)
         return NS_ERROR_NOT_INITIALIZED;
@@ -309,22 +322,23 @@ NS_IMETHODIMP nttZipWriter::AddDirectoryEntry(const nsAString & path, PRTime mod
     nsresult rv;
     
     const nsAString& last = Substring(path, path.Length()-1);
-    nttZipHeader header;
+    nttZipHeader* header = new nttZipHeader();
     if (last.Equals(NS_LITERAL_STRING("/")))
     {
         nsString dirPath;
         dirPath.Append(path);
         dirPath.Append(NS_LITERAL_STRING("/"));
-        header.Init(dirPath, modtime, 16, mCDSOffset);
+        header->Init(dirPath, modtime, 16, mCDSOffset);
     }
     else
-        header.Init(path, modtime, 16, mCDSOffset);
-    rv = header.WriteFileHeader(mStream);
+        header->Init(path, modtime, 16, mCDSOffset);
+    rv = header->WriteFileHeader(mStream);
     if (NS_FAILED(rv)) return rv;
     
     mCDSDirty = PR_TRUE;
-    mCDSOffset += header.mCSize + header.GetFileHeaderLength();
-    mHeaders.AppendElement(header);
+    mCDSOffset += header->mCSize + header->GetFileHeaderLength();
+    mHeaders.AppendObject(header);
+    NS_ADDREF(*_retval = header);
 
     return NS_OK;
 }
@@ -340,9 +354,9 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRTime modtime,
     nsresult rv;
     mBusy = PR_TRUE;
     
-    nttZipHeader header;
-    header.Init(path, modtime, 0, mCDSOffset);
-    rv = header.WriteFileHeader(mStream);
+    nttZipHeader* header = new nttZipHeader();
+    header->Init(path, modtime, 0, mCDSOffset);
+    rv = header->WriteFileHeader(mStream);
     if (NS_FAILED(rv)) return rv;
     
     nttZipOutputStream *stream = new nttZipOutputStream(this, mStream, header);
@@ -353,7 +367,7 @@ NS_IMETHODIMP nttZipWriter::AddFileEntry(const nsAString & path, PRTime modtime,
 }
 
 /* void addFile (in AString path, in nsIFile file); */
-NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file)
+NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file, nsIZipEntry **_retval)
 {
     if (!mStream)
         return NS_ERROR_NOT_INITIALIZED;
@@ -371,7 +385,7 @@ NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file)
     file->GetLastModifiedTime(&modtime);
     if (isdir)
     {
-        return AddDirectoryEntry(path, modtime);
+        return AddDirectoryEntry(path, modtime, _retval);
     }
     else
     {
@@ -411,7 +425,8 @@ NS_IMETHODIMP nttZipWriter::AddFile(const nsAString & path, nsIFile *file)
         } while (read > 0);
         inputStream->Close();
         outputStream->Close();
-        return NS_OK;
+
+        return GetEntry(path, _retval);
     }
 }
 
@@ -423,19 +438,19 @@ NS_IMETHODIMP nttZipWriter::RemoveEntry(const nsAString & path)
     {
         nsresult rv;
         
-        if ((pos+1) < mHeaders.Length())
+        if ((pos+1) < mHeaders.Count())
         {
             nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
-            rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mHeaders[pos].mOffset);
+            rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mHeaders[pos]->mOffset);
             if (NS_FAILED(rv)) return rv;
             
             nsCOMPtr<nsIFileInputStream> reader = do_CreateInstance("@mozilla.org/network/file-input-stream;1");
             reader->Init(mFile, 1, 0, 0);
             seekable = do_QueryInterface(reader);
-            rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mHeaders[pos+1].mOffset);
+            rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mHeaders[pos+1]->mOffset);
             if (NS_FAILED(rv)) return rv;
             
-            PRUint32 count = mCDSOffset - mHeaders[pos+1].mOffset;
+            PRUint32 count = mCDSOffset - mHeaders[pos+1]->mOffset;
             PRUint32 read = 0;
             char buf[4096];
             while (count > 0)
@@ -455,24 +470,24 @@ NS_IMETHODIMP nttZipWriter::RemoveEntry(const nsAString & path)
             }
             reader->Close();
             
-            PRUint32 shift = (mHeaders[pos+1].mOffset - mHeaders[pos].mOffset);
+            PRUint32 shift = (mHeaders[pos+1]->mOffset - mHeaders[pos]->mOffset);
             mCDSOffset -= shift;
             PRUint32 pos2 = pos+1;
-            while (pos2 < mHeaders.Length())
+            while (pos2 < mHeaders.Count())
             {
-                mHeaders[pos2].mOffset -= shift;
+                mHeaders[pos2]->mOffset -= shift;
                 pos2++;
             }
         }
         else
         {
-            mCDSOffset = mHeaders[pos].mOffset;
+            mCDSOffset = mHeaders[pos]->mOffset;
             nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
             rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
             if (NS_FAILED(rv)) return rv;
         }
         
-        mHeaders.RemoveElementAt(pos);
+        mHeaders.RemoveObjectAt(pos);
         mCDSDirty = PR_TRUE;
         
         return NS_OK;
@@ -545,11 +560,11 @@ NS_IMETHODIMP nttZipWriter::Close()
         nsresult rv;
         
         PRUint32 size = 0;
-        for (PRUint32 i = 0; i < mHeaders.Length(); i++)
+        for (PRUint32 i = 0; i < mHeaders.Count(); i++)
         {
-            rv = mHeaders[i].WriteCDSHeader(mStream);
+            rv = mHeaders[i]->WriteCDSHeader(mStream);
             if (NS_FAILED(rv)) return rv;
-            size += mHeaders[i].GetCDSHeaderLength();
+            size += mHeaders[i]->GetCDSHeaderLength();
         }
         
         nsCString comment = NS_LossyConvertUTF16toASCII(mComment);
@@ -559,8 +574,8 @@ NS_IMETHODIMP nttZipWriter::Close()
         WRITE32(buf, pos, ZIP_EOCDR_HEADER_SIGNATURE);
         WRITE16(buf, pos, 0);
         WRITE16(buf, pos, 0);
-        WRITE16(buf, pos, mHeaders.Length());
-        WRITE16(buf, pos, mHeaders.Length());
+        WRITE16(buf, pos, mHeaders.Count());
+        WRITE16(buf, pos, mHeaders.Count());
         WRITE32(buf, pos, size);
         WRITE32(buf, pos, mCDSOffset);
         WRITE16(buf, pos, comment.Length());
@@ -615,7 +630,7 @@ NS_IMETHODIMP nttZipWriter::OnStopRequest(nsIRequest *aRequest, nsISupports *aCo
     return NS_OK;
 }
 
-nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
+nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader* header)
 {
     nsresult rv;
     mStream->Flush();
@@ -623,16 +638,16 @@ nsresult nttZipWriter::OnFileEntryComplete(nttZipHeader header)
     
     rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
     if (NS_FAILED(rv)) return rv;
-    rv = header.WriteFileHeader(mStream);
+    rv = header->WriteFileHeader(mStream);
     if (NS_FAILED(rv)) return rv;
     rv = mStream->Flush();
     if (NS_FAILED(rv)) return rv;
-    rv = seekable->Seek(nsISeekableStream::NS_SEEK_CUR, header.mCSize);
+    rv = seekable->Seek(nsISeekableStream::NS_SEEK_CUR, header->mCSize);
     if (NS_FAILED(rv)) return rv;
     
     mCDSDirty = PR_TRUE;
-    mCDSOffset += header.mCSize + header.GetFileHeaderLength();
-    mHeaders.AppendElement(header);
+    mCDSOffset += header->mCSize + header->GetFileHeaderLength();
+    mHeaders.AppendObject(header);
     mBusy = PR_FALSE;
 
     if (mProcessing)
@@ -677,7 +692,8 @@ void nttZipWriter::BeginProcessingNextItem()
         if (isdir)
         {
             // Directory additions are cheap, just do them synchronously
-            rv = AddDirectoryEntry(next.mPath, modtime);
+            nsCOMPtr<nsIZipEntry> header;
+            rv = AddDirectoryEntry(next.mPath, modtime, getter_AddRefs(header));
             if (NS_FAILED(rv))
             {
                 FinishQueue(rv);
@@ -749,12 +765,12 @@ void nttZipWriter::BeginProcessingNextItem()
         {
             nsresult rv;
             
-            if ((pos+1) < mHeaders.Length())
+            if ((pos+1) < mHeaders.Count())
             {
                 mBusy = PR_TRUE;
                 
                 nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
-                rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mHeaders[pos].mOffset);
+                rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mHeaders[pos]->mOffset);
                 if (NS_FAILED(rv))
                 {
                     FinishQueue(rv);
@@ -767,23 +783,23 @@ void nttZipWriter::BeginProcessingNextItem()
 
                 // make a stream pump and a stream listener to read from the input stream for us
                 nsCOMPtr<nsIInputStreamPump> pump = do_CreateInstance("@mozilla.org/network/input-stream-pump;1");
-                rv = pump->Init(reader, mHeaders[pos+1].mOffset, mCDSOffset-mHeaders[pos+1].mOffset, 0, 0, PR_TRUE);
+                rv = pump->Init(reader, mHeaders[pos+1]->mOffset, mCDSOffset-mHeaders[pos+1]->mOffset, 0, 0, PR_TRUE);
                 if (NS_FAILED(rv))
                 {
                     FinishQueue(rv);
                     return;
                 }
                 
-                PRUint32 shift = (mHeaders[pos+1].mOffset - mHeaders[pos].mOffset);
+                PRUint32 shift = (mHeaders[pos+1]->mOffset - mHeaders[pos]->mOffset);
                 mCDSOffset -= shift;
                 PRUint32 pos2 = pos+1;
-                while (pos2 < mHeaders.Length())
+                while (pos2 < mHeaders.Count())
                 {
-                    mHeaders[pos2].mOffset -= shift;
+                    mHeaders[pos2]->mOffset -= shift;
                     pos2++;
                 }
                 
-                mHeaders.RemoveElementAt(pos);
+                mHeaders.RemoveObjectAt(pos);
                 mCDSDirty = PR_TRUE;
                 
                 // make a simple stream listener to do the writing to output stream for us
@@ -805,7 +821,7 @@ void nttZipWriter::BeginProcessingNextItem()
             }
             else
             {
-                mCDSOffset = mHeaders[pos].mOffset;
+                mCDSOffset = mHeaders[pos]->mOffset;
                 nsCOMPtr<nsISeekableStream> seekable = do_QueryInterface(mStream);
                 rv = seekable->Seek(nsISeekableStream::NS_SEEK_SET, mCDSOffset);
                 if (NS_FAILED(rv))
@@ -814,7 +830,7 @@ void nttZipWriter::BeginProcessingNextItem()
                     return;
                 }
                 
-                mHeaders.RemoveElementAt(pos);
+                mHeaders.RemoveObjectAt(pos);
                 mCDSDirty = PR_TRUE;
                 
                 BeginProcessingNextItem();
@@ -843,9 +859,9 @@ void nttZipWriter::FinishQueue(nsresult status)
 
 PRInt32 nttZipWriter::FindEntry(const nsAString & path)
 {
-    for (PRUint32 pos = 0; pos < mHeaders.Length(); pos++)
+    for (PRUint32 pos = 0; pos < mHeaders.Count(); pos++)
     {
-        if (mHeaders[pos].mName.Equals(path))
+        if (mHeaders[pos]->mName.Equals(path))
             return pos;
     }
     return -1;

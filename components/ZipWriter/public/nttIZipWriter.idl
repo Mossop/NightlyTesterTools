@@ -46,6 +46,7 @@
 #include "nsIOutputStream.idl"
 #include "nsIRequestObserver.idl"
 #include "nsIFile.idl"
+#include "nsIZipReader.idl"
 
 /**
  * nttIZipWriter
@@ -92,16 +93,29 @@ interface nttIZipWriter : nsISupports
   void open(in nsIFile file, in PRInt32 ioflags);
   
   /**
+   * Returns a nsIZipEntry describing a specified zip entry or null if there is
+   * no such entry in the zip file
+   */
+  nsIZipEntry getEntry(in AString zipEntry);
+
+  /**
+   * Checks whether the zipfile contains an entry specified by zipEntry.
+   */
+  boolean hasEntry(in AString zipEntry);
+
+  /**
    * Adds a new directory entry to the zip file. This operation completes
    * immediately.
    *
    * @param path the path of the directory entry
    * @param modtime the modification time of the directory
    *
+   * @return the nsIZipEntry describing the stored directory.
+   *
    * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
    * @throws NS_ERROR_FAILURE if another operation is currently in progress
    */
-  void addDirectoryEntry(in AString path, in PRTime modtime);
+  nsIZipEntry addDirectoryEntry(in AString path, in PRTime modtime);
   
   /**
    * Adds a new file entry to the zip file. This operation will not complete
@@ -126,11 +140,13 @@ interface nttIZipWriter : nsISupports
    * @param path the path of the file entry
    * @param modtime the modification time of the file
    *
+   * @return the nsIZipEntry describing the stored file.
+   *
    * @throws NS_ERROR_NOT_INITIALIZED if no zip file has been opened
    * @throws NS_ERROR_FAILURE if another operation is currently in progress
    * @throws NS_ERROR_FILE_NOT_FOUND if file does not exist
    */
-  void addFile(in AString path, in nsIFile file);
+  nsIZipEntry addFile(in AString path, in nsIFile file);
   
   /**
    * Removes an existing entry from the zip file. This operation can take

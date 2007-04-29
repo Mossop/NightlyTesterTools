@@ -52,6 +52,60 @@
 #define ZIP_CDS_HEADER_SIGNATURE 0x02014b50
 #define ZIP_CDS_HEADER_SIZE 46
 
+NS_IMPL_ISUPPORTS1(nttZipHeader, nsIZipEntry)
+
+/* readonly attribute unsigned short compression; */
+NS_IMETHODIMP nttZipHeader::GetCompression(PRUint16 *aCompression)
+{
+    *aCompression = mMethod;
+    return NS_OK;
+}
+
+/* readonly attribute unsigned long size; */
+NS_IMETHODIMP nttZipHeader::GetSize(PRUint32 *aSize)
+{
+    *aSize = mCSize;
+    return NS_OK;
+}
+
+/* readonly attribute unsigned long realSize; */
+NS_IMETHODIMP nttZipHeader::GetRealSize(PRUint32 *aRealSize)
+{
+    *aRealSize = mUSize;
+    return NS_OK;
+}
+
+/* readonly attribute unsigned long CRC32; */
+NS_IMETHODIMP nttZipHeader::GetCRC32(PRUint32 *aCRC32)
+{
+    *aCRC32 = mCRC;
+    return NS_OK;
+}
+
+/* readonly attribute boolean isDirectory; */
+NS_IMETHODIMP nttZipHeader::GetIsDirectory(PRBool *aIsDirectory)
+{
+    const nsAString& last = Substring(mName, mName.Length()-1);
+    if (last.Equals(NS_LITERAL_STRING("/")))
+        *aIsDirectory = PR_TRUE;
+    else
+        *aIsDirectory = PR_FALSE;
+    return NS_OK;
+}
+
+/* readonly attribute PRTime lastModifiedTime; */
+NS_IMETHODIMP nttZipHeader::GetLastModifiedTime(PRTime *aLastModifiedTime)
+{
+    return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+/* readonly attribute boolean isSynthetic; */
+NS_IMETHODIMP nttZipHeader::GetIsSynthetic(PRBool *aIsSynthetic)
+{
+    *aIsSynthetic = PR_FALSE;
+    return NS_OK;
+}
+
 void nttZipHeader::Init(const nsAString & aPath, PRTime aDate, PRUint32 aAttr, PRUint32 aOffset)
 {
     mMethod = 8;

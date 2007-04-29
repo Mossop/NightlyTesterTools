@@ -53,15 +53,14 @@
 
 NS_IMPL_THREADSAFE_ISUPPORTS2(nttZipOutputStream, nsIOutputStream, nsIStreamListener)
 
-nttZipOutputStream::nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader aHeader)
+nttZipOutputStream::nttZipOutputStream(nttZipWriter *aWriter, nsIOutputStream *aStream, nttZipHeader *aHeader)
 {
     mWriter = aWriter;
-    NS_ADDREF(mWriter);
     mStream = aStream;
     mHeader = aHeader;
-    mHeader.mCRC = 0xffffffff;
+    mHeader->mCRC = 0xffffffff;
     
-    if (mHeader.mMethod == 8)
+    if (mHeader->mMethod == 8)
     {
         mConverter = new nttDeflateConverter();
         mConverter->AsyncConvertData("uncompressed", "deflate", (nsIStreamListener*)this, nsnull);
@@ -78,10 +77,9 @@ NS_IMETHODIMP nttZipOutputStream::Close()
         mConverter->OnStopRequest(nsnull, nsnull, NS_OK);
     mConverter = nsnull;
     
-    mHeader.mCRC = mHeader.mCRC ^ 0xffffffff;
+    mHeader->mCRC = mHeader->mCRC ^ 0xffffffff;
     mStream = nsnull;
     nsresult rv = mWriter->OnFileEntryComplete(mHeader);
-    NS_RELEASE(mWriter);
     mWriter = nsnull;
 
     return rv;
@@ -105,22 +103,22 @@ NS_IMETHODIMP nttZipOutputStream::Write(const char *aBuf, PRUint32 aCount, PRUin
     nsresult rv;
     
     for (PRUint32 n = 0; n < aCount; n++)
-        mHeader.mCRC = CRC_TABLE[(mHeader.mCRC ^ aBuf[n]) & 0xFF] ^ ((mHeader.mCRC >> 8) & 0xFFFFFF);
+        mHeader->mCRC = CRC_TABLE[(mHeader->mCRC ^ aBuf[n]) & 0xFF] ^ ((mHeader->mCRC >> 8) & 0xFFFFFF);
       
     if (mConverter)
     {
         nsCOMPtr<nsIInputStream> stream = new nttStringInputStream(aBuf, aCount);
-        rv = mConverter->OnDataAvailable(nsnull, nsnull, stream, mHeader.mUSize, aCount);
+        rv = mConverter->OnDataAvailable(nsnull, nsnull, stream, mHeader->mUSize, aCount);
     }
     else
     {
         rv = NTT_WriteData(mStream, aBuf, aCount);
         if (NS_FAILED(rv)) return rv;
-        mHeader.mCSize += aCount;
+        mHeader->mCSize += aCount;
     }
     
     *_retval = aCount;
-    mHeader.mUSize += aCount;
+    mHeader->mUSize += aCount;
     
     return rv;
 }
@@ -164,7 +162,7 @@ NS_IMETHODIMP nttZipOutputStream::OnDataAvailable(nsIRequest *aRequest, nsISuppo
         NS_Free(buf);
         return rv;
     }
-    mHeader.mCSize += aCount;
+    mHeader->mCSize += aCount;
     NS_Free(buf);
     return NS_OK;
 }

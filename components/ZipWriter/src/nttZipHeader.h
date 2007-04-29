@@ -48,10 +48,14 @@
 #include "nsStringAPI.h"
 #include "nsIOutputStream.h"
 #include "nsIInputStream.h"
+#include "nsIZipReader.h"
 
-class nttZipHeader
+class nttZipHeader : public nsIZipEntry
 {
 public:
+    NS_DECL_ISUPPORTS
+    NS_DECL_NSIZIPENTRY
+    
     nttZipHeader() :
         mVersionMade(20),
         mVersionNeeded(20),
