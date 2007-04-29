@@ -96,6 +96,18 @@ NS_IMETHODIMP nttZipHeader::GetIsDirectory(PRBool *aIsDirectory)
 /* readonly attribute PRTime lastModifiedTime; */
 NS_IMETHODIMP nttZipHeader::GetLastModifiedTime(PRTime *aLastModifiedTime)
 {
+    struct tm time;
+    
+    time.tm_hour = mTime >> 11;
+    time.tm_min = (mTime >> 5) % 64;
+    time.tm_sec = (mTime % 32) * 2;
+    
+    time.tm_year = mDate >> 11;
+    time.tm_mon = ((mDate >> 5) % 16)-1;
+    time.tm_mday = mDate % 32;
+    
+    *aLastModifiedTime = (PRTime)mktime(&time);
+    
     return NS_ERROR_NOT_IMPLEMENTED;
 }
 
