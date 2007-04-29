@@ -302,13 +302,25 @@ NS_IMETHODIMP nttZipWriter::Open(nsIFile *file, PRInt32 ioflags)
 /* nsIZipEntry getEntry (in AString zipEntry); */
 NS_IMETHODIMP nttZipWriter::GetEntry(const nsAString & zipEntry, nsIZipEntry **_retval)
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
+    PRInt32 pos = FindEntry(zipEntry);
+    if (pos >= 0)
+        NS_ADDREF(*_retval = mHeaders[pos]);
+    else
+        *_retval = nsnull;
+        
+    return NS_OK;
 }
 
 /* boolean hasEntry (in AString zipEntry); */
 NS_IMETHODIMP nttZipWriter::HasEntry(const nsAString & zipEntry, PRBool *_retval)
 {
-    return NS_ERROR_NOT_IMPLEMENTED;
+    PRInt32 pos = FindEntry(zipEntry);
+    if (pos >= 0)
+        *_retval = PR_TRUE;
+    else
+        *_retval = PR_FALSE;
+
+    return NS_OK;
 }
 
 /* void addDirectoryEntry (in AString path, in PRTime modtime); */
