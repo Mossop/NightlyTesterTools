@@ -108,7 +108,7 @@ NS_IMETHODIMP nttZipHeader::GetLastModifiedTime(PRTime *aLastModifiedTime)
     
     *aLastModifiedTime = (PRTime)mktime(&time);
     
-    return NS_ERROR_NOT_IMPLEMENTED;
+    return NS_OK;
 }
 
 /* readonly attribute boolean isSynthetic; */
