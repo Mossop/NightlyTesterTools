@@ -55,6 +55,7 @@
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
   <script type="application/x-javascript" src="talkback/talkback.js" />
+  <script type="application/x-javascript" src="breakpad/breakpad.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 
   <!-- Sidebar -->
@@ -66,6 +67,13 @@
           group="sidebar"
           sidebarurl="chrome://nightly/content/talkback/sidebar.xul"
           oncommand="toggleSidebar('viewTalkbackSidebar');"/>
+    <broadcaster id="viewBreakpadSidebar"
+          autoCheck="false" 
+          label="&nightly.breakpad.sidebar.title;"
+          type="checkbox"
+          group="sidebar"
+          sidebarurl="chrome://nightly/content/breakpad/sidebar.xul"
+          oncommand="toggleSidebar('viewBreakpadSidebar');"/>
   </broadcasterset>
 
   <keyset id="mainKeyset">
@@ -89,6 +97,12 @@
     <popup id="tb-incident-context">
       <menuitem oncommand="talkback.copy(event)" label="&nightly.talkback.copyid;"/>
     </popup>
+    <tooltip orient="vertical" id="bp-incident-tooltip" onpopupshowing="return breakpad.popupTooltip(event)">
+      <label id="bp-tooltip-date"/>
+    </tooltip>
+    <popup id="bp-incident-context">
+      <menuitem oncommand="breakpad.copy(event)" label="&nightly.talkback.copyid;"/>
+    </popup>
   </popupset>
   
   <menupopup id="menu_ToolsPopup">
@@ -104,13 +118,20 @@
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
         <menuseparator/>
         <menu label="&nightly.talkback.recentlist;" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
-          <menupopup id="nightly-incidents">
+          <menupopup id="nightly-talkback-incidents">
             <menuitem disabled="true" label="&nightly.leaks.loading.label;"/>
           </menupopup>
         </menu>
         <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar"/>
         <menuitem id="nightly-talkback-launch" hidden="true" label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
         <menuitem id="nightly-talkback-disabled" hidden="true" label="&nightly.talkback.disabled;" disabled="true"/>
+        <menuseparator/>
+        <menu label="&nightly.breakpad.recentlist;" oncommand="breakpad.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+          <menupopup id="nightly-breakpad-incidents">
+            <menuitem disabled="true" label="&nightly.leaks.loading.label;"/>
+          </menupopup>
+        </menu>
+        <menuitem id="nightly-breakpad-sidebar" observes="viewBreakpadSidebar"/>
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>

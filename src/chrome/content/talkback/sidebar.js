@@ -82,7 +82,6 @@ copy: function(event)
 command: function(tree, event, row)
 {
 	var type = tree.view.getCellText(row, tree.columns.getNamedColumn("type"));
-	dump(type+"\n");
 	if (type=="incident")
 	{
 		var prefservice = Components.classes['@mozilla.org/preferences-service;1']

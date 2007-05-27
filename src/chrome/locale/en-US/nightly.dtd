@@ -21,3 +21,9 @@
 <!ENTITY nightly.talkback.label               "Launch Talkback">
 <!ENTITY nightly.talkback.disabled            "Talkback is not installed">
 <!ENTITY nightly.talkback.recentlist          "Recent Incidents">
+
+<!ENTITY nightly.breakpad.sidebar.title       "Breakpad Sidebar">
+<!ENTITY nightly.breakpad.copyid              "Copy">
+<!ENTITY nightly.breakpad.id                  "ID">
+<!ENTITY nightly.breakpad.date                "Date">
+<!ENTITY nightly.breakpad.recentlist          "Recent Incidents">

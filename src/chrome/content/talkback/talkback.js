@@ -63,7 +63,7 @@ init: function(event)
 	}
 	else
 	{
-		document.getElementById("nightly-incidents").parentNode.hidden=true;
+		document.getElementById("nightly-talkback-incidents").parentNode.hidden=true;
 	}
 },
 
@@ -97,7 +97,7 @@ onDatabaseLoaded: function()
 			incidents = service.getBuildPreviousIncidents(service.currentBuild, 10);
 	}
 	
-	var parent = document.getElementById("nightly-incidents");
+	var parent = document.getElementById("nightly-talkback-incidents");
 	if ((incidents)&&(incidents.length>0))
 	{
 		while (parent.firstChild)
@@ -155,9 +155,7 @@ viewIncident: function(event)
 {
 	if (event.target.id.substring(0,12)=="talkback-id-")
 	{
-		var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-								                .getService(Components.interfaces.nsIPrefBranch);
-		var url = prefservice.getCharPref("nightly.talkback.searchurl");
+		var url = nightly.preferences.getCharPref("talkback.searchurl");
 		var id = event.target.id.substring(12);
 		nightlyApp.openURL(url+id, event);
 	}

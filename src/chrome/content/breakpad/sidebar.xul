@@ -36,10 +36,10 @@
    -
    - ***** END LICENSE BLOCK *****
    -
-   - $HeadURL$
-   - $LastChangedBy$
-   - $Date$
-   - $Revision$
+   - $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/src/chrome/content/talkback/sidebar.xul $
+   - $LastChangedBy: dave $
+   - $Date: 2006-04-09 16:41:11 +0100 (Sun, 09 Apr 2006) $
+   - $Revision: 630 $
    -->
 
 <!DOCTYPE window [
@@ -50,34 +50,32 @@
 ]>
 
 <?xml-stylesheet href="chrome://global/skin/global.css"?>
-<?xml-stylesheet href="chrome://nightly/skin/talkback/sidebar.css"?>
+<?xml-stylesheet href="chrome://nightly/skin/breakpad/sidebar.css"?>
 
-<page id="TalkbackSidebar" title="Talkback" onload="sidebar.init();"
+<page id="BreakpadSidebar" title="Breakpad" onload="sidebar.init();"
       xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
   <script src="sidebar.js"/>
   
   <popupset>
-    <popup id="talkbackContext" onpopupshowing="return sidebar.checkPopup(event)">
-      <menuitem oncommand="sidebar.copy(event)" label="&nightly.talkback.copyid;"/>
+    <popup id="breakpadContext" onpopupshowing="return sidebar.checkPopup(event)">
+      <menuitem oncommand="sidebar.copy(event)" label="&nightly.breakpad.copyid;"/>
     </popup>
   </popupset>
   
   <vbox id="loading" align="center" pack="center" flex="1">
-  	<label style="font-size: 150%;" value="&nightly.leaks.loading.label;"/>
+    <label style="font-size: 150%;" value="&nightly.leaks.loading.label;"/>
   </vbox>
   
   <tree id="tree" hidden="true" flex="1" seltype="single" onkeypress="if (event.keyCode==13) sidebar.selectedCommand(event);">
     <treecols>
-      <treecol id="incidentID" label="&nightly.talkback.id;" primary="true" flex="1" persist="width"/>
+      <treecol id="incidentID" label="&nightly.breakpad.id;" primary="true" flex="1" persist="width"/>
       <splitter class="tree-splitter"/>
-      <treecol id="incidentDate" label="&nightly.talkback.date;" flex="2" hidden="true" persist="width hidden"/>
-      <splitter class="tree-splitter"/>
-      <treecol id="incidentComment" label="&nightly.talkback.comment;" flex="10" hidden="true" persist="width hidden"/>
+      <treecol id="incidentDate" label="&nightly.breakpad.date;" flex="2" hidden="true" persist="width hidden"/>
       <treecol id="type" hidden="true" ignoreincolumnpicker="true"/>
     </treecols>
     
-    <treechildren id="treeroot" context="talkbackContext"
+    <treechildren id="treeroot" context="breakpadContext"
                   onclick="if (event.button==1) sidebar.clickCommand(event);"
                   ondblclick="if (event.button==0) sidebar.clickCommand(event);"/>
   </tree>
