@@ -54,6 +54,7 @@
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
+  <script type="application/x-javascript" src="session/session.js" />
   <script type="application/x-javascript" src="talkback/talkback.js" />
   <script type="application/x-javascript" src="breakpad/breakpad.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
@@ -104,6 +105,10 @@
       <menuitem oncommand="breakpad.copy(event)" label="&nightly.talkback.copyid;"/>
     </popup>
   </popupset>
+  
+  <menupopup id="goPopup">
+    <menuitem id="nightly-session-restore" label="&nightly.session.restore;" insertbefore="endUndoSeparator" oncommand="session.restore()"/>
+  </menupopup>
   
   <menupopup id="menu_ToolsPopup">
     <menu id="nightly-menu" label="Nightly Tester Tools" insertafter="devToolsSeparator">

@@ -27,3 +27,5 @@
 <!ENTITY nightly.breakpad.id                  "ID">
 <!ENTITY nightly.breakpad.date                "Date">
 <!ENTITY nightly.breakpad.recentlist          "Recent Incidents">
+
+<!ENTITY nightly.session.restore              "Restore from last session...">
