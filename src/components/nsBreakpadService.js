@@ -64,13 +64,15 @@ function BP_CreateArray(source)
 function nsBreakpadIncident(file)
 {
   this.id = file.leafName;
-  this.id = this.id.substring(0, this.id.length - 4);
+  this.id = this.id.substring(3, this.id.length - 4);
   this.date = file.lastModifiedTime;
+  this.file = file;
 }
 
 nsBreakpadIncident.prototype = {
 date: null,
 id: null,
+file: null,
 
 QueryInterface: function(iid)
 {
