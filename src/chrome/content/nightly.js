@@ -150,10 +150,10 @@ getProfileName: function()
 defineFlags: function()
 {
 	var flags = "";
-	if (nightly.variables.toolkit && nightly.variables.toolkit == "cairo")
+	/*if (nightly.variables.toolkit && nightly.variables.toolkit == "cairo")
 	{
 		flags+=" [cairo]";
-	}
+	}*/
 	
 	nightly.variables.flags = flags;
 },
