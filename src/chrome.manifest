@@ -26,7 +26,7 @@ style				chrome://mozapps/content/extensions/extensions.xul	chrome://nightly/ski
 
 # Shared chrome
 overlay			chrome://mozapps/content/extensions/extensions.xul	chrome://nightly/content/extensions/addons.xul
-overlay			chrome://mozapps/content/xpinstall/xpinstallConfirm.xul   chrome://nightly/content/extensions/xpinstall.xul
+#overlay			chrome://mozapps/content/xpinstall/xpinstallConfirm.xul   chrome://nightly/content/extensions/xpinstall.xul
 
 style 			chrome://browser/content/browser.xul 								chrome://nightly/skin/browser.css
 style 			chrome://messenger/content/messenger.xul 						chrome://nightly/skin/browser.css
