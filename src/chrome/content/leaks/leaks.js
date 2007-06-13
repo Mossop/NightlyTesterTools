@@ -187,7 +187,7 @@ function doParse(storelog)
     {
 	    para = fulllog.ownerDocument.createElementNS("http://www.w3.org/1999/xhtml","p");
 	    fulllog.appendChild(para);
-	    para.appendChild(document.createTextNode(line.value));
+	    para.appendChild(fulllog.ownerDocument.createTextNode(line.value));
 	    className="logline";
 	  }
 		
