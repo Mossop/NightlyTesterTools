@@ -60,6 +60,19 @@ init: function(event)
   }
 },
 
+copy: function(event)
+{
+  var node = document.popupNode;
+  if (node.id.substring(0,12)=="breakpad-id-")
+  {
+    var id = node.id.substring(12);
+    var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"]
+                              .getService(Components.interfaces.nsIClipboardHelper);
+    clipboard.copyString(id);
+    closeMenus(node);
+  }
+},
+
 onDatabaseLoaded: function()
 {
   var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
