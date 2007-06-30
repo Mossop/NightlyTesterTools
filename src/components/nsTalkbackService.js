@@ -477,36 +477,39 @@ run: function()
     this._scanDir(this._dirs.pop());
   else if (this._databases.length>0)
     this._loadDatabase(this._databases.pop());
-  else if ((!this.currentBuild) && (this.talkbackdir))
+  else if (!this.loaded)
   {
- 		var ini = this.talkbackdir.clone();
- 		ini.append("master.ini");
- 		if (ini.exists())
- 		{
- 			var results = this._readINI(ini);
- 			if (results)
- 			{
- 				var build = this.getVendor(results.vendor);
- 				if (build)
- 				{
- 					build = build.getProduct(results.product);
- 					if (build)
- 					{
- 						build = build.getPlatform(results.platform);
- 						if (build)
- 						{
- 							build = build.getBuild(results.build);
- 							if (build)
- 								this.currentBuild = build;
- 						}
- 					}
- 				}
+    this.loaded = true;
+    if (this.talkbackdir)
+    {
+	 		var ini = this.talkbackdir.clone();
+	 		ini.append("master.ini");
+	 		if (ini.exists())
+	 		{
+	 			var results = this._readINI(ini);
+	 			if (results)
+	 			{
+	 				var build = this.getVendor(results.vendor);
+	 				if (build)
+	 				{
+	 					build = build.getProduct(results.product);
+	 					if (build)
+	 					{
+	 						build = build.getPlatform(results.platform);
+	 						if (build)
+	 						{
+	 							build = build.getBuild(results.build);
+	 							if (build)
+	 								this.currentBuild = build;
+	 						}
+	 					}
+	 				}
+	 			}
  			}
   	}
   }
   else
   {
-    this.loaded = true;
     if (this._listeners.length == 0) {
       this._loadTimer.callback = null;
       this._loadTimer = null;
