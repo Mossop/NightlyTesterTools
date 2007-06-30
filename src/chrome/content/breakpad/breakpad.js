@@ -46,6 +46,7 @@ var breakpad = {
 
 init: function(event)
 {
+  window.removeEventListener("load", breakpad.init, false);
   var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
                           .getService(Components.interfaces.nsIBreakpadService);
   
@@ -128,7 +129,7 @@ viewIncident: function(event)
   if (event.target.id.substring(0,12)=="breakpad-id-")
   {
     var url = nightly.preferences.getCharPref("breakpad.searchurl");
-    var id = event.target.id.substring(12);
+    var id = event.target.id.substring(15);
     nightlyApp.openURL(url+id, event);
   }
 },

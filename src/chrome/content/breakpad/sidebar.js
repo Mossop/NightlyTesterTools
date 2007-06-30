@@ -87,7 +87,7 @@ command: function(tree, event, row)
     var prefservice = Components.classes['@mozilla.org/preferences-service;1']
                                 .getService(Components.interfaces.nsIPrefBranch);
     var url = prefservice.getCharPref("nightly.breakpad.searchurl");
-    var id = tree.view.getCellText(row, tree.columns.getNamedColumn("incidentID"));
+    var id = tree.view.getCellText(row, tree.columns.getNamedColumn("incidentID")).substring(3);
     window.parent.openUILink(url+id, event, false, true);
   }
 },

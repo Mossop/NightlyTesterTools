@@ -47,6 +47,7 @@ var talkback = {
 
 init: function(event)
 {
+  window.removeEventListener("load", talkback.init, false);
 	var service = Components.classes["@blueprintit.co.uk/talkback;1"]
 	                        .getService(Components.interfaces.nsITalkbackService);
 	

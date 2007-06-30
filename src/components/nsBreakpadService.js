@@ -64,7 +64,7 @@ function BP_CreateArray(source)
 function nsBreakpadIncident(file)
 {
   this.id = file.leafName;
-  this.id = this.id.substring(3, this.id.length - 4);
+  this.id = this.id.substring(0, this.id.length - 4);
   this.date = file.lastModifiedTime;
   this.file = file;
 }
@@ -114,6 +114,10 @@ _init: function()
   
   this._inited=true;
 
+  var obs = Cc["@mozilla.org/observer-service;1"]
+             .getService(Ci.nsIObserverService);
+  obs.addObserver(this, "quit-application", false);
+  
   this._findBreakpad();
   if (this.reportdir)
     this._dirs.push(this.reportdir);
@@ -128,25 +132,44 @@ loadDatabase: function()
 {
   if (this._loading)
     return;
-    
+
   this._loading = true;
 
   if (this.reportdir && this.reportdir.exists())
   {
     this.incidents = [];
     this.orderedIncidents = [];
-  
+
     this._loadTimer = Cc["@mozilla.org/timer;1"]
                        .createInstance(Ci.nsITimer);
-    this._loadTimer.initWithCallback(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+    this._loadTimer.init(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
   }
   else
     this.loaded = true;
 },
 
-notify: function(timer)
+observe: function(subject, topic, data)
 {
-  this.run();
+  switch (topic)
+  {
+    case "quit-application":
+      if (this._loadTimer)
+      {
+        // Shutdown during load, clear references
+        this._loadTimer.cancel();
+        this._loadTimer = null;
+        this._databases = [];
+        this._dirs = [];
+        this._listeners = [];
+      }
+		  var obs = Cc["@mozilla.org/observer-service;1"]
+		             .getService(Ci.nsIObserverService);
+		  obs.removeObserver(this, "quit-application");
+      break;
+    case "timer-callback":
+      this.run();
+      break;
+  }
 },
 
 run: function()
@@ -158,14 +181,18 @@ run: function()
   else
   {
     this.loaded = true;
-    if (this._listeners.length == 0)
+    if (this._listeners.length == 0) {
+      this._loadTimer = null;
       return;
+    }
     var listener = this._listeners.pop();
     listener.onDatabaseLoaded();
-    if (this._listeners.length == 0)
+    if (this._listeners.length == 0) {
+      this._loadTimer = null;
       return;
+    }
   }
-  this._loadTimer.initWithCallback(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+  this._loadTimer.init(this, LOAD_DELAY, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
 },
 
 _scanDir: function(dir)
@@ -306,7 +333,7 @@ getTreeView: function()
 QueryInterface: function(iid)
 {
   if (iid.equals(Ci.nsIBreakpadService)
-    || iid.equals(Ci.nsITimerCallback)
+    || iid.equals(Ci.nsIObserver)
     || iid.equals(Ci.nsISupports))
     return this;
   else
