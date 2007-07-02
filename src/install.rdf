@@ -53,7 +53,7 @@
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>
     <em:homepageURL>http://www.oxymoronical.com/web/firefox/${extension.name}</em:homepageURL>
-    <em:updateURL>http://www.oxymoronical.com/web/firefox/${extension.name}/update.rdf?version=%ITEM_VERSION%&status=%ITEM_STATUS%&app=%APP_ID%&appversion=%APP_VERSION%&os=%APP_OS%&abi=%APP_ABI%</em:updateURL>
+    <em:updateURL>http://www.oxymoronical.com/web/firefox/${extension.name}/update.rdf?version=%ITEM_VERSION%&amp;status=%ITEM_STATUS%&amp;app=%APP_ID%&amp;appversion=%APP_VERSION%&amp;os=%APP_OS%&amp;abi=%APP_ABI%</em:updateURL>
     
   </Description>      
 </RDF>
