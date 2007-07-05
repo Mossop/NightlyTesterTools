@@ -35,10 +35,10 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/components/nsNightlyToolsService.js $
- * $LastChangedBy: dave $
- * $Date: 2005-09-10 19:52:42 +0100 (Sat, 10 Sep 2005) $
- * $Revision: 152 $
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Date$
+ * $Revision$
  *
  */
 
@@ -50,28 +50,28 @@ interface nsITreeView;
 [scriptable, uuid(bb823195-02e2-49c4-b1ae-83edf11e31b0)]
 interface nsIBreakpadIncident : nsISupports
 {
-	readonly attribute unsigned long long date;
-	readonly attribute AString id;
+  readonly attribute unsigned long long date;
+  readonly attribute AString id;
 };
 
 [scriptable, uuid(20ddaac1-e28b-455c-8f96-a1999d2a9aa6)]
 interface nsIBreakpadProgressListener : nsISupports
 {
-	void onDatabaseLoaded();
+  void onDatabaseLoaded();
 };
 
 [scriptable, uuid(2f6aa7f7-acd5-4834-ac70-ae1981fd1e52)]
 interface nsIBreakpadService : nsISupports
 {
-	void loadDatabase();
-	
-	nsIArray getRecentIncidents(in unsigned long long date);
-	nsIArray getPreviousIncidents(in long count);
+  void loadDatabase();
+  
+  nsIArray getRecentIncidents(in unsigned long long date);
+  nsIArray getPreviousIncidents(in long count);
 
-	nsIBreakpadIncident getIncident(in AString id);
-	nsIArray getIncidents();
-	
-	nsITreeView getTreeView();
-	
-	void addProgressListener(in nsIBreakpadProgressListener listener);
+  nsIBreakpadIncident getIncident(in AString id);
+  nsIArray getIncidents();
+  
+  nsITreeView getTreeView();
+  
+  void addProgressListener(in nsIBreakpadProgressListener listener);
 };

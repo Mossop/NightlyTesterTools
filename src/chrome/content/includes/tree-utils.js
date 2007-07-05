@@ -1631,14 +1631,14 @@ function xtv_rkeypress (event)
 
 function xtv_atomizeText (text, array)
 {
-	var atomservice = Components.classes["@mozilla.org/atom-service;1"]
+  var atomservice = Components.classes["@mozilla.org/atom-service;1"]
                               .getService(Components.interfaces.nsIAtomService);
                               
   var parts = text.split(" ");
   for (var i = 0; i<parts.length; i++)
   {
-  	var atom = atomservice.getAtom(parts[i]);
-  	array.AppendElement(atom);
+    var atom = atomservice.getAtom(parts[i]);
+    array.AppendElement(atom);
   }
 }
 

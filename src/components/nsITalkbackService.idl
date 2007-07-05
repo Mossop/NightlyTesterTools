@@ -35,10 +35,10 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/components/nsNightlyToolsService.js $
- * $LastChangedBy: dave $
- * $Date: 2005-09-10 19:52:42 +0100 (Sat, 10 Sep 2005) $
- * $Revision: 152 $
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Date$
+ * $Revision$
  *
  */
 
@@ -57,86 +57,86 @@ interface nsITalkbackService;
 [scriptable, uuid(c5d596d3-596f-4681-8c27-2df00ac62b9e)]
 interface nsITalkbackIncident : nsISupports
 {
-	readonly attribute nsITalkbackBuild build;
+  readonly attribute nsITalkbackBuild build;
 
-	readonly attribute unsigned long long date;
-	readonly attribute AString id;
-	readonly attribute AString comment;
+  readonly attribute unsigned long long date;
+  readonly attribute AString id;
+  readonly attribute AString comment;
 };
 
 [scriptable, uuid(56f89015-6d25-4c0f-b584-87fcc255fbf2)]
 interface nsITalkbackBuild : nsISupports
 {
-	readonly attribute AString name;
-	readonly attribute nsITalkbackPlatform platform;
+  readonly attribute AString name;
+  readonly attribute nsITalkbackPlatform platform;
 
-	nsITalkbackIncident getIncident(in AString id);
-	nsIArray getIncidents();
-	
-	void remove();
+  nsITalkbackIncident getIncident(in AString id);
+  nsIArray getIncidents();
+  
+  void remove();
 };
 
 [scriptable, uuid(0e826469-593d-4b1f-a01e-416ddbe7ec94)]
 interface nsITalkbackPlatform : nsISupports
 {
-	readonly attribute AString name;
-	readonly attribute nsITalkbackProduct product;
+  readonly attribute AString name;
+  readonly attribute nsITalkbackProduct product;
 
-	nsITalkbackBuild getBuild(in AString name);
-	nsIArray getBuilds();
-	
-	void remove();
+  nsITalkbackBuild getBuild(in AString name);
+  nsIArray getBuilds();
+  
+  void remove();
 };
 
 [scriptable, uuid(21ee50dc-0137-400f-b143-788caec31872)]
 interface nsITalkbackProduct : nsISupports
 {
-	readonly attribute AString name;
-	readonly attribute nsITalkbackVendor vendor;
+  readonly attribute AString name;
+  readonly attribute nsITalkbackVendor vendor;
 
-	nsITalkbackPlatform getPlatform(in AString name);
-	nsIArray getPlatforms();
-	
-	void remove();
+  nsITalkbackPlatform getPlatform(in AString name);
+  nsIArray getPlatforms();
+  
+  void remove();
 };
 
 [scriptable, uuid(0b4d1cdb-2666-4d42-a322-da928004e625)]
 interface nsITalkbackVendor : nsISupports
 {
-	readonly attribute AString name;
+  readonly attribute AString name;
 
-	nsITalkbackProduct getProduct(in AString name);
-	nsIArray getProducts();
-	
-	void remove();
+  nsITalkbackProduct getProduct(in AString name);
+  nsIArray getProducts();
+  
+  void remove();
 };
 
 [scriptable, uuid(e5fb308e-9904-4e7d-96ca-c1a153b7e1a8)]
 interface nsITalkbackProgressListener : nsISupports
 {
-	void onDatabaseLoaded();
+  void onDatabaseLoaded();
 };
 
 [scriptable, uuid(943acc93-a529-4fb9-98d5-7e4a733953d2)]
 interface nsITalkbackService : nsISupports
 {
-	readonly attribute nsITalkbackBuild currentBuild;
-	readonly attribute nsIFile talkbackdir;
+  readonly attribute nsITalkbackBuild currentBuild;
+  readonly attribute nsIFile talkbackdir;
 
-	void loadDatabase();
-	
-	nsIArray getRecentIncidents(in unsigned long long date);
-	nsIArray getPreviousIncidents(in long count);
+  void loadDatabase();
+  
+  nsIArray getRecentIncidents(in unsigned long long date);
+  nsIArray getPreviousIncidents(in long count);
 
-	nsIArray getBuildRecentIncidents(in nsITalkbackBuild build, in unsigned long long date);
-	nsIArray getBuildPreviousIncidents(in nsITalkbackBuild build, in long count);
+  nsIArray getBuildRecentIncidents(in nsITalkbackBuild build, in unsigned long long date);
+  nsIArray getBuildPreviousIncidents(in nsITalkbackBuild build, in long count);
 
-	nsITalkbackIncident getIncident(in AString id);
-	nsITalkbackVendor getVendor(in AString name);
-	nsIArray getIncidents();
-	nsIArray getVendors();
-	
-	nsITreeView getTreeView();
-	
-	void addProgressListener(in nsITalkbackProgressListener listener);
+  nsITalkbackIncident getIncident(in AString id);
+  nsITalkbackVendor getVendor(in AString name);
+  nsIArray getIncidents();
+  nsIArray getVendors();
+  
+  nsITreeView getTreeView();
+  
+  void addProgressListener(in nsITalkbackProgressListener listener);
 };

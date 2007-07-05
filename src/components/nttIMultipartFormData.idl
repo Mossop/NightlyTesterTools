@@ -35,10 +35,10 @@
  *
  * ***** END LICENSE BLOCK *****
  *
- * $HeadURL: svn://svn.blueprintit.co.uk/dave/mozilla/firefox/buildid/trunk/components/nsNightlyToolsService.js $
- * $LastChangedBy: dave $
- * $Date: 2005-09-10 19:52:42 +0100 (Sat, 10 Sep 2005) $
- * $Revision: 152 $
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Date$
+ * $Revision$
  *
  */
 
@@ -49,19 +49,19 @@
 [scriptable, uuid(0cc4bdb8-a8a8-4998-8ce1-b3caad803119)]
 interface nttIMultipartFormData : nsISupports
 {
-	AString getPostData();
-	
-	nsIInputStream getPostDataStream();
-	
-	AString getHeaders();
-	
-	nsIInputStream getHeaderStream();
-	
-	AString getContentType();
-	
-	void addControl(in AString name, in AString value);
-	
-	void addFile(in AString name, in AString contenttype, in nsIFile file);
-	
-	void addFileData(in AString name, in AString filename, in AString contenttype, in AString encoding, in AString data);
+  AString getPostData();
+  
+  nsIInputStream getPostDataStream();
+  
+  AString getHeaders();
+  
+  nsIInputStream getHeaderStream();
+  
+  AString getContentType();
+  
+  void addControl(in AString name, in AString value);
+  
+  void addFile(in AString name, in AString contenttype, in nsIFile file);
+  
+  void addFileData(in AString name, in AString filename, in AString contenttype, in AString encoding, in AString data);
 };

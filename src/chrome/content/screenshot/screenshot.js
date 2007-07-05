@@ -1,48 +1,45 @@
-// -*- js-var:Components,dump,document,window, -*-
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Nightly Tester Tools.
- *
- * The Initial Developer of the Original Code is
- *      Dave Townsend <dave.townsend@blueprintit.co.uk>.
- *
- * Portions created by the Initial Developer are Copyright (C) 2006
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK *****
- *
- * $HeadURL$
- * $LastChangedBy$
- * $Date$
- * $Revision$
- *
- */
-
+# ***** BEGIN LICENSE BLOCK *****
+# Version: MPL 1.1/GPL 2.0/LGPL 2.1
+#
+# The contents of this file are subject to the Mozilla Public License Version
+# 1.1 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+# http://www.mozilla.org/MPL/
+#
+# Software distributed under the License is distributed on an "AS IS" basis,
+# WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+# for the specific language governing rights and limitations under the
+# License.
+#
+# The Original Code is Nightly Tester Tools.
+#
+# The Initial Developer of the Original Code is
+#      Dave Townsend <dave.townsend@blueprintit.co.uk>.
+#
+# Portions created by the Initial Developer are Copyright (C) 2006
+# the Initial Developer. All Rights Reserved.
+#
+# Contributor(s):
+#
+# Alternatively, the contents of this file may be used under the terms of
+# either the GNU General Public License Version 2 or later (the "GPL"), or
+# the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+# in which case the provisions of the GPL or the LGPL are applicable instead
+# of those above. If you wish to allow use of your version of this file only
+# under the terms of either the GPL or the LGPL, and not to allow others to
+# use your version of this file under the terms of the MPL, indicate your
+# decision by deleting the provisions above and replace them with the notice
+# and other provisions required by the GPL or the LGPL. If you do not delete
+# the provisions above, a recipient may use your version of this file under
+# the terms of any one of the MPL, the GPL or the LGPL.
+#
+# ***** END LICENSE BLOCK *****
+#
+# $HeadURL$
+# $LastChangedBy$
+# $Date$
+# $Revision$
+#
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 
@@ -63,19 +60,19 @@ var windows = [];
 
 function init(event)
 {
-	canvas = document.getElementById("canvas");
-	drawScreenshot();
-	canvas.parentNode.addEventListener("mousedown", startAreaSelect, true);
-	
-	buildWinPopup()
-		
-	var winlist = document.getElementById("winlist");
-	winlist.addEventListener("ValueChange", winChange, false);
-	
-	var winpopup = document.getElementById("winpopup");
-	winpopup.addEventListener("popupshowing", buildWinPopup, false);
-	
-	bundle = document.getElementById("bundle");
+  canvas = document.getElementById("canvas");
+  drawScreenshot();
+  canvas.parentNode.addEventListener("mousedown", startAreaSelect, true);
+  
+  buildWinPopup()
+    
+  var winlist = document.getElementById("winlist");
+  winlist.addEventListener("ValueChange", winChange, false);
+  
+  var winpopup = document.getElementById("winpopup");
+  winpopup.addEventListener("popupshowing", buildWinPopup, false);
+  
+  bundle = document.getElementById("bundle");
 
   try
   {
@@ -99,48 +96,48 @@ function getTopWin()
 
 function timedCapture()
 {
-	if (timer==0)
-	{
-		timer = 5;
-		var button = document.getElementById("timerbtn");
-		button.checked = true;
-		window.setTimeout(captureTimer, 1000);
-	}
+  if (timer==0)
+  {
+    timer = 5;
+    var button = document.getElementById("timerbtn");
+    button.checked = true;
+    window.setTimeout(captureTimer, 1000);
+  }
 }
 
 function captureTimer()
 {
-	var button = document.getElementById("timerbtn");
-	timer--;
-	if (timer==0)
-	{
-		drawScreenshot();
-		button.setAttribute("label", bundle.getFormattedString("screenshot.timer.label", [5]));
-		button.checked = false;
-	}
-	else
-	{
-		button.setAttribute("label", bundle.getFormattedString("screenshot.timer.label", [timer]));
-		window.setTimeout(captureTimer, 1000);
-	}
+  var button = document.getElementById("timerbtn");
+  timer--;
+  if (timer==0)
+  {
+    drawScreenshot();
+    button.setAttribute("label", bundle.getFormattedString("screenshot.timer.label", [5]));
+    button.checked = false;
+  }
+  else
+  {
+    button.setAttribute("label", bundle.getFormattedString("screenshot.timer.label", [timer]));
+    window.setTimeout(captureTimer, 1000);
+  }
 }
 
 function submitScreenshot()
 {
   var fileService = ImageShack;
   
-	var data = canvas.toDataURL("image/png");
-	var pos = data.indexOf(";",5);
-	var contenttype = data.substring(5,pos);
-	var npos = data.indexOf(",",pos+1);
-	var encoding = data.substring(pos+1,npos);
-	data = data.substring(npos+1);
-	
-	var fd = Cc["@blueprintit.co.uk/multipartformdata;1"]
-	           .createInstance(Ci.nttIMultipartFormData);
-	fileService.addFormFields(fd);
-	fd.addFileData(fileService.getFileFormField(), "screenshot.png", contenttype, encoding, data);
-	
+  var data = canvas.toDataURL("image/png");
+  var pos = data.indexOf(";",5);
+  var contenttype = data.substring(5,pos);
+  var npos = data.indexOf(",",pos+1);
+  var encoding = data.substring(pos+1,npos);
+  data = data.substring(npos+1);
+  
+  var fd = Cc["@blueprintit.co.uk/multipartformdata;1"]
+             .createInstance(Ci.nttIMultipartFormData);
+  fileService.addFormFields(fd);
+  fd.addFileData(fileService.getFileFormField(), "screenshot.png", contenttype, encoding, data);
+  
   var ioService = Cc["@mozilla.org/network/io-service;1"]
                     .getService(Ci.nsIIOService);
   
@@ -155,54 +152,54 @@ function submitScreenshot()
 
 function saveScreenshot()
 {
-	var fp = Cc["@mozilla.org/filepicker;1"]
-	           .createInstance(Ci.nsIFilePicker);
-	fp.init(window, bundle.getString("screenshot.filepicker.title"), fp.modeSave);
-	fp.appendFilter(bundle.getString("screenshot.filepicker.filterPNG"), "*.png");
-	fp.appendFilter(bundle.getString("screenshot.filepicker.filterJPG"), "*.jpg");
-	fp.defaultString="screenshot.png";
+  var fp = Cc["@mozilla.org/filepicker;1"]
+             .createInstance(Ci.nsIFilePicker);
+  fp.init(window, bundle.getString("screenshot.filepicker.title"), fp.modeSave);
+  fp.appendFilter(bundle.getString("screenshot.filepicker.filterPNG"), "*.png");
+  fp.appendFilter(bundle.getString("screenshot.filepicker.filterJPG"), "*.jpg");
+  fp.defaultString="screenshot.png";
 
-	var result = fp.show();
-	if (result==fp.returnOK || result==fp.returnReplace)
-	{
-		var file = fp.file;
-		var mimetype = "image/png";
-		var options = "";
-		if (fp.filterIndex == 0)
-		{
-			mimetype = "image/jpeg";
-			options = "quality=65";
-		}
-		else if (fp.filterIndex == 1)
-		{
-			mimetype = "image/png";
-		}
-		
-	  var ioService = Cc["@mozilla.org/network/io-service;1"]
-	                    .getService(Ci.nsIIOService);
-	  
-	  var source = ioService.newURI(canvas.toDataURL(mimetype, options), "UTF8", null);
-	  var target = ioService.newFileURI(file)
-	  
-	  var persist = Cc["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-	                  .createInstance(Ci.nsIWebBrowserPersist);
-	
-	  persist.persistFlags = Ci.nsIWebBrowserPersist.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
-	  persist.persistFlags |= Ci.nsIWebBrowserPersist.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
-	
-	  var tr = Cc["@mozilla.org/transfer;1"]
-	             .createInstance(Ci.nsITransfer);
-	
-	  tr.init(source, target, "", null, null, null, persist);
-	  persist.progressListener = tr;
-	  persist.saveURI(source, null, null, null, null, fp.file);
-	}
+  var result = fp.show();
+  if (result==fp.returnOK || result==fp.returnReplace)
+  {
+    var file = fp.file;
+    var mimetype = "image/png";
+    var options = "";
+    if (fp.filterIndex == 0)
+    {
+      mimetype = "image/jpeg";
+      options = "quality=65";
+    }
+    else if (fp.filterIndex == 1)
+    {
+      mimetype = "image/png";
+    }
+    
+    var ioService = Cc["@mozilla.org/network/io-service;1"]
+                      .getService(Ci.nsIIOService);
+    
+    var source = ioService.newURI(canvas.toDataURL(mimetype, options), "UTF8", null);
+    var target = ioService.newFileURI(file)
+    
+    var persist = Cc["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
+                    .createInstance(Ci.nsIWebBrowserPersist);
+  
+    persist.persistFlags = Ci.nsIWebBrowserPersist.PERSIST_FLAGS_REPLACE_EXISTING_FILES;
+    persist.persistFlags |= Ci.nsIWebBrowserPersist.PERSIST_FLAGS_AUTODETECT_APPLY_CONVERSION;
+  
+    var tr = Cc["@mozilla.org/transfer;1"]
+               .createInstance(Ci.nsITransfer);
+  
+    tr.init(source, target, "", null, null, null, persist);
+    persist.progressListener = tr;
+    persist.saveURI(source, null, null, null, null, fp.file);
+  }
 }
 
 function copyScreenshot()
 {
-	var image = document.getElementById("previewImage");
-	var docshell = window.QueryInterface(Ci.nsIInterfaceRequestor)
+  var image = document.getElementById("previewImage");
+  var docshell = window.QueryInterface(Ci.nsIInterfaceRequestor)
                        .getInterface(Ci.nsIWebNavigation)
                        .QueryInterface(Ci.nsIDocShell);
   var edit = docshell.contentViewer.QueryInterface(Ci.nsIContentViewerEdit);
@@ -212,191 +209,191 @@ function copyScreenshot()
 
 function buildWinPopup(event)
 {
-	var winlist = document.getElementById("winlist");
-	var winpopup = document.getElementById("winpopup");
-	
-	windows = [];
-	while (winpopup.firstChild)
-		winpopup.removeChild(winpopup.firstChild);
+  var winlist = document.getElementById("winlist");
+  var winpopup = document.getElementById("winpopup");
+  
+  windows = [];
+  while (winpopup.firstChild)
+    winpopup.removeChild(winpopup.firstChild);
 
-	var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
-	          .getService(Ci.nsIWindowMediator);
-	var wins = wm.getEnumerator(null);
-	var pos = 0;
-	while (wins.hasMoreElements())
-	{
-		var win = wins.getNext().QueryInterface(Ci.nsIDOMWindow);
-		if (win != window)
-		{
-  		windows[pos] = win;
-  		var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
-  		if (win.document.title)
-  			item.setAttribute("label", win.document.title);
-  		else
-  			item.setAttribute("label", win.document.location.href);
-  		item.setAttribute("value", pos);
-  		winpopup.appendChild(item);
-  		
-  		if (!event && win==shotWindow)
-  			winlist.value=pos;
-  			
-  		pos++;
+  var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
+            .getService(Ci.nsIWindowMediator);
+  var wins = wm.getEnumerator(null);
+  var pos = 0;
+  while (wins.hasMoreElements())
+  {
+    var win = wins.getNext().QueryInterface(Ci.nsIDOMWindow);
+    if (win != window)
+    {
+      windows[pos] = win;
+      var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
+      if (win.document.title)
+        item.setAttribute("label", win.document.title);
+      else
+        item.setAttribute("label", win.document.location.href);
+      item.setAttribute("value", pos);
+      winpopup.appendChild(item);
+      
+      if (!event && win==shotWindow)
+        winlist.value=pos;
+        
+      pos++;
     }
-	}
+  }
 }
 
 function winChange(event)
 {
-	var winlist = document.getElementById("winlist");
-	shotWindow = windows[winlist.value];
-	resetScreenshot();
+  var winlist = document.getElementById("winlist");
+  shotWindow = windows[winlist.value];
+  resetScreenshot();
 }
 
 function startAreaSelect(event)
 {
-	var box = document.getElementById("areaselect");
-	box.hidden=false;
+  var box = document.getElementById("areaselect");
+  box.hidden=false;
 
-	areax = Math.round(event.layerX);
-	areay = Math.round(event.layerY);
-	
-	box.parentNode.addEventListener("mousemove", updateAreaSelect, true);
-	box.parentNode.addEventListener("mouseup", completeAreaSelect, true);
-	updateAreaSelect(event);
+  areax = Math.round(event.layerX);
+  areay = Math.round(event.layerY);
+  
+  box.parentNode.addEventListener("mousemove", updateAreaSelect, true);
+  box.parentNode.addEventListener("mouseup", completeAreaSelect, true);
+  updateAreaSelect(event);
 }
 
 function updateAreaSelect(event)
 {
-	var box = document.getElementById("areaselect");
+  var box = document.getElementById("areaselect");
 
-	var newx = Math.round(event.layerX);
-	var newy = Math.round(event.layerY);
-	
-	box.top = Math.min(newy, areay);
-	box.left = Math.min(newx, areax);
-	
-	box.style.width = (Math.abs(newx-areax))+"px";
-	box.style.height = (Math.abs(newy-areay))+"px";
+  var newx = Math.round(event.layerX);
+  var newy = Math.round(event.layerY);
+  
+  box.top = Math.min(newy, areay);
+  box.left = Math.min(newx, areax);
+  
+  box.style.width = (Math.abs(newx-areax))+"px";
+  box.style.height = (Math.abs(newy-areay))+"px";
 }
 
 function completeAreaSelect(event)
 {
-	var box = document.getElementById("areaselect");
+  var box = document.getElementById("areaselect");
 
-	var cropX = box.boxObject.x;
-	var cropY = box.boxObject.y;
+  var cropX = box.boxObject.x;
+  var cropY = box.boxObject.y;
 
-	box.hidden=true;
-	box.top=0;
-	box.left=0;
-	box.style.width="0px";
-	box.style.height="0px";
-	box.parentNode.removeEventListener("mousemove", updateAreaSelect, true);
-	box.parentNode.removeEventListener("mouseup", completeAreaSelect, true);
+  box.hidden=true;
+  box.top=0;
+  box.left=0;
+  box.style.width="0px";
+  box.style.height="0px";
+  box.parentNode.removeEventListener("mousemove", updateAreaSelect, true);
+  box.parentNode.removeEventListener("mouseup", completeAreaSelect, true);
 
-	var newx = Math.round(event.layerX);
-	var newy = Math.round(event.layerY);
+  var newx = Math.round(event.layerX);
+  var newy = Math.round(event.layerY);
 
-	if ((newx == areax) || (newy == areay))
-		return;
-		
-	cropWidth = Math.abs(newx-areax);
-	cropHeight = Math.abs(newy-areay);
+  if ((newx == areax) || (newy == areay))
+    return;
+    
+  cropWidth = Math.abs(newx-areax);
+  cropHeight = Math.abs(newy-areay);
 
-	canvas.width = cropWidth;
-	canvas.height = cropHeight;
+  canvas.width = cropWidth;
+  canvas.height = cropHeight;
 
-	var ctx = canvas.getContext("2d");
-	
-	try
-	{
-		ctx.drawWindow(window, cropX, cropY, cropWidth, cropHeight, "rgba(255,255,255,255)");
-	}
-	catch (e)
-	{
-	}
+  var ctx = canvas.getContext("2d");
+  
+  try
+  {
+    ctx.drawWindow(window, cropX, cropY, cropWidth, cropHeight, "rgba(255,255,255,255)");
+  }
+  catch (e)
+  {
+  }
 
-	canvas.style.width = cropWidth+"px";
-	canvas.style.minWidth = cropWidth+"px";
-	canvas.style.maxWidth = cropWidth+"px";
-	canvas.style.height = cropHeight+"px";
-	canvas.style.minHeight = cropHeight+"px";
-	canvas.style.maxHeight = cropHeight+"px";
+  canvas.style.width = cropWidth+"px";
+  canvas.style.minWidth = cropWidth+"px";
+  canvas.style.maxWidth = cropWidth+"px";
+  canvas.style.height = cropHeight+"px";
+  canvas.style.minHeight = cropHeight+"px";
+  canvas.style.maxHeight = cropHeight+"px";
 
-	var url = canvas.toDataURL();
-	var image = document.getElementById("previewImage");
-	image.width = cropWidth+"px";
-	image.height = cropHeight+"px";
-	image.src = url;
+  var url = canvas.toDataURL();
+  var image = document.getElementById("previewImage");
+  image.width = cropWidth+"px";
+  image.height = cropHeight+"px";
+  image.src = url;
 }
 
 function drawScreenshot()
 {
-	cropWidth = shotWindow.innerWidth;
-	cropHeight = shotWindow.innerHeight;
-	canvas.width = cropWidth;
-	canvas.height = cropHeight;
-	canvas.style.width = cropWidth+"px";
-	canvas.style.minWidth = cropWidth+"px";
-	canvas.style.maxWidth = cropWidth+"px";
-	canvas.style.height = cropHeight+"px";
-	canvas.style.minHeight = cropHeight+"px";
-	canvas.style.maxHeight = cropHeight+"px";
+  cropWidth = shotWindow.innerWidth;
+  cropHeight = shotWindow.innerHeight;
+  canvas.width = cropWidth;
+  canvas.height = cropHeight;
+  canvas.style.width = cropWidth+"px";
+  canvas.style.minWidth = cropWidth+"px";
+  canvas.style.maxWidth = cropWidth+"px";
+  canvas.style.height = cropHeight+"px";
+  canvas.style.minHeight = cropHeight+"px";
+  canvas.style.maxHeight = cropHeight+"px";
 
-	var ctx = canvas.getContext("2d");
-	
+  var ctx = canvas.getContext("2d");
+  
   var winbo = shotWindow.document.getBoxObjectFor(shotWindow.document.documentElement);
   var winx = winbo.screenX;
   var winy = winbo.screenY;
 
-	try
-	{
-		ctx.drawWindow(shotWindow, shotWindow.scrollX, shotWindow.scrollY, shotWindow.innerWidth, shotWindow.innerHeight, "rgba(255,255,255,255)");
-	}
-	catch (e)
-	{
-	}
-	
-	var docshell = shotWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+  try
+  {
+    ctx.drawWindow(shotWindow, shotWindow.scrollX, shotWindow.scrollY, shotWindow.innerWidth, shotWindow.innerHeight, "rgba(255,255,255,255)");
+  }
+  catch (e)
+  {
+  }
+  
+  var docshell = shotWindow.QueryInterface(Ci.nsIInterfaceRequestor)
                            .getInterface(Ci.nsIWebNavigation)
                            .QueryInterface(Ci.nsIDocShell);
-	var shells = docshell.getDocShellEnumerator(Ci.nsIDocShellTreeItem.typeAll, Ci.nsIDocShell.ENUMERATE_FORWARDS);
-	while (shells.hasMoreElements())
-	{
-		var shell = shells.getNext().QueryInterface(Ci.nsIDocShell);
-		try
-		{
-			if (shell == docshell)
-				continue;
-	
-			shell.QueryInterface(Ci.nsIBaseWindow);
-			if (!shell.visibility)
-				continue;
-	
-			var shellwin = shell.QueryInterface(Ci.nsIInterfaceRequestor)
-			                    .getInterface(Ci.nsIDOMWindow);
-		  var shellbo = shellwin.document.getBoxObjectFor(shellwin.document.documentElement);
-		  
-		  ctx.save();
-		  try
-		  {
-			  ctx.translate(shellbo.screenX-winx+shellwin.scrollX, shellbo.screenY-winy+shellwin.scrollY);
-			  ctx.drawWindow(shellwin, shellwin.scrollX, shellwin.scrollY, shellwin.innerWidth, shellwin.innerHeight, "rgba(255,255,255,255)");
-			}
-			catch (e)
-			{
-			}
-		  ctx.restore();
-		}
-		catch (e)
-		{
-		}
-	}
-	var url = canvas.toDataURL();
-	var image = document.getElementById("previewImage");
-	image.width = cropWidth+"px";
-	image.height = cropHeight+"px";
-	image.src = url;
+  var shells = docshell.getDocShellEnumerator(Ci.nsIDocShellTreeItem.typeAll, Ci.nsIDocShell.ENUMERATE_FORWARDS);
+  while (shells.hasMoreElements())
+  {
+    var shell = shells.getNext().QueryInterface(Ci.nsIDocShell);
+    try
+    {
+      if (shell == docshell)
+        continue;
+  
+      shell.QueryInterface(Ci.nsIBaseWindow);
+      if (!shell.visibility)
+        continue;
+  
+      var shellwin = shell.QueryInterface(Ci.nsIInterfaceRequestor)
+                          .getInterface(Ci.nsIDOMWindow);
+      var shellbo = shellwin.document.getBoxObjectFor(shellwin.document.documentElement);
+      
+      ctx.save();
+      try
+      {
+        ctx.translate(shellbo.screenX-winx+shellwin.scrollX, shellbo.screenY-winy+shellwin.scrollY);
+        ctx.drawWindow(shellwin, shellwin.scrollX, shellwin.scrollY, shellwin.innerWidth, shellwin.innerHeight, "rgba(255,255,255,255)");
+      }
+      catch (e)
+      {
+      }
+      ctx.restore();
+    }
+    catch (e)
+    {
+    }
+  }
+  var url = canvas.toDataURL();
+  var image = document.getElementById("previewImage");
+  image.width = cropWidth+"px";
+  image.height = cropHeight+"px";
+  image.src = url;
 }
 
 window.addEventListener("load", init, false);
