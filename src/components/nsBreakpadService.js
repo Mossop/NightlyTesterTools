@@ -244,8 +244,8 @@ _findBreakpad: function()
       break;
     default:
       var dir = directoryService.get("Home", Ci.nsIFile);
-      dir.append("." + vendor);
-      dir.append(product);
+      dir.append("." + vendor.toLowerCase());
+      dir.append(product.toLowerCase());
       dir.append("Crash Reports");
       break;
   }
