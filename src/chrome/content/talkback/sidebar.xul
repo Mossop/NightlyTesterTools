@@ -14,9 +14,9 @@
 # The Original Code is Nightly Tester Tools.
 #
 # The Initial Developer of the Original Code is
-#      Dave Townsend <dave.townsend@blueprintit.co.uk>.
+#      Dave Townsend <dtownsend@oxymoronical.com>.
 #
-# Portions created by the Initial Developer are Copyright (C) 2006
+# Portions created by the Initial Developer are Copyright (C) 2007
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
