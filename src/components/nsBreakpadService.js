@@ -219,36 +219,12 @@ _loadDatabase: function(database)
 
 _findBreakpad: function()
 {
-  var appinfo = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo);
-  var vendor = appinfo.vendor;
-  var product = appinfo.name;
-  
-  var appinfo = appinfo.QueryInterface(Ci.nsIXULRuntime);
-
   var directoryService = Cc["@mozilla.org/file/directory_service;1"]
                            .getService(Ci.nsIProperties);
-  switch (appinfo.OS)
-  {
-    case "Darwin":
-      var dir = directoryService.get("Home", Ci.nsIFile);
-      dir.append("Library");
-      dir.append("Application Support");
-      dir.append(product);
-      dir.append("Crash Reports");
-      break;
-    case "WINNT":
-      var dir = directoryService.get("AppData", Ci.nsIFile);
-      dir.append(vendor);
-      dir.append(product);
-      dir.append("Crash Reports");
-      break;
-    default:
-      var dir = directoryService.get("Home", Ci.nsIFile);
-      dir.append("." + vendor.toLowerCase());
-      dir.append(product.toLowerCase());
-      dir.append("Crash Reports");
-      break;
-  }
+  var dir = directoryService.get("DefProfRt", Ci.nsIFile);
+  dump("Path is: "+dir.path+"\n");
+  dir = dir.parent;
+  dir.append("Crash Reports");
   if (dir.exists() && dir.isDirectory())
     this.reportdir = dir;
 },
