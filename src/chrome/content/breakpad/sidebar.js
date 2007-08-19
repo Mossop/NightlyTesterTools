@@ -78,15 +78,11 @@ copy: function(event)
 
 command: function(tree, event, row)
 {
-  var type = tree.view.getCellText(row, tree.columns.getNamedColumn("type"));
-  if (type=="incident")
-  {
-    var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-                                .getService(Components.interfaces.nsIPrefBranch);
-    var url = prefservice.getCharPref("nightly.breakpad.searchurl");
-    var id = tree.view.getCellText(row, tree.columns.getNamedColumn("incidentID")).substring(3);
-    window.parent.openUILink(url+id, event, false, true);
-  }
+  var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+                              .getService(Components.interfaces.nsIPrefBranch);
+  var url = prefservice.getCharPref("nightly.breakpad.searchurl");
+  var id = tree.view.getCellText(row, tree.columns.getNamedColumn("incidentID")).substring(3);
+  window.parent.openUILink(url+id, event, false, true);
 },
 
 selectedCommand: function(event)

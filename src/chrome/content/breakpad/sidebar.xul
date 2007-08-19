@@ -72,7 +72,6 @@
       <treecol id="incidentID" label="&nightly.breakpad.id;" primary="true" flex="1" persist="width"/>
       <splitter class="tree-splitter"/>
       <treecol id="incidentDate" label="&nightly.breakpad.date;" flex="2" hidden="true" persist="width hidden"/>
-      <treecol id="type" hidden="true" ignoreincolumnpicker="true"/>
     </treecols>
     
     <treechildren id="treeroot" context="breakpadContext"

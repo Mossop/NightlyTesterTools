@@ -286,18 +286,15 @@ getTreeView: function()
   
   var vparent = tv.childData;
   
-  for (var id in this.incidents)
+  for (var i = 0; i < this.orderedIncidents.length; i++)
   {
-    var incident = this.incidents[id];
+    var incident = this.orderedIncidents[i];
     record = new XULTreeViewRecord(share);
     record.setColumnPropertyName("incidentID", "id");
     record.setColumnPropertyName("incidentDate", "date");
-    record.setColumnPropertyName("type", "type");
     record.setColumnProperties("incidentID", "name incident");
-    record.id = id;
-    record.type = "incident";
+    record.id = incident.id;
     record.date = (new Date(incident.date)).toLocaleString();
-    record.comment = incident.comment;
     tv.childData.appendChild(record);
   }
   
