@@ -1,0 +1,9 @@
+        <menuseparator id="nightly-talkback-separator"/>
+        <menu id="nightly-talkback-recent" label="&nightly.talkback.recentlist;" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
+          <menupopup id="nightly-talkback-incidents">
+            <menuitem disabled="true" label="&nightly.leaks.loading.label;"/>
+          </menupopup>
+        </menu>
+        <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar"/>
+        <menuitem id="nightly-talkback-launch" hidden="true" label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
+        <menuitem id="nightly-talkback-disabled" hidden="true" label="&nightly.talkback.disabled;" disabled="true"/>

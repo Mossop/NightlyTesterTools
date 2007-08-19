@@ -45,17 +45,26 @@ var breakpad = {
 init: function(event)
 {
   window.removeEventListener("load", breakpad.init, false);
-  var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
-                          .getService(Components.interfaces.nsIBreakpadService);
-  
-  if (nightly.preferences.getBoolPref("breakpad.recentlist.display"))
+  if (Components.interfaces.nsICrashReporter)
   {
-    service.loadDatabase();
-    service.addProgressListener(breakpad);
+    var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
+                            .getService(Components.interfaces.nsIBreakpadService);
+    
+    if (nightly.preferences.getBoolPref("breakpad.recentlist.display"))
+    {
+      service.loadDatabase();
+      service.addProgressListener(breakpad);
+    }
+    else
+    {
+      document.getElementById("nightly-breakpad-incidents").parentNode.hidden=true;
+    }
   }
   else
   {
-    document.getElementById("nightly-breakpad-incidents").parentNode.hidden=true;
+    document.getElementById("nightly-breakpad-separator").hidden = true;
+    document.getElementById("nightly-breakpad-recent").hidden = true;
+    document.getElementById("nightly-breakpad-sidebar").hidden = true;
   }
 },
 

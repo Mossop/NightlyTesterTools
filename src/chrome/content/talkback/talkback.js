@@ -45,23 +45,32 @@ var talkback = {
 init: function(event)
 {
   window.removeEventListener("load", talkback.init, false);
-  var service = Components.classes["@blueprintit.co.uk/talkback;1"]
-                          .getService(Components.interfaces.nsITalkbackService);
-  
-  var exe = nightlyplatform.getTalkbackExe(service.talkbackdir);
-  if (!exe)
-    document.getElementById("nightly-talkback-disabled").hidden=false;
-  else
-    document.getElementById("nightly-talkback-launch").hidden=false;
-    
-  if (nightly.preferences.getBoolPref("talkback.recentlist.display"))
+  if (!Components.interfaces.nsICrashReporter)
   {
-    service.loadDatabase();
-    service.addProgressListener(talkback);
+    var service = Components.classes["@blueprintit.co.uk/talkback;1"]
+                            .getService(Components.interfaces.nsITalkbackService);
+    
+    var exe = nightlyplatform.getTalkbackExe(service.talkbackdir);
+    if (!exe)
+      document.getElementById("nightly-talkback-disabled").hidden=false;
+    else
+      document.getElementById("nightly-talkback-launch").hidden=false;
+      
+    if (nightly.preferences.getBoolPref("talkback.recentlist.display"))
+    {
+      service.loadDatabase();
+      service.addProgressListener(talkback);
+    }
+    else
+    {
+      document.getElementById("nightly-talkback-incidents").parentNode.hidden=true;
+    }
   }
   else
   {
-    document.getElementById("nightly-talkback-incidents").parentNode.hidden=true;
+    document.getElementById("nightly-talkback-separator").hidden = true;
+    document.getElementById("nightly-talkback-recent").hidden = true;
+    document.getElementById("nightly-talkback-sidebar").hidden = true;
   }
 },
 

@@ -117,26 +117,11 @@
         <menuitem id="build-insert" label="&nightly.id.insert.label;" oncommand="nightly.insertTemplate('buildid');"/>
         <menuitem id="list-copy" label="&nightly.extensions.copy.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.extensions.insert.label;" oncommand="nightly.insertExtensions();"/>
-        <menuseparator/>
-        <menuitem label="&nightly.screenshot.full.label;" oncommand="nightly.getScreenshot();"/>
+#include "screenshot/screenshot.inc.xul"
         <menuseparator/>
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
-        <menuseparator/>
-        <menu label="&nightly.talkback.recentlist;" oncommand="talkback.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
-          <menupopup id="nightly-talkback-incidents">
-            <menuitem disabled="true" label="&nightly.leaks.loading.label;"/>
-          </menupopup>
-        </menu>
-        <menuitem id="nightly-talkback-sidebar" observes="viewTalkbackSidebar"/>
-        <menuitem id="nightly-talkback-launch" hidden="true" label="&nightly.talkback.label;" oncommand="talkback.launchTalkback();"/>
-        <menuitem id="nightly-talkback-disabled" hidden="true" label="&nightly.talkback.disabled;" disabled="true"/>
-        <menuseparator/>
-        <menu label="&nightly.breakpad.recentlist;" oncommand="breakpad.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
-          <menupopup id="nightly-breakpad-incidents">
-            <menuitem disabled="true" label="&nightly.leaks.loading.label;"/>
-          </menupopup>
-        </menu>
-        <menuitem id="nightly-breakpad-sidebar" observes="viewBreakpadSidebar"/>
+#include "talkback/talkback.inc.xul"
+#include "breakpad/breakpad.inc.xul"
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>
