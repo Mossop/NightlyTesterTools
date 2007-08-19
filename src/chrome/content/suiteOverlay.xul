@@ -55,6 +55,7 @@
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="suite.js" />
   <script type="application/x-javascript" src="talkback/talkback.js" />
+  <script type="application/x-javascript" src="breakpad/breakpad.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 
   <keyset id="navKeys">
@@ -80,8 +81,6 @@
         <menuitem id="list-copy" label="&nightly.extensions.copy.label;" oncommand="nightly.copyExtensions();"/>
         <menuitem id="list-insert" label="&nightly.extensions.insert.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
-        <!--<menuitem label="&nightly.screenshot.full.label;" oncommand="nightly.getScreenshot();"/>
-        <menuseparator/>-->
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
 #include "talkback/talkback.inc.xul"
 #include "breakpad/breakpad.inc.xul"
