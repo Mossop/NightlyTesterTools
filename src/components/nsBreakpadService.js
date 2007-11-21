@@ -222,8 +222,8 @@ _findBreakpad: function()
   var directoryService = Cc["@mozilla.org/file/directory_service;1"]
                            .getService(Ci.nsIProperties);
   var dir = directoryService.get("DefProfRt", Ci.nsIFile);
-  dump("Path is: "+dir.path+"\n");
-  dir = dir.parent;
+  if (dir.leafName.toLowerCase() == "profiles")
+    dir = dir.parent;
   dir.append("Crash Reports");
   if (dir.exists() && dir.isDirectory())
     this.reportdir = dir;
