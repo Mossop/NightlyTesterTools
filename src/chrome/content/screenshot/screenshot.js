@@ -246,7 +246,7 @@ function winChange(event)
 {
   var winlist = document.getElementById("winlist");
   shotWindow = windows[winlist.value];
-  resetScreenshot();
+  drawScreenshot();
 }
 
 function startAreaSelect(event)
