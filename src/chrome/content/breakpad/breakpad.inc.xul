@@ -4,4 +4,3 @@
             <menuitem disabled="true" label="&nightly.leaks.loading.label;"/>
           </menupopup>
         </menu>
-        <menuitem id="nightly-breakpad-sidebar" observes="viewBreakpadSidebar"/>

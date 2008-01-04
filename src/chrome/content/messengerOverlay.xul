@@ -50,11 +50,10 @@
 ]>
 
 <overlay id="NightlyMessengerOverlay"
-                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="messenger.js" />
-  <script type="application/x-javascript" src="talkback/talkback.js" />
   <script type="application/x-javascript" src="breakpad/breakpad.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 
@@ -92,7 +91,6 @@
         <menuitem id="list-insert" label="&nightly.extensions.insert.label;" oncommand="nightly.insertExtensions();"/>
         <menuseparator/>
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
-#include "talkback/talkback.inc.xul"
 #include "breakpad/breakpad.inc.xul"
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);"/>

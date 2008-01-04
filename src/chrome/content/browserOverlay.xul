@@ -50,24 +50,16 @@
 ]>
 
 <overlay id="NightlyBrowserOverlay"
-                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
   <script type="application/x-javascript" src="session/session.js" />
-  <script type="application/x-javascript" src="talkback/talkback.js" />
   <script type="application/x-javascript" src="breakpad/breakpad.js" />
   <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
 
   <!-- Sidebar -->
   <broadcasterset id="mainBroadcasterSet">
-    <broadcaster id="viewTalkbackSidebar"
-          autoCheck="false" 
-          label="&nightly.talkback.sidebar.title;"
-          type="checkbox"
-          group="sidebar"
-          sidebarurl="chrome://nightly/content/talkback/sidebar.xul"
-          oncommand="toggleSidebar('viewTalkbackSidebar');"/>
     <broadcaster id="viewBreakpadSidebar"
           autoCheck="false" 
           label="&nightly.breakpad.sidebar.title;"
@@ -90,14 +82,6 @@
   </toolbarpalette>
   
   <popupset id="mainPopupSet">
-    <tooltip orient="vertical" id="tb-incident-tooltip" onpopupshowing="return talkback.popupTooltip(event)">
-      <label id="tb-tooltip-product"/>
-      <label id="tb-tooltip-date"/>
-      <description id="tb-tooltip-comment"/>
-    </tooltip>
-    <popup id="tb-incident-context">
-      <menuitem oncommand="talkback.copy(event)" label="&nightly.talkback.copyid;"/>
-    </popup>
     <tooltip orient="vertical" id="bp-incident-tooltip" onpopupshowing="return breakpad.popupTooltip(event)">
       <label id="bp-tooltip-date"/>
     </tooltip>
@@ -120,8 +104,8 @@
 #include "screenshot/screenshot.inc.xul"
         <menuseparator/>
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
-#include "talkback/talkback.inc.xul"
 #include "breakpad/breakpad.inc.xul"
+        <menuitem id="nightly-breakpad-sidebar" observes="viewBreakpadSidebar"/>
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>

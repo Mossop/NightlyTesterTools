@@ -108,11 +108,10 @@ onDatabaseLoaded: function()
       item.setAttribute("label", incident.id+" ("+(new Date(incident.date)).toLocaleDateString()+")");
       parent.appendChild(item);
     }
-    parent.parentNode.hidden=false;
   }
   else
   {
-    parent.parentNode.hidden=true;
+    parent.parentNode.disabled=true;
   }
 },
 
