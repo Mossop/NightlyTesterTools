@@ -84,6 +84,15 @@
         <em:maxVersion>2.0a1</em:maxVersion>
       </Description>
     </em:targetApplication>
+	
+    <!-- Songbird version -->
+    <em:targetApplication>
+      <Description>
+        <em:id>songbird@songbirdnest.com</em:id>
+        <em:minVersion>0.5pre</em:minVersion>
+        <em:maxVersion>0.5pre</em:maxVersion>
+      </Description>
+    </em:targetApplication>
 
     <!-- Front End MetaData -->
     <em:name>Nightly Tester Tools</em:name>
@@ -91,6 +100,7 @@
     <em:creator>Mossop</em:creator>
     <em:contributor>Peter van der Woude (original idea)</em:contributor>
     <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
+    <em:contributor>Stephen Lau (Songbird port)</em:contributor>
 
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>

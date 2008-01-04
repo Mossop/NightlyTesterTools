@@ -54,6 +54,8 @@ init: function()
     window=mediator.getMostRecentWindow("mail:3pane");
   if (!window)
     window=mediator.getMostRecentWindow("calendarMainWindow");
+  if (!window)
+    window=mediator.getMostRecentWindow("Songbird:Main");
   if (window)
     prefs.nightly=window.nightly;
 }
