@@ -20,6 +20,7 @@
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
+#      Stephen Lau <stevel@songbirdnest.com>
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -78,24 +79,18 @@ openURL: function(url, event)
 
 setCustomTitle: function(title)
 {
-  var feathers = Components.classes['@songbirdnest.com/songbird/feathersmanager;1']
-                           .getService(Components.interfaces.sbIFeathersManager);
   var titlebar = document.getElementsByTagName("sb-sys-titlebar")[0];
   titlebar.setAttribute("value", title);
 },
 
 setBlankTitle: function()
 {
-  var feathers = Components.classes['@songbirdnest.com/songbird/feathersmanager;1']
-                           .getService(Components.interfaces.sbIFeathersManager);
   var titlebar = document.getElementsByTagName("sb-sys-titlebar")[0];
   titlebar.setAttribute("value", "");
 },
 
 setStandardTitle: function()
 {
-  var feathers = Components.classes['@songbirdnest.com/songbird/feathersmanager;1']
-                           .getService(Components.interfaces.sbIFeathersManager);
   var titlebar = document.getElementsByTagName("sb-sys-titlebar")[0];
   titlebar.setAttribute("value", nightlyApp.storedTitle);
 }
