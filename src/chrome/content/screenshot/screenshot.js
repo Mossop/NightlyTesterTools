@@ -62,7 +62,7 @@ function init(event)
 {
   canvas = document.getElementById("canvas");
   drawScreenshot();
-  canvas.parentNode.addEventListener("mousedown", startAreaSelect, true);
+  //canvas.parentNode.addEventListener("mousedown", startAreaSelect, true);
   
   buildWinPopup()
     

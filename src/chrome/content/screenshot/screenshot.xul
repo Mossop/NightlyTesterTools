@@ -76,12 +76,12 @@
     </toolbar>
   </toolbox>
   
-  <scrollbox flex="1">
-    <stack>
-      <xhtml:canvas id="canvas" style="visibility: hidden"/>
-      <xhtml:img id="previewImage"/>
-      <box id="areaselect" hidden="true"/>
-    </stack>
+  <scrollbox flex="1" style="overflow: auto">
+    <xhtml:img id="previewImage"/>
   </scrollbox>
-    
+
+  <vbox height="0" style="overflow: hidden">
+    <xhtml:canvas id="canvas" style="visibility: hidden"/>
+  </vbox>
+
 </window>
