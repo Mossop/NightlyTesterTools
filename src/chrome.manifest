@@ -1,7 +1,7 @@
 content      nightly                                                  ${extension.chromebase}/content/
 content      nightly-platform                                         ${extension.chromebase}/content/platform/                platform
 skin         nightly          classic/1.0                             ${extension.chromebase}/skin/
-skin         nightly-platform                                         ${extension.chromebase}/skin/platform/
+skin         nightly-platform classic/1.0                             ${extension.chromebase}/skin/platform/
 
 locale       nightly          en-US                                   ${extension.chromebase}/locale/en-US/
 
