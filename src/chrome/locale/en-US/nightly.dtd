@@ -50,19 +50,10 @@
 
 <!ENTITY nightly.screenshot.full.label        "Take Screenshot">
 
-<!ENTITY nightly.talkback.sidebar.title       "Talkback Sidebar">
-<!ENTITY nightly.talkback.copyid              "Copy">
-<!ENTITY nightly.talkback.id                  "ID">
-<!ENTITY nightly.talkback.date                "Date">
-<!ENTITY nightly.talkback.comment             "Comment">
-<!ENTITY nightly.talkback.label               "Launch Talkback">
-<!ENTITY nightly.talkback.disabled            "Talkback is not installed">
-<!ENTITY nightly.talkback.recentlist          "Recent Incidents">
-
-<!ENTITY nightly.breakpad.sidebar.title       "Breakpad Sidebar">
-<!ENTITY nightly.breakpad.copyid              "Copy">
-<!ENTITY nightly.breakpad.id                  "ID">
-<!ENTITY nightly.breakpad.date                "Date">
-<!ENTITY nightly.breakpad.recentlist          "Recent Incidents">
+<!ENTITY nightly.crashreports.sidebar.title   "Crash Reports Sidebar">
+<!ENTITY nightly.crashreports.copyid          "Copy">
+<!ENTITY nightly.crashreports.id              "ID">
+<!ENTITY nightly.crashreports.date            "Date">
+<!ENTITY nightly.crashreports.recentlist      "Recent Incidents">
 
 <!ENTITY nightly.session.restore              "Restore from last session...">

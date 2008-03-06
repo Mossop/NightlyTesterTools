@@ -54,13 +54,13 @@
 
   <!-- Sidebar -->
   <broadcasterset id="mainBroadcasterSet">
-    <broadcaster id="viewBreakpadSidebar"
+    <broadcaster id="viewCrashReportsSidebar"
           autoCheck="false" 
-          label="&nightly.breakpad.sidebar.title;"
+          label="&nightly.crashreports.sidebar.title;"
           type="checkbox"
           group="sidebar"
           sidebarurl="chrome://nightly/content/breakpad/sidebar.xul"
-          oncommand="toggleSidebar('viewBreakpadSidebar');"/>
+          oncommand="toggleSidebar('viewCrashReportsSidebar');"/>
   </broadcasterset>
 
   <keyset id="navKeys">

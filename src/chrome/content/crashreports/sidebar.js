@@ -35,7 +35,13 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cr = Components.results;
+
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+const xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
 var sidebar = {
 
@@ -43,8 +49,8 @@ db: null,
 
 init: function()
 {
-  var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
-                          .getService(Components.interfaces.nttIBreakpadService);
+  var service = Cc["@blueprintit.co.uk/breakpad;1"].
+                getService(Ci.nttIBreakpadService);
   
   service.loadDatabase();
   service.addProgressListener(sidebar);
@@ -52,8 +58,8 @@ init: function()
 
 onDatabaseLoaded: function()
 {
-  var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
-                          .getService(Components.interfaces.nttIBreakpadService);
+  var service = Cc["@blueprintit.co.uk/breakpad;1"].
+                getService(Ci.nttIBreakpadService);
 
   var tree = document.getElementById("tree");
   tree.view = service.getTreeView();
@@ -66,15 +72,15 @@ copy: function(event)
 {
   var tree = document.getElementById("tree");
   var id = tree.view.getCellText(tree.currentIndex, tree.columns.getNamedColumn("incidentID"));
-  var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"]
-                            .getService(Components.interfaces.nsIClipboardHelper);
+  var clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"].
+                  getService(Ci.nsIClipboardHelper);
   clipboard.copyString(id);
 },
 
 command: function(tree, event, row)
 {
-  var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-                              .getService(Components.interfaces.nsIPrefBranch);
+  var prefservice = Cc['@mozilla.org/preferences-service;1'].
+                    getService(Ci.nsIPrefBranch);
   var url = prefservice.getCharPref("nightly.breakpad.searchurl");
   var id = tree.view.getCellText(row, tree.columns.getNamedColumn("incidentID")).substring(3);
   window.parent.openUILink(url+id, event, false, true);
@@ -101,16 +107,5 @@ checkPopup: function(event)
   return type=="incident";
 },
 
-QueryInterface: function(iid)
-{
-  if (iid.equals(Components.interfaces.nttIBreakpadProgressListener)
-    || iid.equals(Components.interfaces.nsISupports))
-  {
-    return this;
-  }
-  else
-  {
-    throw Components.results.NS_ERROR_NO_INTERFACE;
-  }
-}
+QueryInterface: XPCOMUtils.generateQI([Ci.nttIBreakpadProgressListener])
 }

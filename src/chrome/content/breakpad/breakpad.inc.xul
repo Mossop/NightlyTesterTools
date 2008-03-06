@@ -1,6 +1,0 @@
-        <menuseparator id="nightly-breakpad-separator"/>
-        <menu id="nightly-breakpad-recent" label="&nightly.breakpad.recentlist;" oncommand="breakpad.viewIncident(event);" onclick="checkForMiddleClick(this, event);">
-          <menupopup id="nightly-breakpad-incidents">
-            <menuitem disabled="true" label="&nightly.leaks.loading.label;"/>
-          </menupopup>
-        </menu>

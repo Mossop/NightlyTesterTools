@@ -50,18 +50,18 @@
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="browser.js" />
   <script type="application/x-javascript" src="session/session.js" />
-  <script type="application/x-javascript" src="breakpad/breakpad.js" />
+  <script type="application/x-javascript" src="crashreports/crashreports.js" />
   <script type="application/x-javascript" src="chrome://nightly/content/platform.js" />
 
   <!-- Sidebar -->
   <broadcasterset id="mainBroadcasterSet">
-    <broadcaster id="viewBreakpadSidebar"
+    <broadcaster id="viewCrashReportsSidebar"
           autoCheck="false" 
-          label="&nightly.breakpad.sidebar.title;"
+          label="&nightly.crashreports.sidebar.title;"
           type="checkbox"
           group="sidebar"
           sidebarurl="chrome://nightly/content/breakpad/sidebar.xul"
-          oncommand="toggleSidebar('viewBreakpadSidebar');"/>
+          oncommand="toggleSidebar('viewCrashReportsSidebar');"/>
   </broadcasterset>
 
   <keyset id="mainKeyset">
@@ -77,11 +77,11 @@
   </toolbarpalette>
   
   <popupset id="mainPopupSet">
-    <tooltip orient="vertical" id="bp-incident-tooltip" onpopupshowing="return breakpad.popupTooltip(event)">
-      <label id="bp-tooltip-date"/>
+    <tooltip orient="vertical" id="nightly-crashreport-tooltip" onpopupshowing="return crashreports.popupTooltip(event)">
+      <label/>
     </tooltip>
-    <popup id="bp-incident-context">
-      <menuitem oncommand="breakpad.copy(event)" label="&nightly.talkback.copyid;"/>
+    <popup id="nightly-crashreport-context">
+      <menuitem oncommand="crashreports.copy(event)" label="&nightly.crashreports.copyid;"/>
     </popup>
   </popupset>
   
@@ -99,8 +99,8 @@
 #include "screenshot/screenshot.inc.xul"
         <menuseparator/>
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
-#include "breakpad/breakpad.inc.xul"
-        <menuitem id="nightly-breakpad-sidebar" observes="viewBreakpadSidebar"/>
+#include "crashreports/crashreports.inc.xul"
+        <menuitem id="nightly-crashreports-sidebar" observes="viewCrashReportsSidebar"/>
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
       </menupopup>

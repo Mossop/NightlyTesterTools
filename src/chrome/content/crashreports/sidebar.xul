@@ -54,7 +54,7 @@
   
   <popupset>
     <popup id="breakpadContext" onpopupshowing="return sidebar.checkPopup(event)">
-      <menuitem oncommand="sidebar.copy(event)" label="&nightly.breakpad.copyid;"/>
+      <menuitem oncommand="sidebar.copy(event)" label="&nightly.crashreports.copyid;"/>
     </popup>
   </popupset>
   
@@ -64,9 +64,9 @@
   
   <tree id="tree" hidden="true" flex="1" seltype="single" onkeypress="if (event.keyCode==13) sidebar.selectedCommand(event);">
     <treecols>
-      <treecol id="incidentID" label="&nightly.breakpad.id;" primary="true" flex="1" persist="width"/>
+      <treecol id="incidentID" label="&nightly.crashreports.id;" primary="true" flex="1" persist="width"/>
       <splitter class="tree-splitter"/>
-      <treecol id="incidentDate" label="&nightly.breakpad.date;" flex="2" hidden="true" persist="width hidden"/>
+      <treecol id="incidentDate" label="&nightly.crashreports.date;" flex="2" hidden="true" persist="width hidden"/>
     </treecols>
     
     <treechildren id="treeroot" context="breakpadContext"

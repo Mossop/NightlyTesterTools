@@ -35,11 +35,13 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-var breakpad = {
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+var crashreports = {
 
 init: function(event)
 {
-  window.removeEventListener("load", breakpad.init, false);
+  window.removeEventListener("load", crashreports.init, false);
   if (Components.interfaces.nsICrashReporter)
   {
     var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
@@ -48,18 +50,18 @@ init: function(event)
     if (nightly.preferences.getBoolPref("crashreports.recentlist.display"))
     {
       service.loadDatabase();
-      service.addProgressListener(breakpad);
+      service.addProgressListener(crashreports);
     }
     else
     {
-      document.getElementById("nightly-breakpad-incidents").parentNode.hidden=true;
+      document.getElementById("nightly-crashreports-incidents").parentNode.hidden=true;
     }
   }
   else
   {
-    document.getElementById("nightly-breakpad-separator").hidden = true;
-    document.getElementById("nightly-breakpad-recent").hidden = true;
-    document.getElementById("nightly-breakpad-sidebar").hidden = true;
+    document.getElementById("nightly-crashreports-separator").hidden = true;
+    document.getElementById("nightly-crashreports-recent").hidden = true;
+    document.getElementById("nightly-crashreports-sidebar").hidden = true;
   }
 },
 
@@ -85,7 +87,7 @@ onDatabaseLoaded: function()
   
   incidents = service.getPreviousIncidents(10);
   
-  var parent = document.getElementById("nightly-breakpad-incidents");
+  var parent = document.getElementById("nightly-crashreports-incidents");
   if ((incidents) && (incidents.length > 0))
   {
     while (parent.firstChild)
@@ -98,8 +100,8 @@ onDatabaseLoaded: function()
       
       var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
       item.setAttribute("id", "breakpad-id-"+incident.id);
-      item.setAttribute("tooltip", "bp-incident-tooltip");
-      item.setAttribute("context", "bp-incident-context");
+      item.setAttribute("tooltip", "nightly-crashreport-tooltip");
+      item.setAttribute("context", "nightly-crashreport-context");
       item.setAttribute("label", incident.id+" ("+(new Date(incident.date)).toLocaleDateString()+")");
       parent.appendChild(item);
     }
@@ -119,7 +121,8 @@ popupTooltip: function(event)
     var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
                             .getService(Components.interfaces.nttIBreakpadService);
     var incident = service.getIncident(id);
-    document.getElementById("bp-tooltip-date").value=(new Date(incident.date)).toLocaleString();
+    var label = document.getElementById("nightly-crashreport-tooltip").firstChild;
+    label.value=(new Date(incident.date)).toLocaleString();
     return true;
   }
   return false;
@@ -135,15 +138,7 @@ viewIncident: function(event)
   }
 },
 
-  
-QueryInterface: function(iid)
-{
-  if (iid.equals(Components.interfaces.nsIBreakpadProgressListener)
-    || iid.equals(Components.interfaces.nsISupports))
-    return this;
-  else
-    throw Components.results.NS_ERROR_NO_INTERFACE;
-}
+QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nttIBreakpadProgressListener])
 }
 
-window.addEventListener("load", breakpad.init, false);
+window.addEventListener("load", crashreports.init, false);
