@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
 var sidebar = {
@@ -49,7 +44,7 @@ db: null,
 init: function()
 {
   var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
-                          .getService(Components.interfaces.nsIBreakpadService);
+                          .getService(Components.interfaces.nttIBreakpadService);
   
   service.loadDatabase();
   service.addProgressListener(sidebar);
@@ -58,7 +53,7 @@ init: function()
 onDatabaseLoaded: function()
 {
   var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
-                          .getService(Components.interfaces.nsIBreakpadService);
+                          .getService(Components.interfaces.nttIBreakpadService);
 
   var tree = document.getElementById("tree");
   tree.view = service.getTreeView();
@@ -108,7 +103,7 @@ checkPopup: function(event)
 
 QueryInterface: function(iid)
 {
-  if (iid.equals(Components.interfaces.nsITalkbackProgressListener)
+  if (iid.equals(Components.interfaces.nttIBreakpadProgressListener)
     || iid.equals(Components.interfaces.nsISupports))
   {
     return this;

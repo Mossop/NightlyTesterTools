@@ -36,11 +36,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL: http://svn.oxymoronical.com/dave/mozilla/firefox/buildid/trunk/src/chrome/content/browser.js $
-# $LastChangedBy: dave $
-# $Date: 2007-07-12 09:54:23 +0100 (Thu, 12 Jul 2007) $
-# $Revision: 1135 $
-#
 var nightlyApp = {
 
 storedTitle: document.documentElement.getAttribute("titlemodifier"),

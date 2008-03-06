@@ -34,12 +34,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK *****
- *
- * $HeadURL$
- * $LastChangedBy$
- * $Date$
- * $Revision$
- *
  */
 
 #include "nsISupports.idl"
@@ -48,30 +42,30 @@ interface nsIArray;
 interface nsITreeView;
 
 [scriptable, uuid(bb823195-02e2-49c4-b1ae-83edf11e31b0)]
-interface nsIBreakpadIncident : nsISupports
+interface nttIBreakpadIncident : nsISupports
 {
   readonly attribute unsigned long long date;
   readonly attribute AString id;
 };
 
 [scriptable, uuid(20ddaac1-e28b-455c-8f96-a1999d2a9aa6)]
-interface nsIBreakpadProgressListener : nsISupports
+interface nttIBreakpadProgressListener : nsISupports
 {
   void onDatabaseLoaded();
 };
 
 [scriptable, uuid(2f6aa7f7-acd5-4834-ac70-ae1981fd1e52)]
-interface nsIBreakpadService : nsISupports
+interface nttIBreakpadService : nsISupports
 {
   void loadDatabase();
   
   nsIArray getRecentIncidents(in unsigned long long date);
   nsIArray getPreviousIncidents(in long count);
 
-  nsIBreakpadIncident getIncident(in AString id);
+  nttIBreakpadIncident getIncident(in AString id);
   nsIArray getIncidents();
   
   nsITreeView getTreeView();
   
-  void addProgressListener(in nsIBreakpadProgressListener listener);
+  void addProgressListener(in nttIBreakpadProgressListener listener);
 };

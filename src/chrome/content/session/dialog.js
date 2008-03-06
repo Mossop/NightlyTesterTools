@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 const XULNS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
 var gArgs = null;

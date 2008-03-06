@@ -35,11 +35,6 @@
 %
 % ***** END LICENSE BLOCK *****
 %
-% $HeadURL$
-% $LastChangedBy$
-% $Date$
-% $Revision$
-%
 .content-box {
   -moz-box-flex: 1;
 }
@@ -63,6 +58,6 @@ subpane {
   list-style-image: url("chrome://nightly/skin/options/extension.png");
 }
 
-#NightlyTesterOptions radio[pane=paneTalkback] {
-  list-style-image: url("chrome://nightly/skin/options/talkback.png");
+#NightlyTesterOptions radio[pane=paneCrashReports] {
+  list-style-image: url("chrome://nightly/skin/options/crashreports.png");
 }

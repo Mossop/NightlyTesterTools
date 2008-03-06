@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 <!ENTITY screenshot.window.title        "Screenshot Grabber">
 
 <!ENTITY screenshot.save.label          "Save As...">

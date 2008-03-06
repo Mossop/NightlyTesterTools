@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 <!ENTITY nightly.options.height               "30em">
 
 <!ENTITY nightly.options.title                "Nightly Tester Options">
@@ -62,8 +57,7 @@
 <!ENTITY nightly.disablechecking.label        "Disable compatibility overwriting during application update">
 
 
-<!ENTITY nightly.paneTalkback.title           "Talkback">
-<!ENTITY nightly.paneTalkback.description     "Nightly Tester Tools provides convenient access to the Talkback database.">
+<!ENTITY nightly.paneCrashReports.title       "Crash Reports">
+<!ENTITY nightly.paneCrashReports.description "Nightly Tester Tools provides convenient access to the crash report database.">
 
 <!ENTITY nightly.recentlist.label             "Show recent incidents in the menu">
-<!ENTITY nightly.otherbuilds.label            "Only include incidents for the current build">

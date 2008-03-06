@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 var handlers = {
   "DOMWINDOW": {
     count: 0,

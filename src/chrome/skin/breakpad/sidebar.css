@@ -43,7 +43,7 @@
 treechildren#treeroot::-moz-tree-image(name) {
   padding-right: 2px;
   margin: 0px 2px;
-  list-style-image: url("chrome://nightly/skin/talkback/icons.png") !important;
+  list-style-image: url("chrome://nightly/skin/breakpad/icons.png") !important;
 }
 
 treechildren#treeroot::-moz-tree-image(name, incident) {

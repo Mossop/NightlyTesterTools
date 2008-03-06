@@ -35,51 +35,7 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
-var NightlyXPInstall = {
-
-savedAccept: null,
-
-init: function(event)
-{
-  var checkCompatibility = true;
-  var prefservice = Components.classes['@mozilla.org/preferences-service;1']
-                              .getService(Components.interfaces.nsIPrefBranch);
-  try
-  {
-    checkCompatibility = prefservice.getBoolPref("extensions.checkCompatibility");
-  }
-  catch (e)
-  {
-  }
-  if (checkCompatibility && Components.classes["@blueprintit.co.uk/zipwriter;1"])
-  {
-    NightlyXPInstall.savedAccept=XPInstallConfirm.onOK;
-    XPInstallConfirm.onOK=NightlyXPInstall.dialogAccept;
-    document.getElementById("nightlyoverride").hidden=false;
-  }
-},
-
-dialogAccept: function()
-{
-  var check = document.getElementById("nightlyoverride");
-  if (check.checked)
-  {
-    var nightlyService = Components.classes["@blueprintit.co.uk/addonmonitor;1"]
-                                   .getService(Components.interfaces.nttIAddonMonitorService);
-
-    var itemList = document.getElementById("itemList");
-    var items = itemList.getElementsByTagName("installitem");
-    for (var i=0; i<items.length; i++)
-      nightlyService.monitorInstall(items[i].url);
-  }
-  XPInstallConfirm.onOK = NightlyXPInstall.savedAccept;
-  return XPInstallConfirm.onOK();
+var nightlyplatform = {
+  eol: "\r\n"
 }
-}
-
-window.addEventListener("load",NightlyXPInstall.init,true);
+ 

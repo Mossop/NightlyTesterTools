@@ -35,13 +35,11 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 const Ci = Components.interfaces;
 const Cc = Components.classes;
+const Cr = Components.results;
+
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 function NTT_MakeStream(data)
 {
@@ -220,66 +218,11 @@ addFileData: function(name, filename, contenttype, encoding, data)
   this.length = null;
 },
 
-QueryInterface: function(iid)
-{
-  if (iid.equals(Ci.nttIMultipartFormData)
-    || iid.equals(Ci.nsISupports))
-  {
-    return this;
-  }
-  else
-  {
-    throw Components.results.NS_ERROR_NO_INTERFACE;
-  }
+classDescription: "Nightly Tester Multipart Form Data",
+contractID: "@blueprintit.co.uk/multipartformdata;1",
+classID: Components.ID("{46c8b0c6-216c-41e8-ace2-03d61783e278}"),
+QueryInterface: XPCOMUtils.generateQI([Ci.nttIMultipartFormData])
 }
-}
-
-var initModule =
-{
-  ServiceCID: Components.ID("{46c8b0c6-216c-41e8-ace2-03d61783e278}"),
-  ServiceContractID: "@blueprintit.co.uk/multipartformdata;1",
-  ServiceName: "Nightly Tester Multipart Form Data",
-  
-  registerSelf: function (compMgr, fileSpec, location, type)
-  {
-    compMgr = compMgr.QueryInterface(Ci.nsIComponentRegistrar);
-    compMgr.registerFactoryLocation(this.ServiceCID,this.ServiceName,this.ServiceContractID,
-      fileSpec,location,type);
-  },
-
-  unregisterSelf: function (compMgr, fileSpec, location)
-  {
-    compMgr = compMgr.QueryInterface(Ci.nsIComponentRegistrar);
-    compMgr.unregisterFactoryLocation(this.ServiceCID,fileSpec);
-  },
-
-  getClassObject: function (compMgr, cid, iid)
-  {
-    if (!cid.equals(this.ServiceCID))
-      throw Components.results.NS_ERROR_NO_INTERFACE
-    if (!iid.equals(Components.interfaces.nsIFactory))
-      throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-    return this.instanceFactory;
-  },
-
-  canUnload: function(compMgr)
-  {
-    return true;
-  },
-
-  instanceFactory:
-  {
-    createInstance: function (outer, iid)
-    {
-      if (outer != null)
-        throw Components.results.NS_ERROR_NO_AGGREGATION;
-      var instance = new MultipartFormData();
-      return instance.QueryInterface(iid);
-    }
-  }
-}; //Module
 
 function NSGetModule(compMgr, fileSpec)
-{
-  return initModule;
-}
+  XPCOMUtils.generateModule([MultipartFormData]);

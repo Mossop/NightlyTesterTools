@@ -35,18 +35,3 @@
 %
 % ***** END LICENSE BLOCK *****
 %
-% $HeadURL$
-% $LastChangedBy$
-% $Date$
-% $Revision$
-%
-#enableallButton {
-  margin: 0px;
-}
-
-#enableallButton .button-icon {
-  margin-top: 0px !important;
-  margin-bottom: 0px !important;
-  -moz-margin-start: 0px !important;
-  -moz-margin-end: 5px !important;
-}

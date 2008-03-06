@@ -35,10 +35,5 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 pref("nightly.templates.buildid", "${UserAgent} ID:${AppBuildID}${Flags}");
 pref("nightly.templates.title", "${DefaultTitle} (Build ${AppBuildID})");

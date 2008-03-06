@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 <?xml version="1.0"?>
 
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
@@ -105,20 +100,15 @@
 
   </prefpane>
   
-  <prefpane id="paneTalkback" label="&nightly.paneTalkback.title;">
+  <prefpane id="paneCrashReports" label="&nightly.paneCrashReports.title;">
   
     <preferences>
-      <preference id="recentlist" type="bool" name="nightly.talkback.recentlist.display"/>
-      <preference id="otherbuilds" inverted="true" type="bool" name="nightly.talkback.recentlist.otherbuilds"/>
+      <preference id="recentlist" type="bool" name="nightly.crashreports.recentlist.display"/>
     </preferences>
     
-    <description style="padding-bottom: 5px">&nightly.paneTalkback.description;</description>
+    <description style="padding-bottom: 5px">&nightly.paneCrashReports.description;</description>
       
     <checkbox preference="recentlist" label="&nightly.recentlist.label;"/>
-
-    <subpane preference="recentlist" action="disable">
-      <checkbox preference="otherbuilds" label="&nightly.otherbuilds.label;"/>
-    </subpane>
 
   </prefpane>
   

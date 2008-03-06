@@ -35,26 +35,7 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
-<?xml version="1.0"?>
-
-<!DOCTYPE dialog SYSTEM "chrome://nightly/locale/nightly.dtd">
-
-<overlay id="XPInstallOverlay"
-                        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-       
-<dialog id="xpinstallConfirm">
-
-  <script type="application/x-javascript" src="xpinstall.js" />
-
-  <vbox id="dialogContentBox">
-    <checkbox id="nightlyoverride" hidden="true" label="Force compatible on install"/>
-  </vbox>
-
-</dialog>
-
-</overlay>
+var nightlyplatform = {
+  eol: "\n"
+}
+ 

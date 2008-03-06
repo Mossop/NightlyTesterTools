@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL: http://svn.oxymoronical.com/dave/mozilla/firefox/buildid/trunk/src/chrome/content/browserOverlay.xul $
-# $LastChangedBy: dave $
-# $Date: 2007-08-19 15:58:58 +0100 (Sun, 19 Aug 2007) $
-# $Revision: 1158 $
-#
 <?xml version="1.0"?>
 
 <!DOCTYPE window [
@@ -55,7 +50,7 @@
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="songbird.js" />
   <script type="application/x-javascript" src="breakpad/breakpad.js" />
-  <script type="application/x-javascript" src="chrome://nightly-platform/content/platform.js" />
+  <script type="application/x-javascript" src="chrome://nightly/content/platform.js" />
 
   <keyset id="mainKeyset">
     <key key="s" modifiers="accel,shift" oncommand="nightly.getScreenshot();"/>

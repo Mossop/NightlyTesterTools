@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 var breakpad = {
 
 init: function(event)
@@ -48,9 +43,9 @@ init: function(event)
   if (Components.interfaces.nsICrashReporter)
   {
     var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
-                            .getService(Components.interfaces.nsIBreakpadService);
+                            .getService(Components.interfaces.nttIBreakpadService);
     
-    if (nightly.preferences.getBoolPref("breakpad.recentlist.display"))
+    if (nightly.preferences.getBoolPref("crashreports.recentlist.display"))
     {
       service.loadDatabase();
       service.addProgressListener(breakpad);
@@ -84,7 +79,7 @@ copy: function(event)
 onDatabaseLoaded: function()
 {
   var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
-                          .getService(Components.interfaces.nsIBreakpadService);
+                          .getService(Components.interfaces.nttIBreakpadService);
   
   var incidents = null;
   
@@ -99,7 +94,7 @@ onDatabaseLoaded: function()
     var en = incidents.enumerate();
     while (en.hasMoreElements())
     {
-      var incident = en.getNext().QueryInterface(Components.interfaces.nsIBreakpadIncident);
+      var incident = en.getNext().QueryInterface(Components.interfaces.nttIBreakpadIncident);
       
       var item = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "menuitem");
       item.setAttribute("id", "breakpad-id-"+incident.id);
@@ -122,7 +117,7 @@ popupTooltip: function(event)
   {
     var id = node.id.substring(12);
     var service = Components.classes["@blueprintit.co.uk/breakpad;1"]
-                            .getService(Components.interfaces.nsIBreakpadService);
+                            .getService(Components.interfaces.nttIBreakpadService);
     var incident = service.getIncident(id);
     document.getElementById("bp-tooltip-date").value=(new Date(incident.date)).toLocaleString();
     return true;

@@ -35,11 +35,6 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 <!ENTITY nightly.leaks.title                  "Leak Log Analyzer">
 
 <!ENTITY nightly.leaks.logfile.label          "Log file:">

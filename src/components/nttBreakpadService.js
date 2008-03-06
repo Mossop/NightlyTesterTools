@@ -35,13 +35,12 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-# $HeadURL$
-# $LastChangedBy$
-# $Date$
-# $Revision$
-#
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cr = Components.results;
+
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+
 const LOAD_DELAY = 50;
 
 Cc["@mozilla.org/moz/jssubscript-loader;1"]
@@ -59,7 +58,7 @@ function BP_CreateArray(source)
   return result;
 }
 
-function nsBreakpadIncident(file)
+function nttBreakpadIncident(file)
 {
   this.id = file.leafName;
   this.id = this.id.substring(0, this.id.length - 4);
@@ -67,55 +66,25 @@ function nsBreakpadIncident(file)
   this.file = file;
 }
 
-nsBreakpadIncident.prototype = {
+nttBreakpadIncident.prototype = {
 date: null,
 id: null,
 file: null,
 
-QueryInterface: function(iid)
-{
-  if (iid.equals(Ci.nsIBreakpadIncident)
-    || iid.equals(Ci.nsISupports))
-    return this;
-  else
-    throw Components.results.NS_ERROR_NO_INTERFACE;
-}
+QueryInterface: XPCOMUtils.generateQI([Ci.nttIBreakpadIncident])
 }
 
-var nsBreakpadService = {
-
-reportdir: null,
-
-_inited: false,
-loaded: false,
-_loading: false,
-_dirs: [],
-_databases: [],
-_loadTimer: null,
-_listeners: [],
-
-incidents: [],
-orderedIncidents: [],
-
-addProgressListener: function(listener)
-{
-  if (!this.loaded)
-    this._listeners.push(listener);
-  else
-    listener.onDatabaseLoaded();
-},
-
-_init: function()
-{
-  if (this._inited)
-    return;
-  
-  this._inited=true;
-
+function nttBreakpadService() {
   var obs = Cc["@mozilla.org/observer-service;1"]
              .getService(Ci.nsIObserverService);
   obs.addObserver(this, "quit-application", false);
-  
+
+  this._dirs = [];
+  this._databases = [];
+  this._listeners = [];
+  this._incidents = [];
+  this._orderedIncidents = [];
+
   this._findBreakpad();
   if (this.reportdir)
     this._dirs.push(this.reportdir);
@@ -124,6 +93,28 @@ _init: function()
     this.loaded = true;
     this._loading = true;
   }
+}
+
+nttBreakpadService.prototype = {
+
+reportdir: null,
+
+loaded: false,
+_loading: false,
+_dirs: null,
+_databases: null,
+_loadTimer: null,
+_listeners: null,
+
+incidents: null,
+orderedIncidents: null,
+
+addProgressListener: function(listener)
+{
+  if (!this.loaded)
+    this._listeners.push(listener);
+  else
+    listener.onDatabaseLoaded();
 },
 
 loadDatabase: function()
@@ -213,7 +204,7 @@ _scanDir: function(dir)
 
 _loadDatabase: function(database)
 {
-  var incident = new nsBreakpadIncident(database);
+  var incident = new nttBreakpadIncident(database);
   this._addIncident(incident);
 },
 
@@ -301,63 +292,11 @@ getTreeView: function()
   return tv;
 },
 
-QueryInterface: function(iid)
-{
-  if (iid.equals(Ci.nsIBreakpadService)
-    || iid.equals(Ci.nsIObserver)
-    || iid.equals(Ci.nsISupports))
-    return this;
-  else
-    throw Components.results.NS_ERROR_NO_INTERFACE;
+classDescription: "Nightly Tester Breakpad Service",
+contractID: "@blueprintit.co.uk/breakpad;1",
+classID: Components.ID("{b33388ca-71b4-4194-b822-2cbd0e89ffc0}"),
+QueryInterface: XPCOMUtils.generateQI([Ci.nttIBreakpadService, Ci.nsIObserver])
 }
-}
-
-var initModule =
-{
-  ServiceCID: Components.ID("{b33388ca-71b4-4194-b822-2cbd0e89ffc0}"),
-  ServiceContractID: "@blueprintit.co.uk/breakpad;1",
-  ServiceName: "Nightly Tester Breakpad Service",
-  
-  registerSelf: function (compMgr, fileSpec, location, type)
-  {
-    compMgr = compMgr.QueryInterface(Ci.nsIComponentRegistrar);
-    compMgr.registerFactoryLocation(this.ServiceCID,this.ServiceName,this.ServiceContractID,
-      fileSpec,location,type);
-  },
-
-  unregisterSelf: function (compMgr, fileSpec, location)
-  {
-    compMgr = compMgr.QueryInterface(Ci.nsIComponentRegistrar);
-    compMgr.unregisterFactoryLocation(this.ServiceCID,fileSpec);
-  },
-
-  getClassObject: function (compMgr, cid, iid)
-  {
-    if (!cid.equals(this.ServiceCID))
-      throw Components.results.NS_ERROR_NO_INTERFACE
-    if (!iid.equals(Components.interfaces.nsIFactory))
-      throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
-    return this.instanceFactory;
-  },
-
-  canUnload: function(compMgr)
-  {
-    return true;
-  },
-
-  instanceFactory:
-  {
-    createInstance: function (outer, iid)
-    {
-      if (outer != null)
-        throw Components.results.NS_ERROR_NO_AGGREGATION;
-      nsBreakpadService._init();
-      return nsBreakpadService.QueryInterface(iid);
-    }
-  }
-}; //Module
 
 function NSGetModule(compMgr, fileSpec)
-{
-  return initModule;
-}
+  XPCOMUtils.generateModule([nttBreakpadService]);
