@@ -61,19 +61,11 @@
   </toolbarpalette>
 
   <popupset id="mainPopupSet">
-    <tooltip orient="vertical" id="tb-incident-tooltip" onpopupshowing="return talkback.popupTooltip(event)">
-      <label id="tb-tooltip-product"/>
-      <label id="tb-tooltip-date"/>
-      <description id="tb-tooltip-comment"/>
+    <tooltip orient="vertical" id="nightly-crashreport-tooltip" onpopupshowing="return crashreports.popupTooltip(event)">
+      <label/>
     </tooltip>
-    <popup id="tb-incident-context">
-      <menuitem oncommand="talkback.copy(event)" label="&nightly.talkback.copyid;"/>
-    </popup>
-    <tooltip orient="vertical" id="bp-incident-tooltip" onpopupshowing="return breakpad.popupTooltip(event)">
-      <label id="bp-tooltip-date"/>
-    </tooltip>
-    <popup id="bp-incident-context">
-      <menuitem oncommand="breakpad.copy(event)" label="&nightly.talkback.copyid;"/>
+    <popup id="nightly-crashreport-context">
+      <menuitem oncommand="crashreports.copy(event)" label="&nightly.crashreports.copyid;"/>
     </popup>
   </popupset>
   
