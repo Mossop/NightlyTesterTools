@@ -1,3 +1,0 @@
-MacOSX: ~/Library/Application Support/FullCircle/<vendor><product><platform><build>
-Win32:  %APPDATA%\Talkback\<vendor>\<product>\<platform>\<build>
-Unix:   ~/.fullcircle/<vendor><product><platform><build>
