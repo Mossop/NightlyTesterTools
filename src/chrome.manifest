@@ -26,4 +26,4 @@ overlay      chrome://calendar/content/calendar.xul                   chrome://n
 overlay      chrome://navigator/content/navigator.xul                 chrome://nightly/content/suiteOverlay.xul                application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
 
 # Songbird chrome
-overlay      chrome://songbird/content/xul/mainScriptsOverlay.xul     chrome://nightly/content/songbirdOverlay.xul             application=songbird@songbirdnest.com
+overlay      chrome://songbird/content/xul/layoutBaseOverlay.xul      chrome://nightly/content/songbirdOverlay.xul             application=songbird@songbirdnest.com
