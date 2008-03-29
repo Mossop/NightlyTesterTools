@@ -42,6 +42,7 @@ const Cr = Components.results;
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 const PREFIX_NS_EM                    = "http://www.mozilla.org/2004/em-rdf#";
+const PREFIX_ITEM_URI                 = "urn:mozilla:item:";
 const RDFURI_INSTALL_MANIFEST_ROOT    = "urn:mozilla:install-manifest";
 const FILE_INSTALL_MANIFEST           = "install.rdf";
 const TOOLKIT_ID                      = "toolkit@mozilla.org"
@@ -167,12 +168,7 @@ nttAddonDetail.prototype = {
   updateURL: null,
   updateKey: null,
 
-  app: {
-    resource: null,
-    id: null,
-    minVersion: null,
-    maxVersion: null
-  },
+  app: null,
 
   init: function() {
     if (!this.id)
@@ -181,17 +177,19 @@ nttAddonDetail.prototype = {
     this.version = getRDFProperty(this.datasource, this.root, "version");
     this.updateURL = getRDFProperty(this.datasource, this.root, "updateURL");
     this.updateKey = getRDFProperty(this.datasource, this.root, "updateKey");
-  
+
     var apps = this.datasource.GetTargets(this.root, EM_R("targetApplication"), true);
     while (apps.hasMoreElements()) {
       var app = apps.getNext().QueryInterface(Ci.nsIRDFResource);
       var id = getRDFProperty(this.datasource, app, "id");
       LOG("Seen app " + id);
       if (id == gApp.ID || id == TOOLKIT_ID) {
-        this.app.resource = app;
-        this.app.id = id;
-        this.app.minVersion = getRDFProperty(this.datasource, app, "minVersion");
-        this.app.maxVersion = getRDFProperty(this.datasource, app, "maxVersion");
+        this.app = {
+          resource: app,
+          id: id,
+          minVersion: getRDFProperty(this.datasource, app, "minVersion"),
+          maxVersion: getRDFProperty(this.datasource, app, "maxVersion")
+        };
         if (id == gApp.ID)
           break;
       }
@@ -238,14 +236,21 @@ nttAddonDetail.prototype = {
       this.datasource.Assert(this.app.resource, EM_R("minVersion"), gRDF.GetLiteral(version), true);
     }
     else if (vc.compare(version, this.app.maxVersion) > 0) {
-      LOG("maxVersion is too low, increacing to " + version);
+      LOG("maxVersion is too low, increasing to " + version);
       removeRDFProperty(this.datasource, this.app.resource, "maxVersion");
       this.datasource.Assert(this.app.resource, EM_R("maxVersion"), gRDF.GetLiteral(version), true);
     }
 
     this.datasource.QueryInterface(Ci.nsIRDFRemoteDataSource).Flush();
-    if (this.xpi && this.file)
+    if (this.xpi && this.file) {
       updateXPI(this.xpi, this.file);
+    }
+    else {
+     var compatprop = EM_R("compatible");
+     var truth = gRDF.GetLiteral("true");
+     this.datasource.Assert(this.root, compatprop, truth, true);
+     this.datasource.Unassert(this.root, compatprop, truth);
+    }
   },
 
   isValid: function() {
@@ -259,16 +264,19 @@ nttAddonDetail.prototype = {
   },
 
   isCompatible: function() {
-    if (!this.isValid())
-      return false;
-
     var version = (gApp.ID == this.app.id) ? gApp.version : gApp.platformVersion;
+    LOG("Comparing " + version + " " + this.app.minVersion + " " + this.app.maxVersion);
     var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
              getService(Ci.nsIVersionComparator);
-    if (vc.compare(version, this.app.minVersion) < 0)
+    if (vc.compare(version, this.app.minVersion) < 0) {
+      LOG(this.id + " has a minVersion that is too high");
       return false;
-    if (vc.compare(version, this.app.maxVersion) > 0)
+    }
+    if (vc.compare(version, this.app.maxVersion) > 0) {
+      LOG(this.id + " has a maxVersion that is too low");
       return false;
+    }
+    LOG(this.id + " is compatible");
     return true;
   },
 
@@ -281,11 +289,20 @@ nttAddonDetail.prototype = {
   }
 };
 
-function nttAddonInstallListener() {
+function nttAddonCompatibilityService() {
 }
 
-nttAddonInstallListener.prototype = {
+nttAddonCompatibilityService.prototype = {
   id: null,
+
+  ensureServices: function() {
+    if (gRDF)
+      return;
+    gRDF = Cc["@mozilla.org/rdf/rdf-service;1"].
+           getService(Ci.nsIRDFService);
+    gApp = Cc["@mozilla.org/xre/app-info;1"].
+           getService(Ci.nsIXULAppInfo).QueryInterface(Ci.nsIXULRuntime);
+  },
 
   displayUI: function(items) {
     var wm = Cc["@mozilla.org/appshell/window-mediator;1"].
@@ -294,6 +311,32 @@ nttAddonInstallListener.prototype = {
 
     win.openDialog("chrome://nightly/content/extensions/incompatible.xul",
                    "", "chrome,centerscreen,modal,dialog,titlebar", {items: items});
+  },
+
+  // nsIAddonCompatibilityService implementation
+  isCompatible: function(id) {
+    LOG("Is Compatible " + id);
+    this.ensureServices();
+    var addon = new nttAddonDetail();
+    addon.initWithDataSource(gEM.datasource, gRDF.GetResource(PREFIX_ITEM_URI + id), id);
+    return !addon.needsUpdate();
+  },
+
+  makeCompatible: function(ids, count) {
+    this.ensureServices();
+    var items = [];
+    for (var i = 0; i < ids.length; i++) {
+      LOG("Make Compatible " + ids[i]);
+      var addon = new nttAddonDetail();
+      addon.initWithDataSource(gEM.datasource, gRDF.GetResource(PREFIX_ITEM_URI + ids[i]), ids[i]);
+      if (addon.needsUpdate())
+        items.push(addon);
+    }
+    if (items.length > 0) {
+      this.displayUI(items);
+      for (var i = 0; i < items.length; i++)
+        items[i].cleanup();
+    }
   },
 
   // nsIAddonInstallListener implementation
@@ -308,12 +351,7 @@ nttAddonInstallListener.prototype = {
 
   onInstallStarted: function(addon) {
     LOG("Install Started for " + addon.xpiURL);
-    if (!gRDF) {
-      gRDF = Cc["@mozilla.org/rdf/rdf-service;1"].
-             getService(Ci.nsIRDFService);
-      gApp = Cc["@mozilla.org/xre/app-info;1"].
-             getService(Ci.nsIXULAppInfo).QueryInterface(Ci.nsIXULRuntime);
-    }
+    this.ensureServices();
     var ioServ = Cc["@mozilla.org/network/io-service;1"].
                  getService(Ci.nsIIOService);
     var fph = ioServ.getProtocolHandler("file")
@@ -371,9 +409,9 @@ nttAddonInstallListener.prototype = {
   },
 
   classDescription: "Nightly Tester Install Monitor",
-  contractID: "@oxymoronical.com/nightly/installmonitor;1",
+  contractID: "@oxymoronical.com/nightly/addoncompatibility;1",
   classID: Components.ID("{801207d5-037c-4565-80ed-ede8f7a7c100}"),
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIAddonInstallListener, Ci.nsIObserver]),
+  QueryInterface: XPCOMUtils.generateQI([Ci.nttIAddonCompatibilityService, Ci.nsIAddonInstallListener, Ci.nsIObserver]),
   _xpcom_categories: [{
     category: "app-startup",
     service: true
@@ -381,4 +419,4 @@ nttAddonInstallListener.prototype = {
 }
 
 function NSGetModule(compMgr, fileSpec)
-  XPCOMUtils.generateModule([nttAddonInstallListener]);
+  XPCOMUtils.generateModule([nttAddonCompatibilityService]);

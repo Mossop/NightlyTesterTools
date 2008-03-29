@@ -44,8 +44,8 @@ function Startup() {
     var ri = document.createElement("richlistitem");
     ri.setAttribute("name", gItems[i].name);
     ri.setAttribute("version", gItems[i].version);
-    ri.setAttribute("secure", gItems[i].isUpdateSecure());
-    ri.setAttribute("compatible", gItems[i].isCompatible());
+    ri.setAttribute("secure", gItems[i].isUpdateSecure() ? "true" : "false");
+    ri.setAttribute("compatible", gItems[i].isCompatible() ? "true" : "false");
     list.appendChild(ri);
   }
 }
