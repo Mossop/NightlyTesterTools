@@ -50,7 +50,7 @@
   <binding id="incompatible" name="incompatible">
     <content>
       <xul:hbox align="center">
-        <xul:image src="chrome://mozapps/skin/xpinstall/xpinstallItemGeneric.png"/>
+        <xul:image xbl:inherits="src=icon"/>
         <xul:vbox flex="1">
           <xul:hbox class="name-version">
             <xul:label xbl:inherits="value=name"/>

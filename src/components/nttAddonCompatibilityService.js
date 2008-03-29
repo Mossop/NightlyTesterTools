@@ -169,17 +169,26 @@ nttAddonDetail.prototype = {
   id: null,
   name: null,
   version: null,
-  updateURL: null,
+  type: Ci.nsIUpdateItem.TYPE_EXTENSION,
+  updateRDF: null,
   updateKey: null,
+  iconURL: "chrome://mozapps/skin/xpinstall/xpinstallItemGeneric.png",
 
-  app: null,
+  installLocationKey: null,
+  xpiURL: null,
+  xpiHash: null,
+
+  appResource: null,
+  targetAppID: null,
+  minAppVersion: null,
+  maxAppVersion: null,
 
   init: function() {
     if (!this.id)
       this.id = getRDFProperty(this.datasource, this.root, "id");
     this.name = getRDFProperty(this.datasource, this.root, "name");
     this.version = getRDFProperty(this.datasource, this.root, "version");
-    this.updateURL = getRDFProperty(this.datasource, this.root, "updateURL");
+    this.updateRDF = getRDFProperty(this.datasource, this.root, "updateURL");
     this.updateKey = getRDFProperty(this.datasource, this.root, "updateKey");
 
     var apps = this.datasource.GetTargets(this.root, EM_R("targetApplication"), true);
@@ -188,12 +197,10 @@ nttAddonDetail.prototype = {
       var id = getRDFProperty(this.datasource, app, "id");
       LOG("Seen app " + id);
       if (id == gApp.ID || id == TOOLKIT_ID) {
-        this.app = {
-          resource: app,
-          id: id,
-          minVersion: getRDFProperty(this.datasource, app, "minVersion"),
-          maxVersion: getRDFProperty(this.datasource, app, "maxVersion")
-        };
+        this.appResource = app;
+        this.targetAppID = id;
+        this.minAppVersion = getRDFProperty(this.datasource, app, "minVersion");
+        this.maxAppVersion = getRDFProperty(this.datasource, app, "maxVersion");
         if (id == gApp.ID)
           break;
       }
@@ -238,16 +245,16 @@ nttAddonDetail.prototype = {
     }
 
     if (gCheckCompatibility) {
-      var version = (gApp.ID == this.app.id) ? gApp.version : gApp.platformVersion;
-      if (gVC.compare(version, this.app.minVersion) < 0) {
+      var version = (gApp.ID == this.targetAppID) ? gApp.version : gApp.platformVersion;
+      if (gVC.compare(version, this.minAppVersion) < 0) {
         LOG("minVersion is too high, reducing to " + version);
-        removeRDFProperty(this.datasource, this.app.resource, "minVersion");
-        this.datasource.Assert(this.app.resource, EM_R("minVersion"), gRDF.GetLiteral(version), true);
+        removeRDFProperty(this.datasource, this.appResource, "minVersion");
+        this.datasource.Assert(this.appResource, EM_R("minVersion"), gRDF.GetLiteral(version), true);
       }
-      else if (gVC.compare(version, this.app.maxVersion) > 0) {
+      else if (gVC.compare(version, this.maxAppVersion) > 0) {
         LOG("maxVersion is too low, increasing to " + version);
-        removeRDFProperty(this.datasource, this.app.resource, "maxVersion");
-        this.datasource.Assert(this.app.resource, EM_R("maxVersion"), gRDF.GetLiteral(version), true);
+        removeRDFProperty(this.datasource, this.appResource, "maxVersion");
+        this.datasource.Assert(this.appResource, EM_R("maxVersion"), gRDF.GetLiteral(version), true);
       }
 
       if (!this.xpi) {
@@ -265,7 +272,7 @@ nttAddonDetail.prototype = {
   },
 
   isValid: function() {
-    if (!this.app.id || !this.app.minVersion || !this.app.maxVersion)
+    if (!this.targetAppID || !this.minAppVersion || !this.maxAppVersion)
       return false;
     return true;
   },
@@ -278,13 +285,13 @@ nttAddonDetail.prototype = {
     if (!gCheckCompatibility)
       return true;
 
-    var version = (gApp.ID == this.app.id) ? gApp.version : gApp.platformVersion;
-    LOG("Comparing " + version + " " + this.app.minVersion + " " + this.app.maxVersion);
-    if (gVC.compare(version, this.app.minVersion) < 0) {
+    var version = (gApp.ID == this.targetAppID) ? gApp.version : gApp.platformVersion;
+    LOG("Comparing " + version + " " + this.minAppVersion + " " + this.maxAppVersion);
+    if (gVC.compare(version, this.minAppVersion) < 0) {
       LOG(this.id + " has a minVersion that is too high");
       return false;
     }
-    if (gVC.compare(version, this.app.maxVersion) > 0) {
+    if (gVC.compare(version, this.maxAppVersion) > 0) {
       LOG(this.id + " has a maxVersion that is too low");
       return false;
     }
@@ -296,12 +303,14 @@ nttAddonDetail.prototype = {
     if (!gCheckUpdateSecurity)
       return true;
 
-    if (!this.updateURL)
+    if (!this.updateRDF)
       return true;
     if (this.updateKey)
       return true;
-    return (this.updateURL.substring(0, 6) == "https:");
-  }
+    return (this.updateRDF.substring(0, 6) == "https:");
+  },
+
+  QueryInterface: XPCOMUtils.generateQI([Ci.nttIAddon, Ci.nsIUpdateItem]),
 };
 
 function nttAddonCompatibilityService() {
@@ -341,8 +350,14 @@ nttAddonCompatibilityService.prototype = {
              getService(Ci.nsIWindowMediator);
     win = wm.getMostRecentWindow("Extension:Manager");
 
-    win.openDialog("chrome://nightly/content/extensions/incompatible.xul",
-                   "", "chrome,centerscreen,modal,dialog,titlebar", {items: items});
+    var params = Cc["@mozilla.org/array;1"].
+                 createInstance(Ci.nsIMutableArray);
+    for (var i = 0; i < items.length; i++)
+      params.appendElement(items[i], false);
+    var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
+             getService(Ci.nsIWindowWatcher);
+    ww.openWindow(win, "chrome://nightly/content/extensions/incompatible.xul", "",
+                  "chrome,centerscreen,modal,dialog,titlebar", params);
   },
 
   // nsIAddonCompatibilityService implementation
@@ -393,7 +408,7 @@ nttAddonCompatibilityService.prototype = {
         if (addon.needsUpdate())
           this.displayUI([addon]);
         else
-          LOG("Add-on is already compatible: '" + addon.updateURL + "' " + addon.app.minVersion + "-" + addon.app.maxVersion);
+          LOG("Add-on is already compatible: '" + addon.updateRDF + "' " + addon.minAppVersion + "-" + addon.maxAppVersion);
         addon.cleanup();
       }
       catch (e) {

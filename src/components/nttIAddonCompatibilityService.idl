@@ -38,6 +38,16 @@
 
 #include "nsISupports.idl"
 
+[scriptable, uuid(8d634ad7-7126-49e4-8853-5ad93356b985)]
+interface nttIAddon : nsISupports
+{
+  boolean makeCompatible();
+
+  boolean isCompatible();
+
+  boolean isUpdateSecure();
+};
+
 [scriptable, uuid(ba015a71-b148-4391-aa81-1a2f0c727db3)]
 interface nttIAddonCompatibilityService : nsISupports
 {

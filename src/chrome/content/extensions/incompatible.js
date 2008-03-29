@@ -35,15 +35,21 @@
 #
 # ***** END LICENSE BLOCK *****
 #
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
 var gItems;
 
 function Startup() {
-  gItems = window.arguments[0].items;
+  gItems = window.arguments;
   var list = document.getElementById("addonlist");
   for (var i = 0; i < gItems.length; i++) {
+    gItems[i].QueryInterface(Ci.nsIUpdateItem)
+             .QueryInterface(Ci.nttIAddon);
     var ri = document.createElement("richlistitem");
     ri.setAttribute("name", gItems[i].name);
     ri.setAttribute("version", gItems[i].version);
+    ri.setAttribute("icon", gItems[i].iconURL);
     ri.setAttribute("secure", gItems[i].isUpdateSecure() ? "true" : "false");
     ri.setAttribute("compatible", gItems[i].isCompatible() ? "true" : "false");
     list.appendChild(ri);
