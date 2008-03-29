@@ -50,6 +50,10 @@ const TOOLKIT_ID                      = "toolkit@mozilla.org"
 var gEM = null;
 var gRDF = null;
 var gApp = null;
+var gVC = null;
+var gCheckCompatibility = true;
+var gCheckUpdateSecurity = true;
+var gPrefs = null;
 
 function LOG(string) {
   if (true) {
@@ -225,32 +229,39 @@ nttAddonDetail.prototype = {
     if (!this.isUpdateSecure()) {
       LOG("Addon is insecure, removing update URL");
       removeRDFProperty(this.datasource, this.root, "updateURL");
+
+      // This updates any UI bound to the datasource
+      var compatprop = EM_R("providesUpdatesSecurely");
+      var truth = gRDF.GetLiteral("true");
+      this.datasource.Assert(this.root, compatprop, truth, true);
+      this.datasource.Unassert(this.root, compatprop, truth);
     }
 
-    var version = (gApp.ID == this.app.id) ? gApp.version : gApp.platformVersion;
-    var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
-             getService(Ci.nsIVersionComparator);
-    if (vc.compare(version, this.app.minVersion) < 0) {
-      LOG("minVersion is too high, reducing to " + version);
-      removeRDFProperty(this.datasource, this.app.resource, "minVersion");
-      this.datasource.Assert(this.app.resource, EM_R("minVersion"), gRDF.GetLiteral(version), true);
-    }
-    else if (vc.compare(version, this.app.maxVersion) > 0) {
-      LOG("maxVersion is too low, increasing to " + version);
-      removeRDFProperty(this.datasource, this.app.resource, "maxVersion");
-      this.datasource.Assert(this.app.resource, EM_R("maxVersion"), gRDF.GetLiteral(version), true);
+    if (gCheckCompatibility) {
+      var version = (gApp.ID == this.app.id) ? gApp.version : gApp.platformVersion;
+      if (gVC.compare(version, this.app.minVersion) < 0) {
+        LOG("minVersion is too high, reducing to " + version);
+        removeRDFProperty(this.datasource, this.app.resource, "minVersion");
+        this.datasource.Assert(this.app.resource, EM_R("minVersion"), gRDF.GetLiteral(version), true);
+      }
+      else if (gVC.compare(version, this.app.maxVersion) > 0) {
+        LOG("maxVersion is too low, increasing to " + version);
+        removeRDFProperty(this.datasource, this.app.resource, "maxVersion");
+        this.datasource.Assert(this.app.resource, EM_R("maxVersion"), gRDF.GetLiteral(version), true);
+      }
+
+      if (!this.xpi) {
+        // This updates any UI bound to the datasource
+        var compatprop = EM_R("compatible");
+        var truth = gRDF.GetLiteral("true");
+        this.datasource.Assert(this.root, compatprop, truth, true);
+        this.datasource.Unassert(this.root, compatprop, truth);
+      }
     }
 
     this.datasource.QueryInterface(Ci.nsIRDFRemoteDataSource).Flush();
-    if (this.xpi && this.file) {
+    if (this.xpi && this.file)
       updateXPI(this.xpi, this.file);
-    }
-    else {
-     var compatprop = EM_R("compatible");
-     var truth = gRDF.GetLiteral("true");
-     this.datasource.Assert(this.root, compatprop, truth, true);
-     this.datasource.Unassert(this.root, compatprop, truth);
-    }
   },
 
   isValid: function() {
@@ -264,15 +275,16 @@ nttAddonDetail.prototype = {
   },
 
   isCompatible: function() {
+    if (!gCheckCompatibility)
+      return true;
+
     var version = (gApp.ID == this.app.id) ? gApp.version : gApp.platformVersion;
     LOG("Comparing " + version + " " + this.app.minVersion + " " + this.app.maxVersion);
-    var vc = Cc["@mozilla.org/xpcom/version-comparator;1"].
-             getService(Ci.nsIVersionComparator);
-    if (vc.compare(version, this.app.minVersion) < 0) {
+    if (gVC.compare(version, this.app.minVersion) < 0) {
       LOG(this.id + " has a minVersion that is too high");
       return false;
     }
-    if (vc.compare(version, this.app.maxVersion) > 0) {
+    if (gVC.compare(version, this.app.maxVersion) > 0) {
       LOG(this.id + " has a maxVersion that is too low");
       return false;
     }
@@ -281,6 +293,9 @@ nttAddonDetail.prototype = {
   },
 
   isUpdateSecure: function() {
+    if (!gCheckUpdateSecurity)
+      return true;
+
     if (!this.updateURL)
       return true;
     if (this.updateKey)
@@ -295,13 +310,30 @@ function nttAddonCompatibilityService() {
 nttAddonCompatibilityService.prototype = {
   id: null,
 
-  ensureServices: function() {
-    if (gRDF)
-      return;
+  init: function() {
+    gEM = Cc["@mozilla.org/extensions/manager;1"].
+          getService(Ci.nsIExtensionManager);
     gRDF = Cc["@mozilla.org/rdf/rdf-service;1"].
            getService(Ci.nsIRDFService);
     gApp = Cc["@mozilla.org/xre/app-info;1"].
            getService(Ci.nsIXULAppInfo).QueryInterface(Ci.nsIXULRuntime);
+    gVC = Cc["@mozilla.org/xpcom/version-comparator;1"].
+          getService(Ci.nsIVersionComparator);
+    if (gVC.compare(gApp.platformVersion, "1.9b5") > 0)
+      this.id = gEM.addInstallListener(this);
+    gPrefs = Components.classes["@mozilla.org/preferences-service;1"]
+                       .getService(Components.interfaces.nsIPrefService)
+                       .getBranch("extensions.")
+                       .QueryInterface(Components.interfaces.nsIPrefBranch2);
+    try {
+      gCheckCompatibility = gPrefs.getBoolPref("checkCompatibility");
+    }
+    catch (e) { }
+    try {
+      gCheckUpdateSecurity = gPrefs.getBoolPref("checkUpdateSecurity");
+    }
+    catch (e) { }
+    gPrefs.addObserver("", this, false);
   },
 
   displayUI: function(items) {
@@ -316,14 +348,12 @@ nttAddonCompatibilityService.prototype = {
   // nsIAddonCompatibilityService implementation
   isCompatible: function(id) {
     LOG("Is Compatible " + id);
-    this.ensureServices();
     var addon = new nttAddonDetail();
     addon.initWithDataSource(gEM.datasource, gRDF.GetResource(PREFIX_ITEM_URI + id), id);
     return !addon.needsUpdate();
   },
 
   makeCompatible: function(ids, count) {
-    this.ensureServices();
     var items = [];
     for (var i = 0; i < ids.length; i++) {
       LOG("Make Compatible " + ids[i]);
@@ -351,7 +381,6 @@ nttAddonCompatibilityService.prototype = {
 
   onInstallStarted: function(addon) {
     LOG("Install Started for " + addon.xpiURL);
-    this.ensureServices();
     var ioServ = Cc["@mozilla.org/network/io-service;1"].
                  getService(Ci.nsIIOService);
     var fph = ioServ.getProtocolHandler("file")
@@ -395,16 +424,33 @@ nttAddonCompatibilityService.prototype = {
         os.addObserver(this, "quit-application", false);
         break;
       case "profile-after-change":
-        gEM = Cc["@mozilla.org/extensions/manager;1"].
-              getService(Ci.nsIExtensionManager);
-        this.id = gEM.addInstallListener(this);
+        this.init();
         break;
       case "quit-application":
         gEM.removeInstallListenerAt(this.id);
         gEM = null;
         gRDF = null;
         gApp = null;
+        gVC = null;
+        gPrefs.removeObserver("", this);
+        gPrefs = null;
         break;
+      case "nsPref:changed":
+        switch (data) {
+          case "checkCompatibility":
+            try {
+              gCheckCompatibility = gPrefs.getBoolPref(data);
+            } catch (e) { }
+            break;
+          case "checkUpdateSecurity":
+            try {
+              gCheckUpdateSecurity = gPrefs.getBoolPref(data);
+            } catch (e) { }
+            break;
+        }
+        break;
+      default:
+        LOG("Unknown event " + topic);
     }
   },
 
