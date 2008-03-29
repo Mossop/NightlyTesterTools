@@ -38,25 +38,46 @@
 var nightly = {
 
 variables: {
-  appid: null,
-  vendor: null,
-  name: null,
-  version: null,
-  appbuildid: null,
-  platformbuildid: null,
-  platformversion: null,
-  geckobuildid: null,
-  geckoversion: null,
+  _appInfo: null,
+  get appInfo() {
+    if (!this._appInfo) {
+      this._appInfo = Components.classes["@mozilla.org/xre/app-info;1"]
+                                .getService(Components.interfaces.nsIXULAppInfo)
+                                .QueryInterface(Components.interfaces.nsIXULRuntime);
+    }
+    return this._appInfo;
+  },
+
+  get appid() this.appInfo.ID,
+  get vendor() this.appInfo.vendor,
+  get name() this.appInfo.name,
+  get version() this.appInfo.version,
+  get appbuildid() this.appInfo.appBuildID,
+  get platformbuildid() this.appInfo.platformBuildID,
+  get platformversion() this.appInfo.platformVersion,
+  get geckobuildid() this.appInfo.platformBuildID,
+  get geckoversion() this.appInfo.platformVersion,
   brandname: null,
-  useragent: navigator.userAgent,
-  locale: null,
-  os: null,
-  processor: null,
-  compiler: null,
+  get useragent() navigator.userAgent,
+  get locale() {
+    var registry = Components.classes["@mozilla.org/chrome/chrome-registry;1"]
+                             .getService(Components.interfaces.nsIXULChromeRegistry);
+    return registry.getSelectedLocale("global");
+  },
+  get os() this.appInfo.OS,
+  get processor() this.appInfo.XPCOMABI.split("-")[0],
+  get compiler() this.appInfo.XPCOMABI.split("-")[1],
   defaulttitle: null,
-  profile: null,
-  toolkit: "Unknown",
-  flags: null
+  get profile() {
+    var profservice = Components.classes["@mozilla.org/toolkit/profile-service;1"]
+                                .getService(Components.interfaces.nsIToolkitProfileService);
+    var profile = profservice.selectedProfile;
+    if (profile.name)
+      return profile.name;
+    return profile.rootDir.leafName;
+  },
+  toolkit: "cairo",
+  flags: ""
 },
 
 templates: {
@@ -74,55 +95,15 @@ showAlert: function(id, args) {
   promptService.alert(null, "Nightly Tester Tools", text);
 },
 
-getProfileName: function() {
-  var profservice = Components.classes["@mozilla.org/toolkit/profile-service;1"]
-                              .getService(Components.interfaces.nsIToolkitProfileService);
-  var profile = profservice.selectedProfile;
-  if (profile.name)
-    return profile.name;
-  return profile.rootDir.leafName;
-},
-
 init: function() {
   window.removeEventListener("load", nightly.init, false);
-  var prefservice = Components.classes['@mozilla.org/preferences-service;1']
+  var prefservice = Components.classes["@mozilla.org/preferences-service;1"]
                               .getService(Components.interfaces.nsIPrefService);
   nightly.preferences = prefservice.getBranch("nightly.")
                                    .QueryInterface(Components.interfaces.nsIPrefBranchInternal);
-  prefservice = prefservice.QueryInterface(Components.interfaces.nsIPrefBranch);
-  
-  var appinfo = Components.classes['@mozilla.org/xre/app-info;1']
-                          .getService(Components.interfaces.nsIXULAppInfo)
-                          .QueryInterface(Components.interfaces.nsIXULRuntime);
-  nightly.variables.appid=appinfo.ID;
-  nightly.variables.vendor=appinfo.vendor;
-  nightly.variables.name=appinfo.name;
-  nightly.variables.version=appinfo.version;
-  nightly.variables.appbuildid=appinfo.appBuildID;
-  nightly.variables.platformbuildid=appinfo.platformBuildID;
-  nightly.variables.platformversion=appinfo.platformVersion;
-  nightly.variables.geckobuildid=appinfo.platformBuildID;
-  nightly.variables.os=appinfo.OS;
-  var bits=appinfo.XPCOMABI.split("-");
-  nightly.variables.processor=bits[0];
-  nightly.variables.compiler=bits[1];
+  nightly.preferences.addObserver("", nightly, false);
 
-  try {
-    nightly.variables.locale = prefservice.getComplexValue("general.useragent.locale",
-                        Components.interfaces.nsIPrefLocalizedString).data;
-  }
-  catch (e) {
-    nightly.variables.locale = prefservice.getCharPref("general.useragent.locale");
-  }
-  var ua=nightly.variables.useragent;
-  ua=ua.substring(ua.indexOf("rv:")+3,ua.indexOf(")"));
-  nightly.variables.geckoversion=ua;
-
-  nightly.variables.profile = nightly.getProfileName();
-  nightly.variables.toolkit = "cairo";
-  nightly.variables.flags = ""
   nightlyApp.init();
-  nightly.preferences.addObserver("",nightly,false);
   nightly.prefChange("idtitle");
 },
 
@@ -267,6 +248,7 @@ getExtensionList: function() {
   if (items.length == 0) {
     nightly.showAlert("nightly.noextensions.message", []);
     return null;
+  }
 
   var rdfS = Components.classes["@mozilla.org/rdf/rdf-service;1"]
                        .getService(Components.interfaces.nsIRDFService);
