@@ -88,16 +88,8 @@
   <prefpane id="paneExtensions" label="&nightly.paneExtensions.title;">
   
     <preferences>
-      <preference id="update-compatibility" type="bool" name="nightly.disablecompatibility"/>
-      <preference id="compatibility" inverted="true" type="bool" name="extensions.checkCompatibility"/>
     </preferences>
     
-    <checkbox preference="compatibility" label="&nightly.disablecompatibility.label;"/>
-    
-    <subpane preference="compatibility" invert="true" action="disable">
-      <checkbox preference="update-compatibility" label="&nightly.disablechecking.label;"/>
-    </subpane>
-
   </prefpane>
   
   <prefpane id="paneCrashReports" label="&nightly.paneCrashReports.title;">

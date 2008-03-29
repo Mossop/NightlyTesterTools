@@ -53,9 +53,6 @@
 
 <!ENTITY nightly.paneExtensions.title         "Add-ons">
 
-<!ENTITY nightly.disablecompatibility.label   "Disable add-on compatibility checking">
-<!ENTITY nightly.disablechecking.label        "Disable compatibility overwriting during application update">
-
 
 <!ENTITY nightly.paneCrashReports.title       "Crash Reports">
 <!ENTITY nightly.paneCrashReports.description "Nightly Tester Tools provides convenient access to the crash report database.">
