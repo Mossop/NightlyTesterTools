@@ -94,7 +94,8 @@ popupShowing: function() {
   var item = gExtensionsView.selectedItem;
   var menu = document.getElementById("menuitem_appenable");
   var menuclone = document.getElementById("menuitem_appenable_clone");
-  menu.hidden = this.cs.isCompatible(item.getAttribute("addonID"));
+  var addon = this.cs.getAddonForID(item.getAttribute("addonID"));
+  menu.hidden = !(addon.isValid() && addon.needsOverride(false));
   if (menuclone)
     menuclone.hidden = menu.hidden;    
 },
@@ -102,17 +103,22 @@ popupShowing: function() {
 appEnable: function() {
   var ev = gExtensionsView;
   var item = ev.selectedItem;
-  this.cs.makeCompatible([item.getAttribute("addonID")], 1);
+  this.cs.confirmOverride([this.cs.getAddonForID(item.getAttribute("addonID"))], 1);
   this.syncCompatibility();
 },
 
 enableAll: function() {
-  var ids = [];
+  var addons = [];
   var items = gExtensionsView.children;
-  for (var i = 0; i < items.length; i++)
-    ids.push(items[i].getAttribute("addonID"));
-  this.cs.makeCompatible(ids, ids.length);
-  this.syncCompatibility();
+  for (var i = 0; i < items.length; i++) {
+    var addon = this.cs.getAddonForID(items[i].getAttribute("addonID"));
+    if (addon.isValid() && addon.needsOverride(false))
+      addons.push(addon);
+  }
+  if (addons.length > 0) {
+    this.cs.confirmOverride(addons, addons.length);
+    this.syncCompatibility();
+  }
 },
 
 syncCompatibility: function() {

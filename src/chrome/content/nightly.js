@@ -95,6 +95,11 @@ showAlert: function(id, args) {
   promptService.alert(null, "Nightly Tester Tools", text);
 },
 
+showFirstRun: function() {
+  window.openDialog("chrome://nightly/content/firstrun.xul", "_blank",
+                    "dialog=no,titlebar,centerscreen,resizable=no");
+},
+
 init: function() {
   window.removeEventListener("load", nightly.init, false);
   var prefservice = Components.classes["@mozilla.org/preferences-service;1"]
@@ -105,6 +110,17 @@ init: function() {
 
   nightlyApp.init();
   nightly.prefChange("idtitle");
+
+  var lastVersion = 0;
+  try {
+    lastVersion = nightly.preferences.getCharPref("lastVersion");
+    if (lastVersion != "${extension.fullversion}") {
+    }
+  }
+  catch (e) {
+    nightly.showFirstRun();
+  }
+  nightly.preferences.setCharPref("lastVersion", "${extension.fullversion}");
 },
 
 unload: function(pref) {

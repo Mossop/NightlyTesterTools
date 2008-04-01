@@ -195,14 +195,15 @@ nttAddonDetail.prototype = {
     while (apps.hasMoreElements()) {
       var app = apps.getNext().QueryInterface(Ci.nsIRDFResource);
       var id = getRDFProperty(this.datasource, app, "id");
-      LOG("Seen app " + id);
       if (id == gApp.ID || id == TOOLKIT_ID) {
-        this.appResource = app;
-        this.targetAppID = id;
         this.minAppVersion = getRDFProperty(this.datasource, app, "minVersion");
         this.maxAppVersion = getRDFProperty(this.datasource, app, "maxVersion");
-        if (id == gApp.ID)
-          break;
+        if (this.minAppVersion && this.maxAppVersion) {
+          this.appResource = app;
+          this.targetAppID = id;
+          if (id == gApp.ID)
+            break;
+        }
       }
     }
   },
@@ -229,35 +230,28 @@ nttAddonDetail.prototype = {
       this.file.remove(true);
   },
 
-  makeCompatible: function() {
-    if (!this.needsUpdate())
+  overrideCompatibility: function(ignorePrefs) {
+    if (!this.isValid())
       return;
 
-    if (!this.isUpdateSecure()) {
-      LOG("Addon is insecure, removing update URL");
-      removeRDFProperty(this.datasource, this.root, "updateURL");
+    var changed = false;
 
-      // This updates any UI bound to the datasource
-      var compatprop = EM_R("providesUpdatesSecurely");
-      var truth = gRDF.GetLiteral("true");
-      this.datasource.Assert(this.root, compatprop, truth, true);
-      this.datasource.Unassert(this.root, compatprop, truth);
-    }
-
-    if (gCheckCompatibility) {
+    if (gCheckCompatibility || ignorePrefs) {
       var version = (gApp.ID == this.targetAppID) ? gApp.version : gApp.platformVersion;
       if (gVC.compare(version, this.minAppVersion) < 0) {
         LOG("minVersion is too high, reducing to " + version);
         removeRDFProperty(this.datasource, this.appResource, "minVersion");
         this.datasource.Assert(this.appResource, EM_R("minVersion"), gRDF.GetLiteral(version), true);
+        changed = true;
       }
       else if (gVC.compare(version, this.maxAppVersion) > 0) {
         LOG("maxVersion is too low, increasing to " + version);
         removeRDFProperty(this.datasource, this.appResource, "maxVersion");
         this.datasource.Assert(this.appResource, EM_R("maxVersion"), gRDF.GetLiteral(version), true);
+        changed = true;
       }
 
-      if (!this.xpi) {
+      if (changed && !this.xpi) {
         // This updates any UI bound to the datasource
         var compatprop = EM_R("compatible");
         var truth = gRDF.GetLiteral("true");
@@ -266,41 +260,43 @@ nttAddonDetail.prototype = {
       }
     }
 
-    this.datasource.QueryInterface(Ci.nsIRDFRemoteDataSource).Flush();
-    if (this.xpi && this.file)
-      updateXPI(this.xpi, this.file);
+    if (!this.isUpdateSecure(ignorePrefs)) {
+      LOG("Addon is insecure, removing update URL");
+      removeRDFProperty(this.datasource, this.root, "updateURL");
+      changed = true;
+
+      // This updates any UI bound to the datasource
+      compatprop = EM_R("providesUpdatesSecurely");
+      truth = gRDF.GetLiteral("true");
+      this.datasource.Assert(this.root, compatprop, truth, true);
+      this.datasource.Unassert(this.root, compatprop, truth);
+    }
+
+    if (changed) {
+      this.datasource.QueryInterface(Ci.nsIRDFRemoteDataSource).Flush();
+      if (this.xpi && this.file)
+        updateXPI(this.xpi, this.file);
+    }
   },
 
   isValid: function() {
-    if (!this.targetAppID || !this.minAppVersion || !this.maxAppVersion)
-      return false;
-    return true;
+    return !!this.appResource;
   },
 
-  needsUpdate: function() {
-    return (this.isValid() && (!this.isCompatible() || !this.isUpdateSecure()));
-  },
-
-  isCompatible: function() {
-    if (!gCheckCompatibility)
+  isCompatible: function(ignorePrefs) {
+    if (!gCheckCompatibility && !ignorePrefs)
       return true;
 
     var version = (gApp.ID == this.targetAppID) ? gApp.version : gApp.platformVersion;
-    LOG("Comparing " + version + " " + this.minAppVersion + " " + this.maxAppVersion);
-    if (gVC.compare(version, this.minAppVersion) < 0) {
-      LOG(this.id + " has a minVersion that is too high");
+    if (gVC.compare(version, this.minAppVersion) < 0)
       return false;
-    }
-    if (gVC.compare(version, this.maxAppVersion) > 0) {
-      LOG(this.id + " has a maxVersion that is too low");
+    if (gVC.compare(version, this.maxAppVersion) > 0)
       return false;
-    }
-    LOG(this.id + " is compatible");
     return true;
   },
 
-  isUpdateSecure: function() {
-    if (!gCheckUpdateSecurity)
+  isUpdateSecure: function(ignorePrefs) {
+    if (!gCheckUpdateSecurity && !ignorePrefs)
       return true;
 
     if (!this.updateRDF)
@@ -308,6 +304,10 @@ nttAddonDetail.prototype = {
     if (this.updateKey)
       return true;
     return (this.updateRDF.substring(0, 6) == "https:");
+  },
+
+  needsOverride: function(ignorePrefs) {
+    return (!this.isCompatible(ignorePrefs) || !this.isUpdateSecure(ignorePrefs));
   },
 
   QueryInterface: XPCOMUtils.generateQI([Ci.nttIAddon, Ci.nsIUpdateItem]),
@@ -345,43 +345,27 @@ nttAddonCompatibilityService.prototype = {
     gPrefs.addObserver("", this, false);
   },
 
-  displayUI: function(items) {
+  // nsIAddonCompatibilityService implementation
+  getAddonForID: function(id) {
+    var addon = new nttAddonDetail();
+    addon.initWithDataSource(gEM.datasource, gRDF.GetResource(PREFIX_ITEM_URI + id), id);
+    return addon;
+  },
+
+  confirmOverride: function(addons, count) {
     var wm = Cc["@mozilla.org/appshell/window-mediator;1"].
              getService(Ci.nsIWindowMediator);
     win = wm.getMostRecentWindow("Extension:Manager");
 
     var params = Cc["@mozilla.org/array;1"].
                  createInstance(Ci.nsIMutableArray);
-    for (var i = 0; i < items.length; i++)
-      params.appendElement(items[i], false);
+    for (var i = 0; i < addons.length; i++)
+      params.appendElement(addons[i], false);
     var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
              getService(Ci.nsIWindowWatcher);
     ww.openWindow(win, "chrome://nightly/content/extensions/incompatible.xul", "",
                   "chrome,centerscreen,modal,dialog,titlebar", params);
-  },
-
-  // nsIAddonCompatibilityService implementation
-  isCompatible: function(id) {
-    LOG("Is Compatible " + id);
-    var addon = new nttAddonDetail();
-    addon.initWithDataSource(gEM.datasource, gRDF.GetResource(PREFIX_ITEM_URI + id), id);
-    return !addon.needsUpdate();
-  },
-
-  makeCompatible: function(ids, count) {
-    var items = [];
-    for (var i = 0; i < ids.length; i++) {
-      LOG("Make Compatible " + ids[i]);
-      var addon = new nttAddonDetail();
-      addon.initWithDataSource(gEM.datasource, gRDF.GetResource(PREFIX_ITEM_URI + ids[i]), ids[i]);
-      if (addon.needsUpdate())
-        items.push(addon);
-    }
-    if (items.length > 0) {
-      this.displayUI(items);
-      for (var i = 0; i < items.length; i++)
-        items[i].cleanup();
-    }
+    return true;
   },
 
   // nsIAddonInstallListener implementation
@@ -405,8 +389,8 @@ nttAddonCompatibilityService.prototype = {
       try {
         var addon = new nttAddonDetail();
         addon.initWithXPI(file);
-        if (addon.needsUpdate())
-          this.displayUI([addon]);
+        if (addon.isValid() && addon.needsOverride(false))
+          this.confirmOverride([addon], 1);
         else
           LOG("Add-on is already compatible: '" + addon.updateRDF + "' " + addon.minAppVersion + "-" + addon.maxAppVersion);
         addon.cleanup();
@@ -442,7 +426,8 @@ nttAddonCompatibilityService.prototype = {
         this.init();
         break;
       case "quit-application":
-        gEM.removeInstallListenerAt(this.id);
+        if (this.id)
+          gEM.removeInstallListenerAt(this.id);
         gEM = null;
         gRDF = null;
         gApp = null;
@@ -455,12 +440,18 @@ nttAddonCompatibilityService.prototype = {
           case "checkCompatibility":
             try {
               gCheckCompatibility = gPrefs.getBoolPref(data);
-            } catch (e) { }
+            }
+            catch (e) {
+              gCheckCompatibility = true;
+            }
             break;
           case "checkUpdateSecurity":
             try {
               gCheckUpdateSecurity = gPrefs.getBoolPref(data);
-            } catch (e) { }
+            }
+            catch (e) {
+              gCheckUpdateSecurity = true;
+            }
             break;
         }
         break;

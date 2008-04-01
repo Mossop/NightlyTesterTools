@@ -35,28 +35,16 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+<!ENTITY dialog.title      "Nightly Tester Tools">
+<!ENTITY dialog.style      "width: 40em">
 
-var gItems;
+<!ENTITY title             "Welcome to Nightly Tester Tools">
+<!ENTITY subtitle          "Please be careful, this add-on is designed for use by experienced users only.">
 
-function Startup() {
-  gItems = window.arguments;
-  var list = document.getElementById("addonlist");
-  for (var i = 0; i < gItems.length; i++) {
-    gItems[i].QueryInterface(Ci.nsIUpdateItem)
-             .QueryInterface(Ci.nttIAddon);
-    var ri = document.createElement("richlistitem");
-    ri.setAttribute("name", gItems[i].name);
-    ri.setAttribute("version", gItems[i].version);
-    ri.setAttribute("icon", gItems[i].iconURL);
-    ri.setAttribute("secure", gItems[i].isUpdateSecure(false) ? "true" : "false");
-    ri.setAttribute("compatible", gItems[i].isCompatible(false) ? "true" : "false");
-    list.appendChild(ri);
-  }
-}
+<!ENTITY overview          "Nightly Tester Tools can help you test &brandShortName; with add-ons designed for other versions.">
 
-function Accept() {
-  for (var i = 0; i < gItems.length; i++)
-    gItems[i].overrideCompatibility(false);
-}
+<!ENTITY configwarning     "Currently &brandShortName; is configured to allow any add-ons to be used, this is a risk and could expose you to unnecessary risks.">
+<!ENTITY reset             "Reset your configuration and allow Nightly Tester Tools to help you install incompatible add-ons">
+<!ENTITY enable            "Leave any currently enabled add-ons working">
+
+<!ENTITY open              "Open the add-ons manager to enable incompatible add-ons">

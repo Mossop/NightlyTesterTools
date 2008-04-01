@@ -41,17 +41,22 @@
 [scriptable, uuid(8d634ad7-7126-49e4-8853-5ad93356b985)]
 interface nttIAddon : nsISupports
 {
-  boolean makeCompatible();
+  boolean isValid();
 
-  boolean isCompatible();
+  boolean overrideCompatibility(in boolean ignorePrefs);
 
-  boolean isUpdateSecure();
+  boolean isCompatible(in boolean ignorePrefs);
+
+  boolean isUpdateSecure(in boolean ignorePrefs);
+
+  boolean needsOverride(in boolean ignorePrefs);
 };
 
 [scriptable, uuid(ba015a71-b148-4391-aa81-1a2f0c727db3)]
 interface nttIAddonCompatibilityService : nsISupports
 {
-  boolean isCompatible(in wstring id);
+  nttIAddon getAddonForID(in wstring id);
 
-  void makeCompatible([array, size_is(count)] in wstring ids, in unsigned long count);
+  boolean confirmOverride([array, size_is(count)] in nttIAddon addons,
+                        in unsigned long count);
 };
