@@ -48,6 +48,8 @@
 
 <!ENTITY nightly.leakreporter.label           "Analyse Leak Log">
 
+<!ENTITY nightly.options.label                "Options">
+
 <!ENTITY nightly.screenshot.full.label        "Take Screenshot">
 
 <!ENTITY nightly.crashreports.sidebar.title   "Crash Reports Sidebar">

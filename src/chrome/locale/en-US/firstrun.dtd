@@ -39,7 +39,7 @@
 <!ENTITY dialog.style      "width: 45em">
 
 <!ENTITY title             "Welcome to Nightly Tester Tools">
-<!ENTITY subtitle          "You can find Nightly Tester Tools in the tools menu and configure options from the add-ons manager.">
+<!ENTITY subtitle          "You can find Nightly Tester Tools in the Tools menu.">
 
 <!ENTITY overview          "Some of the features of Nightly Tester Tools are designed for advanced users and if used improperly could leave &brandShortName; unusable and potentially lose profile data.">
 

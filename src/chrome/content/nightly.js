@@ -356,7 +356,26 @@ getScreenshot: function() {
 },
 
 launchOptions: function() {
-  window.openDialog("chrome://nightly/content/options.xul", "", "chrome,titlebar,toolbar,centerscreen,modal");
+  var wm = Components.classes['@mozilla.org/appshell/window-mediator;1']
+                     .getService(Components.interfaces.nsIWindowMediator);
+
+  var win = wm.getMostRecentWindow("NightlyTester:Options");
+  if (win) {
+    win.focus();
+    return;
+  }
+
+  var features;
+  try {
+    var prefservice = Components.classes["@mozilla.org/preferences-service;1"]
+                                .getService(Components.interfaces.nsIPrefBranch);
+    var instantApply = prefservice.getBoolPref("browser.preferences.instantApply");
+    features = "chrome,titlebar,toolbar,centerscreen" + (instantApply ? ",dialog=no" : ",modal");
+  }
+  catch (e) {
+    features = "chrome,titlebar,toolbar,centerscreen,modal";
+  }
+  openDialog("chrome://nightly/content/options/options.xul", "", features);
 }
 
 }

@@ -103,6 +103,8 @@
         <menuitem id="nightly-crashreports-sidebar" observes="viewCrashReportsSidebar"/>
         <menuseparator/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
+        <menuseparator/>
+        <menuitem label="&nightly.options.label;" oncommand="nightly.launchOptions();"/>
       </menupopup>
     </menu>
   </menupopup>

@@ -45,31 +45,31 @@
 <prefwindow id="NightlyTesterOptions" windowtype="NightlyTester:Options"
             title="&nightly.options.title;"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  
+
   <script type="application/x-javascript" src="prefs.js"/>
 
   <prefpane id="paneTitle" label="&nightly.paneTitlebar.title;">
-  
+
     <preferences>
       <preference id="idtitle" type="bool" name="nightly.idtitle" onchange="paneTitle.toggled();"/>
       <preference id="title" type="string" name="nightly.templates.title"/>
     </preferences>
-    
+
     <script type="application/x-javascript" src="title.js"/>
-  
+
     <stringbundle id="variablesBundle" src="chrome://nightly/locale/variables.properties"/>
-    
+
     <description style="padding-bottom: 5px">&nightly.paneTitlebar.description;</description>
-      
+
     <checkbox preference="idtitle" style="padding-bottom: 5px" id="enableTitleBar" label="&nightly.customtitle.label;"/>
-                  
+
     <hbox style="padding-bottom: 5px" align="center">
       <label value="&nightly.customtemplate.label;" control="customTitle"/>
       <textbox preference="title" id="customTitle" flex="1"/>
     </hbox>
-  
+
     <description style="padding-bottom: 5px">&nightly.variables.description;</description>
-  
+
     <listbox id="varList" flex="1">
       <listhead>
         <listheader label="&nightly.variable.label;"/>
@@ -84,24 +84,17 @@
     </listbox>
 
   </prefpane>
-  
-  <prefpane id="paneExtensions" label="&nightly.paneExtensions.title;">
-  
-    <preferences>
-    </preferences>
-    
-  </prefpane>
-  
+
   <prefpane id="paneCrashReports" label="&nightly.paneCrashReports.title;">
-  
+
     <preferences>
       <preference id="recentlist" type="bool" name="nightly.crashreports.recentlist.display"/>
     </preferences>
-    
+
     <description style="padding-bottom: 5px">&nightly.paneCrashReports.description;</description>
-      
+
     <checkbox preference="recentlist" label="&nightly.recentlist.label;"/>
 
   </prefpane>
-  
+
 </prefwindow>
