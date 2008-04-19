@@ -244,12 +244,12 @@ function drawScreenshot()
   var height = shotWindow.innerHeight;
   canvas.width = width;
   canvas.height = height;
-  canvas.style.width = width+"px";
-  canvas.style.minWidth = width+"px";
-  canvas.style.maxWidth = width+"px";
-  canvas.style.height = height+"px";
-  canvas.style.minHeight = height+"px";
-  canvas.style.maxHeight = height+"px";
+  canvas.style.width = width + "px";
+  canvas.style.minWidth = width + "px";
+  canvas.style.maxWidth = width + "px";
+  canvas.style.height = height + "px";
+  canvas.style.minHeight = height + "px";
+  canvas.style.maxHeight = height + "px";
 
   var ctx = canvas.getContext("2d");
   
@@ -257,14 +257,18 @@ function drawScreenshot()
   var winx = winbo.screenX;
   var winy = winbo.screenY;
 
+  // This draws the main window
   try
   {
-    ctx.drawWindow(shotWindow, shotWindow.scrollX, shotWindow.scrollY, shotWindow.innerWidth, shotWindow.innerHeight, "rgba(255,255,255,255)");
+    ctx.drawWindow(shotWindow, shotWindow.scrollX, shotWindow.scrollY,
+                               shotWindow.innerWidth, shotWindow.innerHeight,
+                               "rgba(255,255,255,255)");
   }
   catch (e)
   {
   }
-  
+
+  // Must also draw inner windows as inner-content from chrome are not included
   var docshell = shotWindow.QueryInterface(Ci.nsIInterfaceRequestor)
                            .getInterface(Ci.nsIWebNavigation)
                            .QueryInterface(Ci.nsIDocShell);
@@ -288,8 +292,11 @@ function drawScreenshot()
       ctx.save();
       try
       {
-        ctx.translate(shellbo.screenX-winx+shellwin.scrollX, shellbo.screenY-winy+shellwin.scrollY);
-        ctx.drawWindow(shellwin, shellwin.scrollX, shellwin.scrollY, shellwin.innerWidth, shellwin.innerHeight, "rgba(255,255,255,255)");
+        ctx.translate(shellbo.screenX - winx + shellwin.scrollX,
+                      shellbo.screenY - winy + shellwin.scrollY);
+        ctx.drawWindow(shellwin, shellwin.scrollX, shellwin.scrollY,
+                                 shellwin.innerWidth, shellwin.innerHeight,
+                                 "rgba(255,255,255,255)");
       }
       catch (e)
       {
@@ -300,10 +307,11 @@ function drawScreenshot()
     {
     }
   }
+
   var url = canvas.toDataURL();
   var image = document.getElementById("previewImage");
-  image.style.width = width+"px";
-  image.style.height = height+"px";
+  image.style.width = width + "px";
+  image.style.height = height + "px";
   image.src = url;
 }
 
