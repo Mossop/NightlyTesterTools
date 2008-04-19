@@ -3,6 +3,8 @@ skin         nightly          classic/1.0                             ${extensio
 
 locale       nightly          en-US                                   ${extension.chromebase}/locale/en-US/
 
+resource     nightly          modules/
+
 # Shared chrome
 overlay      chrome://mozapps/content/extensions/extensions.xul       chrome://nightly/content/extensions/addons.xul
 override     chrome://nightly/content/platform.js                     chrome://nightly/content/winPlatform.js                  os=winnt

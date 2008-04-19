@@ -55,15 +55,6 @@ var gCheckCompatibility = true;
 var gCheckUpdateSecurity = true;
 var gPrefs = null;
 
-function LOG(string) {
-  if (true) {
-    dump("*** " + string + "\n");
-    var console = Cc["@mozilla.org/consoleservice;1"].
-                  getService(Ci.nsIConsoleService);
-    console.logStringMessage(string);
-  }
-}
-
 function EM_NS(property) {
   return PREFIX_NS_EM + property;
 }
@@ -377,6 +368,8 @@ nttAddonCompatibilityService.prototype = {
   id: null,
 
   init: function() {
+    Components.utils.import("resource://nightly/Logging.jsm");
+
     gEM = Cc["@mozilla.org/extensions/manager;1"].
           getService(Ci.nsIExtensionManager);
     gRDF = Cc["@mozilla.org/rdf/rdf-service;1"].
@@ -459,12 +452,12 @@ nttAddonCompatibilityService.prototype = {
             LOG("Add-on is already compatible: '" + addon.updateRDF + "' " + addon.minAppVersion + "-" + addon.maxAppVersion);
         }
         else {
-          LOG("Add-on seems to be invalid");
+          WARN("Add-on seems to be invalid");
         }
         addon.cleanup();
       }
       catch (e) {
-        LOG("Exception during compatibility check " + e);
+        ERROR("Exception during compatibility check " + e);
       }
     }
   },
@@ -524,7 +517,7 @@ nttAddonCompatibilityService.prototype = {
         }
         break;
       default:
-        LOG("Unknown event " + topic);
+        WARN("Unknown event " + topic);
     }
   },
 
