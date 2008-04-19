@@ -49,12 +49,3 @@
 <!ENTITY nightly.variable.label               "Variable">
 <!ENTITY nightly.variabledesc.label           "Description">
 <!ENTITY nightly.variablevalue.label          "Value">
-
-
-<!ENTITY nightly.paneExtensions.title         "Add-ons">
-
-
-<!ENTITY nightly.paneCrashReports.title       "Crash Reports">
-<!ENTITY nightly.paneCrashReports.description "Nightly Tester Tools provides convenient access to the crash report database.">
-
-<!ENTITY nightly.recentlist.label             "Show recent incidents in the menu">

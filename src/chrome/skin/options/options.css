@@ -49,15 +49,3 @@ subpane {
   width: 40em;
   height: 35em;
 }
-
-#NightlyTesterOptions radio[pane=paneTitle] {
-  list-style-image: url("chrome://nightly/content/brand/icon.png");
-}
-
-#NightlyTesterOptions radio[pane=paneExtensions] {
-  list-style-image: url("chrome://nightly/skin/options/extension.png");
-}
-
-#NightlyTesterOptions radio[pane=paneCrashReports] {
-  list-style-image: url("chrome://nightly/skin/options/crashreports.png");
-}

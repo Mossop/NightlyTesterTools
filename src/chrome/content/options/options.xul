@@ -48,7 +48,7 @@
 
   <script type="application/x-javascript" src="prefs.js"/>
 
-  <prefpane id="paneTitle" label="&nightly.paneTitlebar.title;">
+  <prefpane id="paneTitle" label="&nightly.options.title;">
 
     <preferences>
       <preference id="idtitle" type="bool" name="nightly.idtitle" onchange="paneTitle.toggled();"/>
@@ -82,18 +82,6 @@
         <listcol style="width: 15em"/>
       </listcols>
     </listbox>
-
-  </prefpane>
-
-  <prefpane id="paneCrashReports" label="&nightly.paneCrashReports.title;">
-
-    <preferences>
-      <preference id="recentlist" type="bool" name="nightly.crashreports.recentlist.display"/>
-    </preferences>
-
-    <description style="padding-bottom: 5px">&nightly.paneCrashReports.description;</description>
-
-    <checkbox preference="recentlist" label="&nightly.recentlist.label;"/>
 
   </prefpane>
 
