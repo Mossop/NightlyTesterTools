@@ -45,12 +45,6 @@ var timer = 0;
 var canvas = null;
 var bundle = null;
 
-var cropWidth = 0;
-var cropHeight = 0;
-
-var areax = 0;
-var areay = 0;
-
 var windows = [];
 
 function init(event)
@@ -244,96 +238,18 @@ function winChange(event)
   drawScreenshot();
 }
 
-function startAreaSelect(event)
-{
-  var box = document.getElementById("areaselect");
-  box.hidden=false;
-
-  areax = Math.round(event.layerX);
-  areay = Math.round(event.layerY);
-  
-  box.parentNode.addEventListener("mousemove", updateAreaSelect, true);
-  box.parentNode.addEventListener("mouseup", completeAreaSelect, true);
-  updateAreaSelect(event);
-}
-
-function updateAreaSelect(event)
-{
-  var box = document.getElementById("areaselect");
-
-  var newx = Math.round(event.layerX);
-  var newy = Math.round(event.layerY);
-  
-  box.top = Math.min(newy, areay);
-  box.left = Math.min(newx, areax);
-  
-  box.style.width = (Math.abs(newx-areax))+"px";
-  box.style.height = (Math.abs(newy-areay))+"px";
-}
-
-function completeAreaSelect(event)
-{
-  var box = document.getElementById("areaselect");
-
-  var cropX = box.boxObject.x;
-  var cropY = box.boxObject.y;
-
-  box.hidden=true;
-  box.top=0;
-  box.left=0;
-  box.style.width="0px";
-  box.style.height="0px";
-  box.parentNode.removeEventListener("mousemove", updateAreaSelect, true);
-  box.parentNode.removeEventListener("mouseup", completeAreaSelect, true);
-
-  var newx = Math.round(event.layerX);
-  var newy = Math.round(event.layerY);
-
-  if ((newx == areax) || (newy == areay))
-    return;
-    
-  cropWidth = Math.abs(newx-areax);
-  cropHeight = Math.abs(newy-areay);
-
-  canvas.width = cropWidth;
-  canvas.height = cropHeight;
-
-  var ctx = canvas.getContext("2d");
-  
-  try
-  {
-    ctx.drawWindow(window, cropX, cropY, cropWidth, cropHeight, "rgba(255,255,255,255)");
-  }
-  catch (e)
-  {
-  }
-
-  canvas.style.width = cropWidth+"px";
-  canvas.style.minWidth = cropWidth+"px";
-  canvas.style.maxWidth = cropWidth+"px";
-  canvas.style.height = cropHeight+"px";
-  canvas.style.minHeight = cropHeight+"px";
-  canvas.style.maxHeight = cropHeight+"px";
-
-  var url = canvas.toDataURL();
-  var image = document.getElementById("previewImage");
-  image.width = cropWidth+"px";
-  image.height = cropHeight+"px";
-  image.src = url;
-}
-
 function drawScreenshot()
 {
-  cropWidth = shotWindow.innerWidth;
-  cropHeight = shotWindow.innerHeight;
-  canvas.width = cropWidth;
-  canvas.height = cropHeight;
-  canvas.style.width = cropWidth+"px";
-  canvas.style.minWidth = cropWidth+"px";
-  canvas.style.maxWidth = cropWidth+"px";
-  canvas.style.height = cropHeight+"px";
-  canvas.style.minHeight = cropHeight+"px";
-  canvas.style.maxHeight = cropHeight+"px";
+  var width = shotWindow.innerWidth;
+  var height = shotWindow.innerHeight;
+  canvas.width = width;
+  canvas.height = height;
+  canvas.style.width = width+"px";
+  canvas.style.minWidth = width+"px";
+  canvas.style.maxWidth = width+"px";
+  canvas.style.height = height+"px";
+  canvas.style.minHeight = height+"px";
+  canvas.style.maxHeight = height+"px";
 
   var ctx = canvas.getContext("2d");
   
@@ -386,8 +302,8 @@ function drawScreenshot()
   }
   var url = canvas.toDataURL();
   var image = document.getElementById("previewImage");
-  image.width = cropWidth+"px";
-  image.height = cropHeight+"px";
+  image.style.width = width+"px";
+  image.style.height = height+"px";
   image.src = url;
 }
 
