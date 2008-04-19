@@ -156,6 +156,50 @@ function updateXPI(xpi, file) {
   zipWriter.close();
 }
 
+function nttAddonUpdateChecker(addon) {
+  this.addon = addon;
+}
+
+nttAddonUpdateChecker.prototype = {
+  addon: null,
+  busy: null,
+
+  checkForUpdates: function() {
+    this.busy = true;
+    LOG("Searching for compatibility information for " + this.addon.id);
+    gEM.update([this.addon], 1,
+               Ci.nsIExtensionManager.UPDATE_SYNC_COMPATIBILITY, this);
+
+    // Spin an event loop to wait for the update check to complete.
+    var tm = Cc["@mozilla.org/thread-manager;1"].
+             getService(Ci.nsIThreadManager);
+    var thread = tm.currentThread;
+    while (this.busy)
+      thread.processNextEvent(true);
+  },
+
+  // nsIAddonUpdateCheckListener implementation
+  onUpdateStarted: function() {
+  },
+
+  onUpdateEnded: function() {
+    this.busy = false;
+  },
+
+  onAddonUpdateStarted: function(addon) {
+  },
+
+  onAddonUpdateEnded: function(addon, status) {
+    if (status & Ci.nsIAddonUpdateCheckListener.STATUS_DATA_FOUND) {
+      LOG("Found new compatibility information for " + addon.id + ": " + addon.minAppVersion + " " + addon.maxAppVersion);
+      this.addon.minAppVersion = addon.minAppVersion;
+      this.addon.maxAppVersion = addon.maxAppVersion;
+      this.addon.targetAppID = addon.targetAppID;
+      this.addon.overrideVersions();
+    }
+  }
+};
+
 function nttAddonDetail() {
 }
 
@@ -230,6 +274,16 @@ nttAddonDetail.prototype = {
       this.file.remove(true);
   },
 
+  overrideVersions: function() {
+    removeRDFProperty(this.datasource, this.appResource, "minVersion");
+    this.datasource.Assert(this.appResource, EM_R("minVersion"), gRDF.GetLiteral(this.minAppVersion), true);
+    removeRDFProperty(this.datasource, this.appResource, "maxVersion");
+    this.datasource.Assert(this.appResource, EM_R("maxVersion"), gRDF.GetLiteral(this.maxAppVersion), true);
+    this.datasource.QueryInterface(Ci.nsIRDFRemoteDataSource).Flush();
+    if (this.xpi && this.file)
+      updateXPI(this.xpi, this.file);
+  },
+
   overrideCompatibility: function(ignorePrefs) {
     if (!this.isValid())
       return;
@@ -242,12 +296,14 @@ nttAddonDetail.prototype = {
         LOG("minVersion is too high, reducing to " + version);
         removeRDFProperty(this.datasource, this.appResource, "minVersion");
         this.datasource.Assert(this.appResource, EM_R("minVersion"), gRDF.GetLiteral(version), true);
+        this.minVersion = version;
         changed = true;
       }
       else if (gVC.compare(version, this.maxAppVersion) > 0) {
         LOG("maxVersion is too low, increasing to " + version);
         removeRDFProperty(this.datasource, this.appResource, "maxVersion");
         this.datasource.Assert(this.appResource, EM_R("maxVersion"), gRDF.GetLiteral(version), true);
+        this.maxVersion = version;
         changed = true;
       }
 
@@ -263,6 +319,7 @@ nttAddonDetail.prototype = {
     if (!this.isUpdateSecure(ignorePrefs)) {
       LOG("Addon is insecure, removing update URL");
       removeRDFProperty(this.datasource, this.root, "updateURL");
+      this.updateRDF = null;
       changed = true;
 
       // This updates any UI bound to the datasource
@@ -389,10 +446,21 @@ nttAddonCompatibilityService.prototype = {
       try {
         var addon = new nttAddonDetail();
         addon.initWithXPI(file);
-        if (addon.isValid() && addon.needsOverride(false))
-          this.confirmOverride([addon], 1);
-        else
-          LOG("Add-on is already compatible: '" + addon.updateRDF + "' " + addon.minAppVersion + "-" + addon.maxAppVersion);
+        if (addon.isValid()) {
+          if (!addon.isCompatible(false)) {
+            // Check if there are remote updates available
+            var checker = new nttAddonUpdateChecker(addon);
+            checker.checkForUpdates();
+          }
+
+          if (addon.needsOverride(false))
+            this.confirmOverride([addon], 1);
+          else
+            LOG("Add-on is already compatible: '" + addon.updateRDF + "' " + addon.minAppVersion + "-" + addon.maxAppVersion);
+        }
+        else {
+          LOG("Add-on seems to be invalid");
+        }
         addon.cleanup();
       }
       catch (e) {

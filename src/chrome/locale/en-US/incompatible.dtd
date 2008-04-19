@@ -42,5 +42,5 @@
 
 <!ENTITY warning.label             "Installing incompatible add-ons can make &brandShortName; unstable and even lose data. Be sure you know what you are doing.">
 
-<!ENTITY incompatible.label        "This add-on may be incompatible with this version of &brandShortName;.">
-<!ENTITY insecure.label            "This add-on cannot update securely. Updates will be disabled.">
+<!ENTITY incompatible.label        "This add-on is incompatible with this version of &brandShortName;.">
+<!ENTITY insecure.label            "This add-on cannot update securely. Updates must be disabled.">
