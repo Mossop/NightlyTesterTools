@@ -78,6 +78,7 @@ function removeRDFProperty(ds, source, property) {
 }
 
 function extractXPI(xpi) {
+  // XXX For 1.9 final we can switch to just extracting/compressing install.rdf
   var zipReader = Cc["@mozilla.org/libjar/zip-reader;1"].
                   createInstance(Ci.nsIZipReader);
   zipReader.open(xpi);
@@ -140,6 +141,7 @@ function recursiveUpdate(zipWriter, path, dir) {
 }
 
 function updateXPI(xpi, file) {
+  // XXX For 1.9 final we can switch to just extracting/compressing install.rdf
   var zipWriter = Cc["@mozilla.org/zipwriter;1"].
                   createInstance(Ci.nsIZipWriter);
   zipWriter.open(xpi, 0x04 | 0x08 | 0x20);
@@ -378,7 +380,7 @@ nttAddonCompatibilityService.prototype = {
            getService(Ci.nsIXULAppInfo).QueryInterface(Ci.nsIXULRuntime);
     gVC = Cc["@mozilla.org/xpcom/version-comparator;1"].
           getService(Ci.nsIVersionComparator);
-    if (gVC.compare(gApp.platformVersion, "1.9b5") > 0)
+    if (gVC.compare(gApp.platformVersion, "1.9b5") >= 0)
       this.id = gEM.addInstallListener(this);
     gPrefs = Components.classes["@mozilla.org/preferences-service;1"]
                        .getService(Components.interfaces.nsIPrefService)
