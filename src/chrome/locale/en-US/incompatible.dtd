@@ -35,12 +35,14 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-<!ENTITY window.title              "Make Compatible">
-<!ENTITY window.style              "width: 40em; height: 30em">
-<!ENTITY window.accept             "Fix Compatibility">
-<!ENTITY window.cancel             "Skip">
+<!ENTITY window.title        "Make Compatible">
+<!ENTITY window.style        "width: 40em; height: 25em">
+<!ENTITY window.accept       "Fix Compatibility">
+<!ENTITY window.cancel       "Skip">
 
-<!ENTITY warning.label             "Warning, incompatible add-ons can make &brandShortName; unstable and even lose data.">
+<!ENTITY warning.label       "Forcing incompatible extensions to run could
+                              cause hangs, crashes, memory leaks, data
+                              corruption or other problems.">
 
-<!ENTITY incompatible.label        "This add-on is incompatible with this version of &brandShortName;.">
-<!ENTITY insecure.label            "This add-on cannot update securely. Updates must be disabled.">
+<!ENTITY incompatible.label  "This add-on is incompatible with this version of &brandShortName;.">
+<!ENTITY insecure.label      "This add-on cannot update securely. Updates must be disabled.">
