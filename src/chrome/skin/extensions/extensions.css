@@ -35,3 +35,6 @@
 %
 % ***** END LICENSE BLOCK *****
 %
+#enableallButton {
+  list-style-image: none !important;
+}
