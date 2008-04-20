@@ -309,9 +309,18 @@ function drawScreenshot()
   }
 
   var url = canvas.toDataURL();
-  var image = document.getElementById("previewImage");
+  var oldImage = document.getElementById("previewImage");
+  if (oldImage)
+    oldImage.parentNode.removeChild(oldImage);
+
+  var image = document.createElementNS("http://www.w3.org/1999/xhtml", "img");
+  image.id = "previewImage";
+  document.getElementById("container").appendChild(image);
+
   image.style.width = width + "px";
   image.style.height = height + "px";
+  image.width = width;
+  image.height = height;
   image.src = url;
 }
 

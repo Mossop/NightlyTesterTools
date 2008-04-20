@@ -71,7 +71,7 @@
     </toolbar>
   </toolbox>
   
-  <scrollbox flex="1" style="overflow: auto" align="start" pack="start">
+  <scrollbox flex="1" style="overflow: auto" align="start" pack="start" id="container">
     <xhtml:img id="previewImage"/>
   </scrollbox>
 
