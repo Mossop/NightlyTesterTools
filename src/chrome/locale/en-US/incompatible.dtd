@@ -40,9 +40,9 @@
 <!ENTITY window.accept       "Fix Compatibility">
 <!ENTITY window.cancel       "Skip">
 
-<!ENTITY warning.label       "Forcing incompatible extensions to run could
-                              cause hangs, crashes, memory leaks, data
-                              corruption or other problems.">
+<!ENTITY warning.label       "Forcing incompatible add-ons to run could cause
+                              hangs, crashes, memory leaks, data corruption or
+                              other problems.">
 
 <!ENTITY incompatible.label  "This add-on is incompatible with this version of &brandShortName;.">
 <!ENTITY insecure.label      "This add-on cannot update securely. Updates must be disabled.">
