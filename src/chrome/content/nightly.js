@@ -95,17 +95,12 @@ showAlert: function(id, args) {
   promptService.alert(null, "Nightly Tester Tools", text);
 },
 
-showFirstRun: function() {
-  window.openDialog("chrome://nightly/content/firstrun.xul", "_blank",
-                    "dialog=no,titlebar,centerscreen,resizable=no");
-},
-
 init: function() {
   window.removeEventListener("load", nightly.init, false);
-  var prefservice = Components.classes["@mozilla.org/preferences-service;1"]
-                              .getService(Components.interfaces.nsIPrefService);
-  nightly.preferences = prefservice.getBranch("nightly.")
-                                   .QueryInterface(Components.interfaces.nsIPrefBranchInternal);
+  var prefs = Components.classes["@mozilla.org/preferences-service;1"]
+                        .getService(Components.interfaces.nsIPrefService);
+  nightly.preferences = prefs.getBranch("nightly.")
+                             .QueryInterface(Components.interfaces.nsIPrefBranchInternal);
   nightly.preferences.addObserver("", nightly, false);
 
   nightlyApp.init();
@@ -118,7 +113,24 @@ init: function() {
     }
   }
   catch (e) {
-    nightly.showFirstRun();
+    var checkCompatibility = true;
+    var checkUpdateSecurity = true;
+    if (prefs.prefHasUserValue("extensions.checkCompatibility"))
+      checkCompatibility = prefs.getBoolPref("extensions.checkCompatibility");
+    if (prefs.prefHasUserValue("extensions.checkUpdateSecurity"))
+      checkUpdateSecurity = prefs.getBoolPref("extensions.checkUpdateSecurity");
+    if (!checkCompatibility || !checkUpdateSecurity) {
+      var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                         .getService(Components.interfaces.nsIWindowMediator);
+      var win = wm.getMostRecentWindow("NightlyTester:ConfigWarning");
+      if (win) {
+        win.focus();
+        return;
+      }
+    
+      window.openDialog("chrome://nightly/content/configwarning.xul", "",
+                        "dialog=no,titlebar,centerscreen,resizable=no");
+    }
   }
   //nightly.preferences.setCharPref("lastVersion", "${extension.fullversion}");
 },

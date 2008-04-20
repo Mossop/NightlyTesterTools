@@ -35,38 +35,10 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-<?xml version="1.0"?>
+<!ENTITY dialog.title  "Nightly Tester Tools">
+<!ENTITY dialog.style  "width: 45em">
 
-<!DOCTYPE dialog [
-<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
-%brandDTD;
-<!ENTITY % firstrunDTD SYSTEM "chrome://nightly/locale/firstrun.dtd">
-%firstrunDTD;
-]>
-
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://nightly/skin/firstrun.css" type="text/css"?>
-
-<dialog title="&dialog.title;" style="&dialog.style;"
-        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        buttons="accept" onload="init()" ondialogaccept="accept()">
-
-  <script src="firstrun.js"/>
-
-  <hbox id="banner">
-    <image src="chrome://nightly/content/brand/logo.png"/>
-    <vbox flex="1">
-      <label id="title" value="&title;"/>
-      <spacer flex="1"/>
-      <description>&subtitle;</description>
-    </vbox>
-  </hbox>
-
-  <vbox id="changeConfig">
-    <description>&warning;</description>
-    <checkbox id="reset" oncommand="resetToggled()" checked="false" label="&reset;"/>
-  </vbox>
-
-  <checkbox id="open" checked="false" label="&open;"/>
-
-</dialog>
+<!ENTITY title         "&brandShortName; is ignoring add-on compatibility">
+<!ENTITY subtitle      "Nightly Tester Tools can control compatibility using
+                        a safer, individual method. Do you want to use Nightly
+                        Tester Tools to control compatibility?">

@@ -39,28 +39,8 @@ dialog {
   padding: 1em;
 }
 
-#banner {
-  margin-bottom: 2em;
-}
-
-#banner > image {
-  margin-right: 1em;
-}
-
 #title {
   font-weight: bold;
-  font-size: 120%;
-}
-
-#changeConfig {
+  font-size: 110%;
   margin-bottom: 1em;
-}
-
-#configwarning {
-  margin-bottom: 0.5em;
-  font-weight: bold;
-}
-
-#enable {
-  margin-left: 2em;
 }
