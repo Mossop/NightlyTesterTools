@@ -50,42 +50,55 @@ function init() {
   if (gPrefs.prefHasUserValue("extensions.checkUpdateSecurity"))
     gCheckUpdateSecurity = gPrefs.getBoolPref("extensions.checkUpdateSecurity");
 
+  var needsOpen = false;
+  var cs = Cc["@oxymoronical.com/nightly/addoncompatibility;1"].
+           createInstance(Ci.nttIAddonCompatibilityService);
+  var em = Cc["@mozilla.org/extensions/manager;1"].
+           getService(Ci.nsIExtensionManager);
+  var items = em.getItemList(Ci.nsIUpdateItem.TYPE_ADDON, {});
+  for (var i = 0; i < items.length; i++) {
+    var addon = cs.getAddonForID(items[i].id);
+    if (!addon.isValid())
+      continue;
+    if (addon.needsOverride(false)) {
+      needsOpen = true;
+      break;
+    }
+  }
+
   document.getElementById("changeConfig").hidden = !((gCheckCompatibility === false) ||
                                                      (gCheckUpdateSecurity === false));
-  
-}
+  document.getElementById("reset").checked = !document.getElementById("changeConfig").hidden;
 
-function resetToggled() {
-  document.getElementById("enable").disabled = !document.getElementById("reset").checked
+  document.getElementById("open").hidden = !needsOpen;
+  document.getElementById("open").checked = needsOpen;
 }
 
 function accept() {
-  if (document.getElementById("reset").checked && !document.getElementById("changeConfig").hidden) {
-    var cs = Components.classes["@oxymoronical.com/nightly/addoncompatibility;1"]
-                       .createInstance(Components.interfaces.nttIAddonCompatibilityService);
-
-    if (document.getElementById("enable").checked) {
-      var em = Cc["@mozilla.org/extensions/manager;1"].
-               getService(Ci.nsIExtensionManager);
-      var items = em.getItemList(Ci.nsIUpdateItem.TYPE_ADDON, {});
-      for (var i = 0; i < items.length; i++) {
-        var addon = cs.getAddonForID(items[i].id);
-        if (!addon.isValid())
-          continue;
-        if (!addon.needsOverride(false) && addon.needsOverride(true))
-          addon.overrideCompatibility(true);
-      }
+  if (document.getElementById("reset").checked) {
+    var cs = Cc["@oxymoronical.com/nightly/addoncompatibility;1"].
+             createInstance(Ci.nttIAddonCompatibilityService);
+    var em = Cc["@mozilla.org/extensions/manager;1"].
+             getService(Ci.nsIExtensionManager);
+    var items = em.getItemList(Ci.nsIUpdateItem.TYPE_ADDON, {});
+    for (var i = 0; i < items.length; i++) {
+      var addon = cs.getAddonForID(items[i].id);
+      if (!addon.isValid())
+        continue;
+      if (!addon.needsOverride(false) && addon.needsOverride(true))
+        addon.overrideCompatibility(true);
     }
-    
+
     if (gCheckCompatibility === false)
       gPrefs.clearUserPref("extensions.checkCompatibility");
     if (gCheckUpdateSecurity === false)
       gPrefs.clearUserPref("extensions.checkUpdateSecurity");
   }
+
   if (document.getElementById("open").checked) {
     const EMTYPE = "Extension:Manager";
-    var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-                       .getService(Components.interfaces.nsIWindowMediator);
+    var wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+             getService(Ci.nsIWindowMediator);
     var theEM = wm.getMostRecentWindow(EMTYPE);
     if (theEM) {
       theEM.focus();

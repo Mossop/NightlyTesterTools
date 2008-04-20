@@ -62,12 +62,9 @@
     </vbox>
   </hbox>
 
-  <description style="margin-bottom: 1em">&overview;</description>
-
   <vbox id="changeConfig">
-    <description id="configwarning">&configwarning;</description>
-    <checkbox id="reset" oncommand="resetToggled()" checked="true" label="&reset;"/>
-    <checkbox id="enable" checked="true" label="&enable;"/>
+    <description>&warning;</description>
+    <checkbox id="reset" oncommand="resetToggled()" checked="false" label="&reset;"/>
   </vbox>
 
   <checkbox id="open" checked="false" label="&open;"/>

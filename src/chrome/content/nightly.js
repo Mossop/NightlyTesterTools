@@ -120,7 +120,7 @@ init: function() {
   catch (e) {
     nightly.showFirstRun();
   }
-  nightly.preferences.setCharPref("lastVersion", "${extension.fullversion}");
+  //nightly.preferences.setCharPref("lastVersion", "${extension.fullversion}");
 },
 
 unload: function(pref) {

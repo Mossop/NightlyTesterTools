@@ -35,16 +35,13 @@
 #
 # ***** END LICENSE BLOCK *****
 #
-<!ENTITY dialog.title      "Nightly Tester Tools">
-<!ENTITY dialog.style      "width: 45em">
+<!ENTITY dialog.title  "Nightly Tester Tools">
+<!ENTITY dialog.style  "width: 45em">
 
-<!ENTITY title             "Welcome to Nightly Tester Tools">
-<!ENTITY subtitle          "You can find Nightly Tester Tools in the Tools menu.">
+<!ENTITY title         "Welcome to Nightly Tester Tools">
+<!ENTITY subtitle      "You can find Nightly Tester Tools in the Tools menu.">
 
-<!ENTITY overview          "Some of the features of Nightly Tester Tools are designed for advanced users and if used improperly could leave &brandShortName; unusable and potentially lose profile data.">
+<!ENTITY warning       "Currently &brandShortName; is set to ignore compatibility information which exposes you to the risk of instability, poor performance and data loss without your knowledge">
+<!ENTITY reset         "Switch to using Nightly Tester Tools to overide compatibility individually">
 
-<!ENTITY configwarning     "Currently &brandShortName; is set to ignore compatibility information which exposes you to the risk of instability, poor performance and data loss without your knowledge">
-<!ENTITY reset             "Reconfigure to allow you to choose when to override compatibility">
-<!ENTITY enable            "Leave any currently enabled add-ons working">
-
-<!ENTITY open              "Open the add-ons manager to enable incompatible add-ons">
+<!ENTITY open          "Open the add-ons manager to enable add-ons that are currently incompatible">
