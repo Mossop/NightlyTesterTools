@@ -39,6 +39,7 @@
 <!ENTITY dialog.style  "width: 45em">
 
 <!ENTITY title         "&brandShortName; is ignoring add-on compatibility">
-<!ENTITY subtitle      "Nightly Tester Tools can control compatibility using
-                        a safer, individual method. Do you want to use Nightly
-                        Tester Tools to control compatibility?">
+<!ENTITY subtitle      "Nightly Tester Tools can manage add-on compatibility
+                        using a safer method that works on an individual basis.">
+<!ENTITY question      "Do you want to switch to use Nightly Tester Tools to
+                        control compatibility?">

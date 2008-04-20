@@ -408,6 +408,8 @@ nttAddonCompatibilityService.prototype = {
     var wm = Cc["@mozilla.org/appshell/window-mediator;1"].
              getService(Ci.nsIWindowMediator);
     win = wm.getMostRecentWindow("Extension:Manager");
+    if (win && win.top)
+      win = win.top;
 
     var params = Cc["@mozilla.org/array;1"].
                  createInstance(Ci.nsIMutableArray);

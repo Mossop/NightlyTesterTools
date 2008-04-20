@@ -61,6 +61,7 @@
     <vbox flex="1">
       <label id="title">&title;</label>
       <description>&subtitle;</description>
+      <description>&question;</description>
     </vbox>
   </hbox>
 
