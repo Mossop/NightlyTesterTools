@@ -132,7 +132,7 @@ init: function() {
                         "dialog=no,titlebar,centerscreen,resizable=no");
     }
   }
-  //nightly.preferences.setCharPref("lastVersion", "${extension.fullversion}");
+  nightly.preferences.setCharPref("lastVersion", "${extension.fullversion}");
 },
 
 unload: function(pref) {
