@@ -38,10 +38,27 @@
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+var gOS = null;
+
+var observer = {
+  observe: function(subject, topic, data) {
+    window.focus();
+  }
+}
+
 function init() {
   var bundle = document.getElementById("bundle");
   setLabelForButton(document.documentElement.getButton("accept"), bundle.getString("Yes"));
   setLabelForButton(document.documentElement.getButton("cancel"), bundle.getString("No"));
+
+  gOS = Cc["@mozilla.org/observer-service;1"].
+        getService(Ci.nsIObserverService);
+  gOS.addObserver(observer, "xul-window-visible", false);
+}
+
+function unload() {
+  gOS.removeObserver(observer, "xul-window-visible");
+  gOS = null;
 }
 
 function setLabelForButton(button, label)
