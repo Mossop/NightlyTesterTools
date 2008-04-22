@@ -96,6 +96,7 @@
     <em:creator>Mossop</em:creator>
     <em:contributor>Peter van der Woude (original idea)</em:contributor>
     <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
+    <em:contributor>Steve England (QA)</em:contributor>
     <em:contributor>Stephen Lau (Songbird port)</em:contributor>
 
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
