@@ -146,7 +146,8 @@ function saveScreenshot()
   fp.init(window, bundle.getString("screenshot.filepicker.title"), fp.modeSave);
   fp.appendFilter(bundle.getString("screenshot.filepicker.filterPNG"), "*.png");
   fp.appendFilter(bundle.getString("screenshot.filepicker.filterJPG"), "*.jpg");
-  fp.defaultString="screenshot.png";
+  fp.filterIndex = 0;
+  fp.defaultString="screenshot";
 
   var result = fp.show();
   if (result==fp.returnOK || result==fp.returnReplace)
@@ -154,15 +155,16 @@ function saveScreenshot()
     var file = fp.file;
     var mimetype = "image/png";
     var options = "";
-    if (fp.filterIndex == 0)
+    var extension = "png";
+    if (fp.filterIndex == 1)
     {
+      extension = "jpg";
       mimetype = "image/jpeg";
-      options = "quality=65";
+      options = "quality=80";
     }
-    else if (fp.filterIndex == 1)
-    {
-      mimetype = "image/png";
-    }
+
+    if (file.leafName.indexOf(".") < 0)
+      file.leafName += "." + extension;
     
     var ioService = Cc["@mozilla.org/network/io-service;1"]
                       .getService(Ci.nsIIOService);
@@ -181,7 +183,7 @@ function saveScreenshot()
   
     tr.init(source, target, "", null, null, null, persist);
     persist.progressListener = tr;
-    persist.saveURI(source, null, null, null, null, fp.file);
+    persist.saveURI(source, null, null, null, null, file);
   }
 }
 
