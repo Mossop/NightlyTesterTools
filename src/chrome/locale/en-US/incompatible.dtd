@@ -37,7 +37,7 @@
 #
 <!ENTITY window.title        "Make Compatible">
 <!ENTITY window.style        "width: 40em; height: 25em">
-<!ENTITY window.accept       "Fix Compatibility">
+<!ENTITY window.accept       "Force Install">
 <!ENTITY window.cancel       "Skip">
 
 <!ENTITY warning.label       "Forcing incompatible add-ons to run could cause
