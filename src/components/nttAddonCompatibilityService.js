@@ -286,17 +286,21 @@ nttAddonDetail.prototype = {
     if (gCheckCompatibility || ignorePrefs) {
       var version = (gApp.ID == this.targetAppID) ? gApp.version : gApp.platformVersion;
       if (gVC.compare(version, this.minAppVersion) < 0) {
-        LOG("minVersion is too high, reducing to " + version);
+        LOG("minVersion " + this.minAppVersion + " is too high, reducing to " + version);
+        if (!this.datasource.GetTarget(this.appResource, EM_R("oldMinVersion"), true))
+          this.datasource.Assert(this.appResource, EM_R("oldMinVersion"), gRDF.GetLiteral(this.minAppVersion), true);
         removeRDFProperty(this.datasource, this.appResource, "minVersion");
         this.datasource.Assert(this.appResource, EM_R("minVersion"), gRDF.GetLiteral(version), true);
-        this.minVersion = version;
+        this.minAppVersion = version;
         changed = true;
       }
       else if (gVC.compare(version, this.maxAppVersion) > 0) {
-        LOG("maxVersion is too low, increasing to " + version);
+        LOG("maxVersion " + this.maxAppVersion + " is too low, increasing to " + version);
+        if (!this.datasource.GetTarget(this.appResource, EM_R("oldMaxVersion"), true))
+          this.datasource.Assert(this.appResource, EM_R("oldMaxVersion"), gRDF.GetLiteral(this.maxAppVersion), true);
         removeRDFProperty(this.datasource, this.appResource, "maxVersion");
         this.datasource.Assert(this.appResource, EM_R("maxVersion"), gRDF.GetLiteral(version), true);
-        this.maxVersion = version;
+        this.maxAppVersion = version;
         changed = true;
       }
 
