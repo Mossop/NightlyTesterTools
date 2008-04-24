@@ -56,7 +56,9 @@
   </vbox>
   
   <hbox id="commandBarBottom">
-    <button id="enableallButton" hidden="true" label="&nightly.enableall.label;" oncommand="extensionAppEnabler.enableAll()" insertbefore="restartAppButton"/>
+    <button id="enableallButton" hidden="true" label="&nightly.enableall.label;"
+            oncommand="extensionAppEnabler.enableAll()"
+            tooltiptext="&nightly.enableall.tooltip;" insertbefore="restartAppButton"/>
     <separator class="commandBarSeparator" insertbefore="restartAppButton"/>
   </hbox>
   
