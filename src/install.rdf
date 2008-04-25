@@ -98,6 +98,7 @@
     <em:contributor>Jesse Ruderman (Mac fixes)</em:contributor>
     <em:contributor>Steve England (QA)</em:contributor>
     <em:contributor>Stephen Lau (Songbird port)</em:contributor>
+    <em:contributor>FAMFAMFAM (Some icons)</em:contributor>
 
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>

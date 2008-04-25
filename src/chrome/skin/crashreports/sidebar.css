@@ -35,21 +35,8 @@
 %
 % ***** END LICENSE BLOCK *****
 %
-% $HeadURL$
-% $LastChangedBy$
-% $Date$
-% $Revision$
-%
 treechildren#treeroot::-moz-tree-image(name) {
   padding-right: 2px;
   margin: 0px 2px;
-  list-style-image: url("chrome://nightly/skin/breakpad/icons.png") !important;
-}
-
-treechildren#treeroot::-moz-tree-image(name, incident) {
-  -moz-image-region: rect(64px, 16px, 80px, 0px);
-}
-
-treechildren#treeroot::-moz-tree-image(name, incident, selected) {
-  -moz-image-region: rect(64px, 48px, 80px, 32px);
+  list-style-image: url("chrome://nightly/skin/crashreports/crash.png") !important;
 }

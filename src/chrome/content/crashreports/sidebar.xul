@@ -45,15 +45,15 @@
 ]>
 
 <?xml-stylesheet href="chrome://global/skin/global.css"?>
-<?xml-stylesheet href="chrome://nightly/skin/breakpad/sidebar.css"?>
+<?xml-stylesheet href="chrome://nightly/skin/crashreports/sidebar.css"?>
 
-<page id="BreakpadSidebar" title="Breakpad" onload="sidebar.init();"
+<page id="CrashReportsSidebar" onload="sidebar.init();"
       xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
   <script src="sidebar.js"/>
   
   <popupset>
-    <popup id="breakpadContext" onpopupshowing="return sidebar.checkPopup(event)">
+    <popup id="crashReportContext" onpopupshowing="return sidebar.checkPopup(event)">
       <menuitem oncommand="sidebar.copy(event)" label="&nightly.crashreports.copyid;"/>
     </popup>
   </popupset>
@@ -69,7 +69,7 @@
       <treecol id="incidentDate" label="&nightly.crashreports.date;" flex="2" hidden="true" persist="width hidden"/>
     </treecols>
     
-    <treechildren id="treeroot" context="breakpadContext"
+    <treechildren id="treeroot" context="crashReportContext"
                   onclick="if (event.button==1) sidebar.clickCommand(event);"
                   ondblclick="if (event.button==0) sidebar.clickCommand(event);"/>
   </tree>
