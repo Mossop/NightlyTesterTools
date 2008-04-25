@@ -60,7 +60,7 @@
           label="&nightly.crashreports.sidebar.title;"
           type="checkbox"
           group="sidebar"
-          sidebarurl="chrome://nightly/content/breakpad/sidebar.xul"
+          sidebarurl="chrome://nightly/content/crashreports/sidebar.xul"
           oncommand="toggleSidebar('viewCrashReportsSidebar');"/>
   </broadcasterset>
 
