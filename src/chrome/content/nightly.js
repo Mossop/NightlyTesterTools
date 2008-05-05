@@ -68,14 +68,7 @@ variables: {
   get processor() this.appInfo.XPCOMABI.split("-")[0],
   get compiler() this.appInfo.XPCOMABI.split("-")[1],
   defaulttitle: null,
-  get profile() {
-    var profservice = Components.classes["@mozilla.org/toolkit/profile-service;1"]
-                                .getService(Components.interfaces.nsIToolkitProfileService);
-    var profile = profservice.selectedProfile;
-    if (profile.name)
-      return profile.name;
-    return profile.rootDir.leafName;
-  },
+  profile: null,
   toolkit: "cairo",
   flags: ""
 },
@@ -102,6 +95,23 @@ init: function() {
   nightly.preferences = prefs.getBranch("nightly.")
                              .QueryInterface(Components.interfaces.nsIPrefBranchInternal);
   nightly.preferences.addObserver("", nightly, false);
+
+  var profd = Components.classes["@mozilla.org/file/directory_service;1"]
+                        .getService(Components.interfaces.nsIProperties)
+                        .get("ProfD", Components.interfaces.nsILocalFile);
+  var profservice = Components.classes["@mozilla.org/toolkit/profile-service;1"]
+                              .getService(Components.interfaces.nsIToolkitProfileService);
+  var profiles = profservice.profiles;
+  while (profiles.hasMoreElements()) {
+    var profile = profiles.getNext().QueryInterface(Components.interfaces.nsIToolkitProfile);
+    if (profile.rootDir.path == profd.path) {
+      nightly.variables.profile = profile.name;
+      break;
+    }
+  }
+
+  if (!nightly.variables.profile)
+    nightly.variables.profile = profd.leafName;
 
   nightlyApp.init();
   nightly.prefChange("idtitle");
