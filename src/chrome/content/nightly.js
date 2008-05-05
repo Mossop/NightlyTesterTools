@@ -105,9 +105,7 @@ init: function() {
   while (profiles.hasMoreElements()) {
     var profile = profiles.getNext().QueryInterface(Components.interfaces.nsIToolkitProfile);
     if (profile.rootDir.path == profd.path) {
-      if (profile.name)
-        nightly.variables.profile = profile.name;
-      nightly.variables.profile = profile.rootDir.leafName;
+      nightly.variables.profile = profile.name;
       break;
     }
   }
