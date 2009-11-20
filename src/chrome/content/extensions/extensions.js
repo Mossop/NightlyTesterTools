@@ -44,7 +44,7 @@ init: function() {
   var pos = gAddonContextMenus.indexOf("menuitem_enable");
   gAddonContextMenus.splice(pos, 0, "menuitem_appenable");
   this.cs = Components.classes["@oxymoronical.com/nightly/addoncompatibility;1"]
-                      .createInstance(Components.interfaces.nttIAddonCompatibilityService);
+                      .getService(Components.interfaces.nttIAddonCompatibilityService);
 },
 
 initView: function() {
@@ -122,17 +122,8 @@ enableAll: function() {
 },
 
 syncCompatibility: function() {
-  var prefService = Components.classes['@mozilla.org/preferences-service;1']
-                              .getService(Components.interfaces.nsIPrefBranch);
-  try {
-    var checkCompatibility = prefService.getBoolPref("extensions.checkCompatibility");
-    prefService.setBoolPref("extensions.checkCompatibility", !checkCompatibility);
-    prefService.setBoolPref("extensions.checkCompatibility", checkCompatibility);
- 	}
- 	catch (e) {
-    prefService.setBoolPref("extensions.checkCompatibility", false);
-    prefService.setBoolPref("extensions.checkCompatibility", true);
-  }
+  this.cs.compatibilityCheckingEnabled = !this.cs.compatibilityCheckingEnabled;
+  this.cs.compatibilityCheckingEnabled = !this.cs.compatibilityCheckingEnabled;
   updateOptionalViews();
   updateGlobalCommands();
 }

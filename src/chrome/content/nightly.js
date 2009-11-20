@@ -79,7 +79,7 @@ templates: {
 preferences: null,
 
 showAlert: function(id, args) {
-   var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
+  var sbs = Components.classes["@mozilla.org/intl/stringbundle;1"]
                       .getService(Components.interfaces.nsIStringBundleService);
   var bundle = sbs.createBundle("chrome://nightly/locale/nightly.properties");
   var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
@@ -123,10 +123,10 @@ init: function() {
     }
   }
   catch (e) {
-    var checkCompatibility = true;
+    var cs = Components.classes["@oxymoronical.com/nightly/addoncompatibility;1"]
+                       .getService(Components.interfaces.nttIAddonCompatibilityService);
+    var checkCompatibility = cs.compatibilityCheckingEnabled;
     var checkUpdateSecurity = true;
-    if (prefs.prefHasUserValue("extensions.checkCompatibility"))
-      checkCompatibility = prefs.getBoolPref("extensions.checkCompatibility");
     if (prefs.prefHasUserValue("extensions.checkUpdateSecurity"))
       checkUpdateSecurity = prefs.getBoolPref("extensions.checkUpdateSecurity");
     if (!checkCompatibility || !checkUpdateSecurity) {

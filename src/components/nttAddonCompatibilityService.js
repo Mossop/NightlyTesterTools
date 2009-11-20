@@ -54,6 +54,7 @@ var gVC = null;
 var gCheckCompatibility = true;
 var gCheckUpdateSecurity = true;
 var gPrefs = null;
+var gPrefName = "checkCompatibility";
 
 function EM_NS(property) {
   return PREFIX_NS_EM + property;
@@ -386,12 +387,16 @@ nttAddonCompatibilityService.prototype = {
           getService(Ci.nsIVersionComparator);
     if (gVC.compare(gApp.platformVersion, "1.9b5") >= 0)
       this.id = gEM.addInstallListener(this);
+    if (gVC.compare(gApp.platformVersion, "1.9.2b3") >= 0) {
+      var version = gApp.version.replace(/^([^\.]+\.[^a-z\.]+[a-z]?).*/gi, "$1");
+      gPrefName += "." + version;
+    }
     gPrefs = Components.classes["@mozilla.org/preferences-service;1"]
                        .getService(Components.interfaces.nsIPrefService)
                        .getBranch("extensions.")
                        .QueryInterface(Components.interfaces.nsIPrefBranch2);
     try {
-      gCheckCompatibility = gPrefs.getBoolPref("checkCompatibility");
+      gCheckCompatibility = gPrefs.getBoolPref(gPrefName);
     }
     catch (e) { }
     try {
@@ -399,6 +404,27 @@ nttAddonCompatibilityService.prototype = {
     }
     catch (e) { }
     gPrefs.addObserver("", this, false);
+  },
+
+  get compatibilityCheckingEnabled() {
+    return gCheckCompatibility;
+  },
+
+  set compatibilityCheckingEnabled(val) {
+    if (val == gCheckCompatibility)
+      return;
+
+    if (val) {
+      gPrefs.clearUserPref(gPrefName);
+      try {
+        if (!gPrefs.getBoolPref(gPrefName))
+          gPrefs.setBoolPref(gPrefName, true);
+      }
+      catch (e) { }
+    }
+    else {
+      gPrefs.setBoolPref(gPrefName, false);
+    }
   },
 
   // nsIAddonCompatibilityService implementation
@@ -506,7 +532,7 @@ nttAddonCompatibilityService.prototype = {
         break;
       case "nsPref:changed":
         switch (data) {
-          case "checkCompatibility":
+          case gPrefName:
             try {
               gCheckCompatibility = gPrefs.getBoolPref(data);
             }

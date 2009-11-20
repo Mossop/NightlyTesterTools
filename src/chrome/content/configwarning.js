@@ -94,8 +94,7 @@ function accept() {
 
   var prefs = Cc["@mozilla.org/preferences-service;1"].
               getService(Ci.nsIPrefBranch);
-  if (prefs.prefHasUserValue("extensions.checkCompatibility"))
-    prefs.clearUserPref("extensions.checkCompatibility");
+  cs.compatibilityCheckingEnabled = true;
   if (prefs.prefHasUserValue("extensions.checkUpdateSecurity"))
     prefs.clearUserPref("extensions.checkUpdateSecurity");
 }

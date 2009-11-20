@@ -55,8 +55,10 @@ interface nttIAddon : nsISupports
 [scriptable, uuid(ba015a71-b148-4391-aa81-1a2f0c727db3)]
 interface nttIAddonCompatibilityService : nsISupports
 {
+  attribute boolean compatibilityCheckingEnabled;
+
   nttIAddon getAddonForID(in wstring id);
 
   boolean confirmOverride([array, size_is(count)] in nttIAddon addons,
-                        in unsigned long count);
+                          in unsigned long count);
 };

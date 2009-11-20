@@ -42,7 +42,7 @@ init: function(event)
   var menu = document.getElementById("nightly-session-restore");
   var ds = Components.classes["@mozilla.org/file/directory_service;1"]
                      .getService(Components.interfaces.nsIProperties);
-  var file = ds.get("ProfD", Ci.nsIFile);
+  var file = ds.get("ProfD", Components.interfaces.nsIFile);
   file.append("sessionstore.bak");
   if (!file.exists)
     menu.setAttribute("disabled", "true");
