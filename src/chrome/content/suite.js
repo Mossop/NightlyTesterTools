@@ -37,6 +37,8 @@
 #
 var nightlyApp = {
 
+storedTitle: document.documentElement.getAttribute("titlemodifier"),
+
 init: function()
 {
   var brandbundle = document.getElementById("bundle_brand");
@@ -46,6 +48,10 @@ init: function()
   }
   nightly.variables.brandname=brandbundle.getString("brandFullName");
   nightly.variables.defaulttitle=nightlyApp.storedTitle;
+  document.getElementById("content").addEventListener("DOMTitleChanged",nightlyApp.titleUpdated,false);
+  if (!("toggleSidebar" in window)) {
+    document.getElementById("viewCrashReportsSidebar").hidden = true;
+  }
 },
 
 detectLeaks: function(event)
@@ -55,19 +61,41 @@ detectLeaks: function(event)
 
 openURL: function(url, event)
 {
-  openTopWin(url);
+  if ("openUILink" in window)
+    openUILink(url, event, false, true);
+  else
+    openTopWin(url);
+},
+
+titleUpdated: function()
+{
+  gBrowser.updateTitlebar();
+},
+
+updateTitlebar: function()
+{
+  window.setTimeout("gBrowser.updateTitlebar();", 50);
 },
 
 setCustomTitle: function(title)
 {
+  document.documentElement.setAttribute("titlemodifier",title);
+  document.documentElement.setAttribute("titlemenuseparator"," - ");
+  nightlyApp.updateTitlebar();
 },
 
 setBlankTitle: function()
 {
+  document.documentElement.setAttribute("titlemodifier","");
+  document.documentElement.setAttribute("titlemenuseparator","");
+  nightlyApp.updateTitlebar();
 },
 
 setStandardTitle: function()
 {
+  document.documentElement.setAttribute("titlemodifier",nightlyApp.storedTitle);
+  document.documentElement.setAttribute("titlemenuseparator"," - ");
+  nightlyApp.updateTitlebar();
 }
 
 }

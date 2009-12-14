@@ -49,7 +49,8 @@
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="suite.js" />
-  <script type="application/x-javascript" src="breakpad/breakpad.js" />
+  <script type="application/x-javascript" src="session/session.js" />
+  <script type="application/x-javascript" src="crashreports/crashreports.js" />
   <script type="application/x-javascript" src="chrome://nightly/content/platform.js" />
 
   <!-- Sidebar -->
@@ -59,13 +60,25 @@
           label="&nightly.crashreports.sidebar.title;"
           type="checkbox"
           group="sidebar"
-          sidebarurl="chrome://nightly/content/breakpad/sidebar.xul"
+          sidebarurl="chrome://nightly/content/crashreports/sidebar.xul"
           oncommand="toggleSidebar('viewCrashReportsSidebar');"/>
   </broadcasterset>
+
+  <menupopup id="viewSidebarMenu">
+    <menuitem observes="viewCrashReportsSidebar"/>
+  </menupopup>
 
   <keyset id="navKeys">
     <key key="s" modifiers="accel,shift" oncommand="nightly.getScreenshot();"/>
   </keyset>
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="nightly-tester-enter"
+            class="toolbarbutton-1"
+            label="&nightly.id.insert.label;"
+            tooltiptext="&nightly.id.insert.tooltip;"
+            oncommand="nightly.insertTemplate('buildid');"/>
+  </toolbarpalette>
 
   <popupset id="mainPopupSet">
     <tooltip orient="vertical" id="nightly-crashreport-tooltip" onpopupshowing="return crashreports.popupTooltip(event)">
@@ -76,6 +89,10 @@
     </popup>
   </popupset>
   
+  <menupopup id="goPopup">
+    <menuitem id="nightly-session-restore" label="&nightly.session.restore;" insertbefore="endUndoSeparator" oncommand="session.restore()"/>
+  </menupopup>
+
   <menupopup id="taskPopup">
     <menu id="nightly-menu" label="Nightly Tester Tools" insertbefore="sep_switchprofile">
       <menupopup onpopupshowing="nightly.menuPopup(event,this);">
@@ -86,9 +103,9 @@
         <menuseparator/>
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
 #include "crashreports/crashreports.inc.xul"
-        <menuitem id="nightly-breakpad-sidebar" observes="viewBreakpadSidebar"/>
+        <menuitem id="nightly-crashreports-sidebar" observes="viewCrashReportsSidebar"/>
         <menuseparator/>
-        <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);"/>
+        <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);" onclick="checkForMiddleClick(this, event);"/>
         <menuseparator/>
         <menuitem label="&nightly.options.label;" oncommand="nightly.launchOptions();"/>
       </menupopup>

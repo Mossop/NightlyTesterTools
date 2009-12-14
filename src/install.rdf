@@ -77,7 +77,7 @@
       <Description>
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
         <em:minVersion>2.0a1pre</em:minVersion>
-        <em:maxVersion>2.0b1pre</em:maxVersion>
+        <em:maxVersion>2.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
 	
@@ -99,6 +99,7 @@
     <em:contributor>Steve England (QA)</em:contributor>
     <em:contributor>Stephen Lau (Songbird port)</em:contributor>
     <em:contributor>FAMFAMFAM (Some icons)</em:contributor>
+    <em:contributor>Philip Chee (SeaMonkey and Thunderbird fixes)</em:contributor>
 
     <em:iconURL>chrome://nightly/content/brand/icon.png</em:iconURL>
     <em:optionsURL>chrome://nightly/content/options/options.xul</em:optionsURL>

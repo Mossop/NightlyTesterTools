@@ -49,6 +49,10 @@ init: function()
   }
   nightly.variables.defaulttitle=brandbundle.getString("brandShortName");
   nightly.variables.brandname=brandbundle.getString("brandFullName");
+  if (!("toggleSidebar" in window)) {
+    document.getElementById("viewCrashReportsSidebar").hidden = true;
+    document.getElementById("nightly-menu-crashreports-sep").hidden = true;
+  }
 },
 
 openURL: function(url, event)

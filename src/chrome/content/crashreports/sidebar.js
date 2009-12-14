@@ -100,12 +100,5 @@ clickCommand: function(event)
   sidebar.command(tree, event, row.value);
 },
 
-checkPopup: function(event)
-{
-  var tree = document.getElementById("tree");
-  var type = tree.view.getCellText(tree.currentIndex, tree.columns.getNamedColumn("type"));
-  return type=="incident";
-},
-
 QueryInterface: XPCOMUtils.generateQI([Ci.nttIBreakpadProgressListener])
 }

@@ -53,7 +53,7 @@
   <script src="sidebar.js"/>
   
   <popupset>
-    <popup id="crashReportContext" onpopupshowing="return sidebar.checkPopup(event)">
+    <popup id="crashReportContext">
       <menuitem oncommand="sidebar.copy(event)" label="&nightly.crashreports.copyid;"/>
     </popup>
   </popupset>

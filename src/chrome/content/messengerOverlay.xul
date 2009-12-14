@@ -49,15 +49,30 @@
        
   <script type="application/x-javascript" src="nightly.js" />
   <script type="application/x-javascript" src="messenger.js" />
-  <script type="application/x-javascript" src="breakpad/breakpad.js" />
+  <script type="application/x-javascript" src="crashreports/crashreports.js" />
   <script type="application/x-javascript" src="chrome://nightly/content/platform.js" />
+
+  <!-- Sidebar -->
+  <broadcasterset id="mainBroadcasterSet">
+    <broadcaster id="viewCrashReportsSidebar"
+                 autoCheck="false"
+                 label="&nightly.crashreports.sidebar.title;"
+                 type="checkbox"
+                 group="sidebar"
+                 sidebarurl="chrome://nightly/content/crashreports/sidebar.xul"
+                 oncommand="toggleSidebar('viewCrashReportsSidebar');"/>
+  </broadcasterset>
+
+  <menupopup id="viewSidebarMenu">
+    <menuitem observes="viewCrashReportsSidebar"/>
+  </menupopup>
 
   <toolbarpalette id="MailToolbarPalette">
     <toolbarbutton id="nightly-tester-enter"
-            class="toolbarbutton-1"
-            label="&nightly.id.insert.label;"
-            tooltiptext="&nightly.id.insert.tooltip;"
-            oncommand="nightly.insertTemplate('buildid');"/>
+                   class="toolbarbutton-1"
+                   label="&nightly.id.insert.label;"
+                   tooltiptext="&nightly.id.insert.tooltip;"
+                   oncommand="nightly.insertTemplate('buildid');"/>
   </toolbarpalette>
 
   <popupset id="mainPopupSet">
@@ -79,7 +94,8 @@
         <menuseparator/>
         <menuitem label="&nightly.openprofile.label;" oncommand="nightly.openProfileDir();"/>
 #include "crashreports/crashreports.inc.xul"
-        <menuseparator/>
+        <menuitem id="nightly-crashreports-sidebar" observes="viewCrashReportsSidebar"/>
+        <menuseparator id="nightly-menu-crashreports-sep"/>
         <menuitem label="&nightly.leakreporter.label;" oncommand="nightlyApp.detectLeaks(event);"/>
         <menuseparator/>
         <menuitem label="&nightly.options.label;" oncommand="nightly.launchOptions();"/>
